@@ -56,8 +56,7 @@ REPOSITORY_CHROME="https://dl.google.com/linux/chrome/deb/"
 echo "-------------------------------------------------------------"
 echo "To Follow extra details use: tail -F $LOG" or
 echo "To Follow extra details use: tail -F $ERR"
-	touch $LOG
-	touch $ERR
+
 echo "-------------------------------------------------------------"
 
 echo "Making script backup ----------------------------------------"
@@ -67,6 +66,8 @@ echo "Making script backup ----------------------------------------"
 echo "Creating cache folder ---------------------------------------"
         mkdir -vp ${CACHE_FOLDER}
         chown $SUDO_USER: -R ${CACHE_FOLDER}
+	touch $LOG
+	touch $ERR
 
 echo "Cleaning cache packages if necesary -------------------------"
 if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; then
