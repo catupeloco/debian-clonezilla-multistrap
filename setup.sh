@@ -71,7 +71,7 @@ echo "Installing dependencies for this script ---------------------"
 echo "-------------------------------------------------------------"
 echo "To Follow extra details use: tail -F $LOG" or
 echo "To Follow extra details use: tail -F $ERR"
-ip a -br
+ip -br a
 echo "Device $DEVICE"
 echo "-------------------------------------------------------------"
 
