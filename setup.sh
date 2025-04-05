@@ -84,7 +84,8 @@ To Follow extra details use:
 	tail -F $ERR
 
 For remote access during installation, you can connect via ssh" 
-
+grep iso /proc/cmdline >/dev/null && \
+echo ISO Detected. Hint username is \"user\" and password is \"live\"
 ip -br a | grep -v ^lo
 
 echo "-------------------------------------------------------------"
