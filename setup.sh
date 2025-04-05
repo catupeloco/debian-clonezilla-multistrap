@@ -112,7 +112,7 @@ echo "Creating EFI partition --------------------------------------"
         parted ${DEVICE} --script set 1 esp on                        > /dev/null 2>&1
 
 echo "Creating Clonezilla partition -------------------------------"
-	parted ${DEVICE} --script mkpart primary ext4 901MiB 12901MiB > /dev/null 2>&1
+	parted ${DEVICE} --script mkpart CLONEZILLA ext4 901MiB 12901MiB > /dev/null 2>&1
 
 echo "Calculating OS partition size -------------------------------"
 	DISK_SIZE=$(parted ${DEVICE} --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
@@ -120,17 +120,17 @@ echo "Calculating OS partition size -------------------------------"
 	END_X_PART=$((DISK_SIZE - 20480)) 
 
 echo "Creating OS partition ---------------------------------------"
-	parted ${DEVICE} --script mkpart primary ext4 ${START_X_PART}MiB ${END_X_PART}MiB >/dev/null 2>&1
+	parted ${DEVICE} --script mkpart LINUX ext4 ${START_X_PART}MiB ${END_X_PART}MiB >/dev/null 2>&1
 
-echo "Creating Images partition -----------------------------------"
-	parted ${DEVICE} --script mkpart primary ext4 ${END_X_PART}MiB 100% >/dev/null 2>&1
+echo "Creating Resources partition --------------------------------"
+	parted ${DEVICE} --script mkpart RESOURCES ext4 ${END_X_PART}MiB 100% >/dev/null 2>&1
         sleep 2
 
 echo "Formating partitions ----------------------------------------"
         mkfs.vfat -n EFI ${DEVICE}1                             > /dev/null 2>&1
         mkfs.ext4 -L CLONEZILLA ${DEVICE}2                      > /dev/null 2>&1
         mkfs.ext4 -L LINUX ${DEVICE}3                           > /dev/null 2>&1
-        mkfs.ext4 -L IMAGES ${DEVICE}4                          > /dev/null 2>&1
+        mkfs.ext4 -L RESOURCES ${DEVICE}4                       > /dev/null 2>&1
 
 echo "Mounting OS partition ---------------------------------------"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
