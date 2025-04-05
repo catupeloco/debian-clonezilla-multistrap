@@ -224,7 +224,7 @@ echo '
 ##PREFIX##
 menuentry  --hotkey=s "Salvar imagen"{
   search --set -f /live/vmlinuz
-  linux /live/vmlinuz boot=live union=overlay username=user config components noquiet noswap edd=on nomodeset noprompt noeject locales= keyboard-layouts=%%KEYBOAR%% ocs_prerun="mount /dev/%%BASE%%2 /home/partimag" ocs_live_run="/usr/sbin/ocs-sr -q2 -c -j2 -z1p -i 4096 -sfsck -scs -enc -p poweroff saveparts debian_image %%BASE%%1 %%BASE%%3" ocs_postrun="/home/partimag/clean" ocs_live_extra_param="" keyboard-layouts="US" ocs_live_batch="no" vga=788 toram=live,syslinux,EFI ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+  linux /live/vmlinuz boot=live union=overlay username=user config components noquiet noswap edd=on nomodeset noprompt noeject locales= keyboard-layouts=%%KEYBOARD%% ocs_prerun="mount /dev/%%BASE%%2 /home/partimag" ocs_live_run="/usr/sbin/ocs-sr -q2 -c -j2 -z1p -i 4096 -sfsck -scs -enc -p poweroff saveparts debian_image %%BASE%%1 %%BASE%%3" ocs_postrun="/home/partimag/clean" ocs_live_extra_param="" keyboard-layouts="US" ocs_live_batch="no" vga=788 toram=live,syslinux,EFI ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
   initrd /live/initrd.img
 }
 ##SUFIX##
