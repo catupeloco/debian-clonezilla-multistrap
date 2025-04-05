@@ -80,6 +80,7 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
+        umount ${CACHEFOLDER}                   2>/dev/null || true
 
 
 echo "Full reparted or not? ---------------------------------------"
