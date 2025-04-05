@@ -357,6 +357,9 @@ echo "Setting Keyboard maps for non graphical console -------------"
         mkdir -p ${ROOTFS}/usr/share/keymaps/
         cp -r * ${ROOTFS}/usr/share/keymaps/  >>$LOG 2>>$ERR
 
+echo "Setting Keyboard maps for everything else -------------------"
+	echo 'XKBLAYOUT="latam"' > ${ROOTFS}/etc/default/keyboard
+
 echo "Creating recovery -------------------------------------------"
 echo '#!/bin/sh
 exec tail -n +3 $0
