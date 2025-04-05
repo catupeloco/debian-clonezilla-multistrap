@@ -65,6 +65,7 @@ echo "Installing dependencies for this script ---------------------"
 	apt install --fix-broken -y					 >/dev/null 2>&1
         apt install dosfstools parted gnupg2 unzip \
 		             wget curl openssh-server -y		 >/dev/null 2>&1
+	systemctl start sshd						 >/dev/null 2>&1
 	wget --show-progress -q -O /tmp/multistrap.deb ${MULTISTRAP_URL}
 	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
 
