@@ -15,9 +15,8 @@ fi
 
 set -e # Exit on error
 cd /tmp
+MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
 
-
-CACHE_FOLDER=/var/cache/apt/archives
 CACHE_FOLDER=/home/$SUDO_USER/.multistrap
 LOG=${CACHE_FOLDER}/multistrap.log
 ERR=${CACHE_FOLDER}/multistrap.err
@@ -76,25 +75,19 @@ echo "Creating cache folder ---------------------------------------"
 echo "Cleaning cache packages if necesary -------------------------"
 if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; then
 		echo ---This packages have more than one version.
- 		#ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
         	do ls ${CACHE_FOLDER}/${line}* 
 		done
 		echo ---Removing older versions so multistrap wont fail
-		#cd ${CACHE_FOLDER}/ && ls -rt | awk -F'_' '{a[$1]++; if (a[$1] > 1) print $0}' | xargs sudo rm -v
- 		#ls /var/cache/apt/archives/ | awk -F'_' '{print $1}' | sort | uniq -d
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
         	do rm -v ${CACHE_FOLDER}/${line}* 
 		done
 	fi
-        if [ $(ls $0.$(date +'%Y%m%d')* | wc -l) == "1" ] ; then
-                echo ----First run of today, cleaning ${CACHE_FOLDER}
-		find ${CACHE_FOLDER}/ -type f -name "*.deb" -exec rm {} \;
-        fi
 
 echo "Installing dependencies for this script ---------------------"
         apt update								     >/dev/null 2>&1
 	apt install --fix-broken -y						     >/dev/null 2>&1
+	wget -q -O ${CACHE_FOLDER}/multistrap.deb ${MULTISTRAP_URL} --progress -N
         apt install dosfstools parted btrfs-progs vim multistrap wget curl gnupg2 -y >/dev/null 2>&1
 
 echo "Unmounting ${DEVICE}  ----------------------------------------"
