@@ -371,7 +371,7 @@ exec tail -n +3 $0
 # Particion para restaurar
 menuentry "Restaurar" {
    insmod chain
-   search --no-floppy --set=root -f /live/vmlinuz
+   search --no-floppy --set=root -f /live-hd/vmlinuz
    chainloader ($root)/EFI/boot/grubx64.efi
 }'> ${ROOTFS}/etc/grub.d/40_custom
 
