@@ -155,7 +155,6 @@ echo "Creating cache folder ---------------------------------------"
         mkdir -vp ${CACHE_FOLDER}
         chown $SUDO_USER: -R ${CACHE_FOLDER}
 	mount ${DEVICE}4 ${CACHE_FOLDER}
-	#mount ${DEVICE}4 /var/cache/apt/archives	
         mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1
         mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
 	touch $LOG
@@ -177,13 +176,6 @@ echo "Downloading Google Chrome keyrings --------------------------"
         echo ---------Creating Directories in ${ROOTFS}
         mkdir -p ${ROOTFS}/etc/apt/sources.list.d/
         mkdir -p ${ROOTFS}${APT_TRUSTEDDIR}  
-
-        #CHROME
-        #echo ---------Installing chrome keyring here
-        #wget -qO - https://dl.google.com/linux/linux_signing_key.pub \
-        #| awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 2 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 2 {exit}' \
-        #| gpg --dearmor >          ${APT_TRUSTEDDIR}google-chrome.gpg
-        #echo deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main    >          /etc/apt/sources.list.d/google-chrome.list
 
         echo ---------Installing chrome keyring in ${ROOTFS}
         wget -qO - https://dl.google.com/linux/linux_signing_key.pub \
@@ -355,17 +347,12 @@ echo "Downloading Libreoffice -------------------------------------"
 echo "Setting Keyboard maps for non graphical console -------------"
         # FIX DEBIAN BUG
         keyboard_maps=$(curl -s https://mirrors.edge.kernel.org/pub/linux/utils/kbd/ | grep tar.gz | cut -d'"' -f2 | tail -n1)
-        where_am_i=$PWD
         wget --show-progress -qcN -O $keyboard_maps https://mirrors.edge.kernel.org/pub/linux/utils/kbd/$keyboard_maps 
         cd /tmp
         tar xzvf $where_am_i/$keyboard_maps   >>$LOG 2>>$ERR
         cd kbd-*/data/keymaps/
         mkdir -p ${ROOTFS}/usr/share/keymaps/
         cp -r * ${ROOTFS}/usr/share/keymaps/  >>$LOG 2>>$ERR
-
-echo "Copying skel, defaults and crontab --------------------------"
-        cp -pR /etc/crontab /etc/skel ${ROOTFS}/etc/
-        cp -p /etc/default/keyboard /etc/default/locale /etc/default/console-setup ${ROOTFS}/etc/default/
 
 echo "Creating recovery -------------------------------------------"
 echo '#!/bin/sh
@@ -460,14 +447,22 @@ echo "Entering chroot ---------------------------------------------"
         chmod +x ${ROOTFS}/root/chroot.sh
         chroot ${ROOTFS} /bin/bash /root/chroot.sh
 
-
-
         echo Adding local admin ------------------------------------------
         read -p "What username do you want for local_admin_user ?: " username
         chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
         
-	read -sp "What password do you want for local_admin_user ${username} ?" password
-	echo ${username}:${password} | chroot ${ROOTFS} chpasswd
+	REPEAT=yes
+	while [ "$REPEAT" == yes ] ; do
+		read -sp "What password do you want for local_admin_user ${username} ?" password
+		read -sp "to be sure, please repeat the password: " password2
+		if [ "$password" == "$password" ] ; then
+			echo ${username}:${password} | chroot ${ROOTFS} chpasswd
+			echo .
+			REPEAT=no
+		else
+			echo "ERROR: Passwords entered dont match"
+		fi
+	done
 	
 	echo "
 	echo Adding local user -------------------------------------------
