@@ -460,13 +460,10 @@ echo "Entering chroot ---------------------------------------------"
         
 	REPEAT=yes
 	while [ "$REPEAT" == "yes" ] ; do
-		read -sp "What password do you want for local_admin_user ${username} ?" password
-		echo .
-		read -sp "to be sure, please repeat the password: " password2
-		echo .
+		read -sp "What password do you want for local_admin_user ${username} ?" password && echo "."
+		read -sp "to be sure, please repeat the password: " password2                    && echo "."
 		if [ "$password" == "$password2" ] ; then
-			echo ${username}:${password} | chroot ${ROOTFS} chpasswd
-			echo .
+			echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 && echo "."
 			REPEAT=no
 		else
 			echo "ERROR: Passwords entered dont match"
