@@ -60,18 +60,20 @@ REPOSITORY_DEB="http://deb.debian.org/debian/"
 REPOSITORY_CHROME="https://dl.google.com/linux/chrome/deb/"
 
 
+echo "Installing dependencies for this script ---------------------"
+        apt update							 >/dev/null 2>&1
+	apt install --fix-broken -y					 >/dev/null 2>&1
+        apt install dosfstools parted gnupg2 unzip \
+		             wget curl openssh-server -y		 >/dev/null 2>&1
+	wget --show-progress -q -O /tmp/multistrap.deb ${MULTISTRAP_URL}
+	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
+
 echo "-------------------------------------------------------------"
 echo "To Follow extra details use: tail -F $LOG" or
 echo "To Follow extra details use: tail -F $ERR"
-
-echo "-------------------------------------------------------------"
+ip a -br
 echo "Device $DEVICE"
-
-echo "Installing dependencies for this script ---------------------"
-        apt update								     >/dev/null 2>&1
-	apt install --fix-broken -y						     >/dev/null 2>&1
-	wget --show-progress -q -O /tmp/multistrap.deb ${MULTISTRAP_URL}
-        apt install dosfstools parted gnupg2 unzip wget curl /tmp/multistrap.deb -y  >/dev/null 2>&1
+echo "-------------------------------------------------------------"
 
 echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
