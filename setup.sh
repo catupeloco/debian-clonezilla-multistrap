@@ -1,8 +1,6 @@
 #!/bin/bash
 #VARIABLES
 if [ -z $1 ] ; then
-        #echo Usage: "time sudo $0 /dev/vdb"
-        #exit
         disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
 
         menu_options=()
