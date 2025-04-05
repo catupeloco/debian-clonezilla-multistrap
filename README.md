@@ -64,3 +64,9 @@ sudo dhclient wlan0
 $ sudo su -
 # curl -fsSL vicentech.com.ar/notebook | bash
 ```
+
+OR
+
+```
+$ sudo bash -c "$(curl -fsSL vicentech.com.ar/notebook)"
+```
