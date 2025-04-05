@@ -12,6 +12,10 @@ For everything else (Current build)
  </a>
 </div>
 
+## Copy Iso to pendrive using ventoy or dd
+
+## Run live via USB
+
 ## Connect device to internet if necesary
 
 #### - Connect cable if its possible.
@@ -41,11 +45,15 @@ iwlist wlan0 scan | grep SSID
 ```
 sudo wpa_passphrase "SSID" "your_wifi_password" | sudo tee /etc/wpa_supplicant.conf
 ```
+
 ###### - - connect to wireless network
+
 ```
 sudo wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf
 ```
+
 ###### - - request ip address
+
 ```
 sudo dhclient wlan0
 ```
