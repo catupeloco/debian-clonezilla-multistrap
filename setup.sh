@@ -70,12 +70,23 @@ echo "Installing dependencies for this script ---------------------"
 	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
 
 echo "-------------------------------------------------------------"
-echo "Installing on Device $DEVICE"
-echo "To Follow extra details use: 
+echo "
+Installing on Device ${DEVICE}
+	- Debian ${DEBIAN_VERSION}
+        - Backport kernel for newer HW compatibility
+	- Latest Libreoffice
+        - Latest Google Chrome 
+	- Latest XFCE 
+	- Latest Firefox ESR
+
+To Follow extra details use: 
 	tail -F $LOG or
-	tail -F $ERR"
-echo "For remote access during installation, you can connect via ssh" 
+	tail -F $ERR
+
+For remote access during installation, you can connect via ssh" 
+
 ip -br a | grep -v ^lo
+
 echo "-------------------------------------------------------------"
 
 echo "Unmounting ${DEVICE}  ----------------------------------------"
