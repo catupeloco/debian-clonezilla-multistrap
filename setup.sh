@@ -402,22 +402,10 @@ echo "Entering chroot ---------------------------------------------"
 	      --bootloader-id=debian --recheck --no-nvram --removable  				>>\$LOG 2>>\$ERR 
         update-grub                                                                             >>\$LOG 2>>\$ERR
 
-        echo Adding local admin ------------------------------------------
-        read -p \"What username do you want for local_admin_user ?: \" username
-        useradd -d /home/\$username -c local_admin_user -G sudo -m -s /bin/bash \$username
-        
-        passwd \$username
-        if [ \"\$?\" != \"0\" ] ; then echo Please repeat the password....; passwd \$username ; fi
-        
         echo Installing LibreOffice and its language pack ----------------
         wait $pid_LO
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
         echo LibreOffice \$VERSION_LO installation done.
-
-	echo Listing relevant packages -----------------------------------
-        dpkg -l | grep -v ^ii                        | grep -vE '^Des|^\| |^\|/'		>>\$LOG 2>>\$ERR
-        dpkg -l | grep -iE 'google|libreoffice' | grep -vE '^Des|^\| |^\|/'			>>\$LOG 2>>\$ERR
-
 
         echo Setting languaje --------------------------------------------
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
@@ -459,6 +447,15 @@ echo "Entering chroot ---------------------------------------------"
         chmod +x ${ROOTFS}/root/chroot.sh
         chroot ${ROOTFS} /bin/bash /root/chroot.sh
 
+
+
+        echo Adding local admin ------------------------------------------
+        read -p "What username do you want for local_admin_user ?: " username
+        chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
+        
+	read -sP "What password do you want for local_admin_user ${username} ?" password
+	echo ${username}:${password} | chroot ${ROOTFS} chpasswd
+	
 	echo "
 	echo Adding local user -------------------------------------------
         read -p \"What username do you want for local_encrypted_user ?: \" username
