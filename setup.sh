@@ -133,7 +133,7 @@ echo "Creating cache folder ---------------------------------------"
         mkdir -vp ${CACHE_FOLDER}
         chown $SUDO_USER: -R ${CACHE_FOLDER}
 	mount ${DEVICE}4 ${CACHE_FOLDER}
-	mount ${DEVICE}4 /var/cache/apt/archives	
+	#mount ${DEVICE}4 /var/cache/apt/archives	
         mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1
         mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
 	touch $LOG
@@ -164,11 +164,11 @@ echo "Downloading Google Chrome keyrings --------------------------"
         mkdir -p ${ROOTFS}${APT_TRUSTEDDIR}  
 
         #CHROME
-        echo ---------Installing chrome keyring here
-        wget -qO - https://dl.google.com/linux/linux_signing_key.pub \
-        | awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 2 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 2 {exit}' \
-        | gpg --dearmor >          ${APT_TRUSTEDDIR}google-chrome.gpg
-        echo deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main    >          /etc/apt/sources.list.d/google-chrome.list
+        #echo ---------Installing chrome keyring here
+        #wget -qO - https://dl.google.com/linux/linux_signing_key.pub \
+        #| awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 2 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 2 {exit}' \
+        #| gpg --dearmor >          ${APT_TRUSTEDDIR}google-chrome.gpg
+        #echo deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main    >          /etc/apt/sources.list.d/google-chrome.list
 
         echo ---------Installing chrome keyring in ${ROOTFS}
         wget -qO - https://dl.google.com/linux/linux_signing_key.pub \
