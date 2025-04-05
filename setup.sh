@@ -69,7 +69,7 @@ echo "Installing dependencies for this script ---------------------"
 	wget --show-progress -q -O /tmp/multistrap.deb ${MULTISTRAP_URL}
 	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
 
-echo "-------------------------------------------------------------"
+echo "============================================================="
 echo "
 Installing on Device ${DEVICE}
 	- Debian ${DEBIAN_VERSION}
@@ -78,17 +78,18 @@ Installing on Device ${DEVICE}
         - Latest Google Chrome 
 	- Latest XFCE 
 	- Latest Firefox ESR
+	- Latest Clonezilla recovery
 
 To Follow extra details use: 
 	tail -F $LOG or
 	tail -F $ERR
 
 For remote access during installation, you can connect via ssh" 
+ip -br a | grep -v ^lo
 grep iso /proc/cmdline >/dev/null && \
 echo ISO Detected. Hint username is \"user\" and password is \"live\"
-ip -br a | grep -v ^lo
 
-echo "-------------------------------------------------------------"
+echo "============================================================="
 
 echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
