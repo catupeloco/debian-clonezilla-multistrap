@@ -155,7 +155,7 @@ echo "Installing dependencies for this script ---------------------"
         apt update								     >/dev/null 2>&1
 	apt install --fix-broken -y						     >/dev/null 2>&1
 	wget --show-progress -q -O ${CACHE_FOLDER}/multistrap.deb ${MULTISTRAP_URL}
-        apt install dosfstools parted gnupg2 unzip wget curl ${CACHE_FOLDER}/multistrap.deb -y >/dev/null 2>&1
+        apt install dosfstools parted gnupg2 unzip wget curl ${CACHE_FOLDER}/multistrap.deb -y #>/dev/null 2>&1
 
 
 echo "Downloading Google Chrome keyrings --------------------------"
