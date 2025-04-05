@@ -62,5 +62,5 @@ sudo dhclient wlan0
 
 ```
 $ sudo su -
-# wget -qO- vicentech.com.ar/notebook | bash
+# curl -fsSL vicentech.com.ar/notebook | bash
 ```
