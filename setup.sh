@@ -454,7 +454,7 @@ echo "Entering chroot ---------------------------------------------"
         chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
         
 	REPEAT=yes
-	while [ "$REPEAT" == yes ] ; do
+	while [ "$REPEAT" == "yes" ] ; do
 		read -sp "What password do you want for local_admin_user ${username} ?" password
 		read -sp "to be sure, please repeat the password: " password2
 		if [ "$password" == "$password2" ] ; then
