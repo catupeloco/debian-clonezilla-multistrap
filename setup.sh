@@ -66,9 +66,75 @@ echo "To Follow extra details use: tail -F $ERR"
 
 echo "-------------------------------------------------------------"
 echo "Device $DEVICE"
+
+echo "Unmounting ${DEVICE}  ----------------------------------------"
+        umount ${DEVICE}*                       2>/dev/null || true
+        umount ${ROOTFS}/dev/pts                2>/dev/null || true
+        umount ${ROOTFS}/dev                    2>/dev/null || true
+        umount ${ROOTFS}/proc                   2>/dev/null || true
+        umount ${ROOTFS}/run                    2>/dev/null || true
+        umount ${ROOTFS}/sys                    2>/dev/null || true
+        umount ${ROOTFS}/tmp                    2>/dev/null || true
+        umount ${ROOTFS}/boot/efi               2>/dev/null || true
+        umount          /var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}                        2>/dev/null || true
+        umount ${RECOVERYFS}                    2>/dev/null || true
+
+
+echo "Full reparted or not? ---------------------------------------"
+	REPARTED=yes
+	blkid | grep ${DEVICE}2 | grep CLONEZILLA >/dev/null && \
+	blkid | grep ${DEVICE}3 | grep LINUX      >/dev/null && \
+	blkid | grep ${DEVICE}4 | grep RESOURCES  >/dev/null && \
+	REPARTED=no
+
+if [ "$REPARTED" == yes ] ; then
+	echo "Setting partition table to GPT (UEFI) -----------------------"
+		parted ${DEVICE} --script mktable gpt                         > /dev/null 2>&1
+
+
+	echo "Creating EFI partition --------------------------------------"
+		parted ${DEVICE} --script mkpart ESP fat32 1MiB 901MiB        > /dev/null 2>&1
+		parted ${DEVICE} --script set 1 esp on                        > /dev/null 2>&1
+
+	echo "Creating Clonezilla partition -------------------------------"
+		parted ${DEVICE} --script mkpart CLONEZILLA ext4 901MiB 12901MiB > /dev/null 2>&1
+
+	echo "Calculating OS partition size -------------------------------"
+		DISK_SIZE=$(parted ${DEVICE} --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
+		START_X_PART=$((12901 + 1))
+		END_X_PART=$((DISK_SIZE - 20480)) 
+
+	echo "Creating OS partition ---------------------------------------"
+		parted ${DEVICE} --script mkpart LINUX ext4 ${START_X_PART}MiB ${END_X_PART}MiB >/dev/null 2>&1
+
+	echo "Creating Resources partition --------------------------------"
+		parted ${DEVICE} --script mkpart RESOURCES ext4 ${END_X_PART}MiB 100% >/dev/null 2>&1
+		sleep 2
+fi
+
+echo "Formating partitions ----------------------------------------"
+[ "$REPARTED" == yes ] && mkfs.vfat -n EFI ${DEVICE}1           > /dev/null 2>&1
+[ "$REPARTED" == no  ] && mkfs.ext4 -L CLONEZILLA ${DEVICE}2    > /dev/null 2>&1
+[ "$REPARTED" == no  ] && mkfs.ext4 -L LINUX ${DEVICE}3         > /dev/null 2>&1
+[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES ${DEVICE}4     > /dev/null 2>&1
+
+echo "Mounting OS partition ---------------------------------------"
+        mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
+        mount ${DEVICE}3 ${ROOTFS}                              > /dev/null 2>&1
+	
+echo "Mounting Recovery partition ---------------------------------"
+        mkdir -p ${RECOVERYFS}                                  > /dev/null 2>&1
+        mount ${DEVICE}2 ${RECOVERYFS}                          > /dev/null 2>&1
+
 echo "Creating cache folder ---------------------------------------"
         mkdir -vp ${CACHE_FOLDER}
         chown $SUDO_USER: -R ${CACHE_FOLDER}
+	mount ${DEVICE}4 ${CACHE_FOLDER}
+	mount ${DEVICE}4 /var/cache/apt/archives	
+        mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1
+        mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
 	touch $LOG
 	touch $ERR
 
@@ -90,57 +156,6 @@ echo "Installing dependencies for this script ---------------------"
 	wget --show-progress -q -O ${CACHE_FOLDER}/multistrap.deb ${MULTISTRAP_URL}
         apt install dosfstools parted  gnupg2 -y >/dev/null 2>&1
 
-echo "Unmounting ${DEVICE}  ----------------------------------------"
-        umount ${DEVICE}*                       2>/dev/null || true
-        umount ${ROOTFS}/dev/pts                2>/dev/null || true
-        umount ${ROOTFS}/dev                    2>/dev/null || true
-        umount ${ROOTFS}/proc                   2>/dev/null || true
-        umount ${ROOTFS}/run                    2>/dev/null || true
-        umount ${ROOTFS}/sys                    2>/dev/null || true
-        umount ${ROOTFS}/tmp                    2>/dev/null || true
-        umount ${ROOTFS}/boot/efi               2>/dev/null || true
-        umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
-        umount ${ROOTFS}                        2>/dev/null || true
-        umount ${RECOVERYFS}                    2>/dev/null || true
-
-echo "Setting partition table to GPT (UEFI) -----------------------"
-        parted ${DEVICE} --script mktable gpt                         > /dev/null 2>&1
-
-
-echo "Creating EFI partition --------------------------------------"
-        parted ${DEVICE} --script mkpart ESP fat32 1MiB 901MiB        > /dev/null 2>&1
-        parted ${DEVICE} --script set 1 esp on                        > /dev/null 2>&1
-
-echo "Creating Clonezilla partition -------------------------------"
-	parted ${DEVICE} --script mkpart CLONEZILLA ext4 901MiB 12901MiB > /dev/null 2>&1
-
-echo "Calculating OS partition size -------------------------------"
-	DISK_SIZE=$(parted ${DEVICE} --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
-	START_X_PART=$((12901 + 1))
-	END_X_PART=$((DISK_SIZE - 20480)) 
-
-echo "Creating OS partition ---------------------------------------"
-	parted ${DEVICE} --script mkpart LINUX ext4 ${START_X_PART}MiB ${END_X_PART}MiB >/dev/null 2>&1
-
-echo "Creating Resources partition --------------------------------"
-	parted ${DEVICE} --script mkpart RESOURCES ext4 ${END_X_PART}MiB 100% >/dev/null 2>&1
-        sleep 2
-
-echo "Formating partitions ----------------------------------------"
-        mkfs.vfat -n EFI ${DEVICE}1                             > /dev/null 2>&1
-        mkfs.ext4 -L CLONEZILLA ${DEVICE}2                      > /dev/null 2>&1
-        mkfs.ext4 -L LINUX ${DEVICE}3                           > /dev/null 2>&1
-        mkfs.ext4 -L RESOURCES ${DEVICE}4                       > /dev/null 2>&1
-
-echo "Mounting OS partition ---------------------------------------"
-        mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
-        mount ${DEVICE}3 ${ROOTFS}                              > /dev/null 2>&1
-        mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1
-        mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
-	
-echo "Mounting Recovery partition ---------------------------------"
-        mkdir -p ${RECOVERYFS}                                  > /dev/null 2>&1
-        mount ${DEVICE}2 ${RECOVERYFS}                          > /dev/null 2>&1
 
 echo "Downloading Google Chrome keyrings --------------------------"
         echo ---------Creating Directories in ${ROOTFS}
