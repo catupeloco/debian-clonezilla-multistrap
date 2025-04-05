@@ -87,7 +87,7 @@ if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ;
 echo "Installing dependencies for this script ---------------------"
         apt update								     >/dev/null 2>&1
 	apt install --fix-broken -y						     >/dev/null 2>&1
-	wget --show-progress -qcN -O ${CACHE_FOLDER}/multistrap.deb ${MULTISTRAP_URL}
+	wget --show-progress -qN -O ${CACHE_FOLDER}/multistrap.deb ${MULTISTRAP_URL}
         apt install dosfstools parted  gnupg2 -y >/dev/null 2>&1
 
 echo "Unmounting ${DEVICE}  ----------------------------------------"
