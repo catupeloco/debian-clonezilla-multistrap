@@ -88,6 +88,7 @@ echo "Full reparted or not? ---------------------------------------"
 	blkid | grep ${DEVICE}3 | grep LINUX      >/dev/null && \
 	blkid | grep ${DEVICE}4 | grep RESOURCES  >/dev/null && \
 	REPARTED=no
+	echo ${REPARTED}
 
 if [ "$REPARTED" == yes ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
@@ -154,7 +155,7 @@ echo "Installing dependencies for this script ---------------------"
         apt update								     >/dev/null 2>&1
 	apt install --fix-broken -y						     >/dev/null 2>&1
 	wget --show-progress -q -O ${CACHE_FOLDER}/multistrap.deb ${MULTISTRAP_URL}
-        apt install dosfstools parted gnupg2 unzip wget curl -y >/dev/null 2>&1
+        apt install dosfstools parted gnupg2 unzip wget curl ${CACHE_FOLDER}/multistrap.deb -y >/dev/null 2>&1
 
 
 echo "Downloading Google Chrome keyrings --------------------------"
