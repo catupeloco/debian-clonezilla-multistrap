@@ -69,10 +69,6 @@ echo "To Follow extra details use: tail -F $ERR"
 
 echo "-------------------------------------------------------------"
 
-echo "Making script backup ----------------------------------------"
-        cp $0 $0.$(date +'%Y%m%d-%H%M')
-        chown $SUDO_USER: $0.*
-
 echo "Creating cache folder ---------------------------------------"
         mkdir -vp ${CACHE_FOLDER}
         chown $SUDO_USER: -R ${CACHE_FOLDER}
