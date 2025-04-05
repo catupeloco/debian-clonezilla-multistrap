@@ -68,7 +68,7 @@ echo "To Follow extra details use: tail -F $LOG" or
 echo "To Follow extra details use: tail -F $ERR"
 
 echo "-------------------------------------------------------------"
-
+echo "Device $DEVICE"
 echo "Creating cache folder ---------------------------------------"
         mkdir -vp ${CACHE_FOLDER}
         chown $SUDO_USER: -R ${CACHE_FOLDER}
