@@ -1,13 +1,23 @@
 #!/bin/bash
 #VARIABLES
 if [ -z $1 ] ; then
-        echo Usage: "time sudo $0 /dev/vdb"
-        exit
+        #echo Usage: "time sudo $0 /dev/vdb"
+        #exit
+        disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
+
+        menu_options=()
+        while read -r name size; do
+            menu_options+=("/dev/$name" "$size")
+        done <<< "$disk_list"
+	
+        DEVICE=$(whiptail --title "Select a Disk" --menu "Choose a disk:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
+else
+	DEVICE=$1
 fi
 
 set -e # Exit on error
 cd /tmp
-DEVICE=$1
+
 
 CACHE_FOLDER=/var/cache/apt/archives
 CACHE_FOLDER=/home/$SUDO_USER/.multistrap
