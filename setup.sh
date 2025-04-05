@@ -104,7 +104,6 @@ if [ "$REPARTED" == yes ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
 		parted ${DEVICE} --script mktable gpt                         > /dev/null 2>&1
 
-
 	echo "Creating EFI partition --------------------------------------"
 		parted ${DEVICE} --script mkpart ESP fat32 1MiB 901MiB        > /dev/null 2>&1
 		parted ${DEVICE} --script set 1 esp on                        > /dev/null 2>&1
