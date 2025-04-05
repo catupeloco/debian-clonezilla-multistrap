@@ -453,7 +453,7 @@ echo "Entering chroot ---------------------------------------------"
         read -p "What username do you want for local_admin_user ?: " username
         chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
         
-	read -sP "What password do you want for local_admin_user ${username} ?" password
+	read -sp "What password do you want for local_admin_user ${username} ?" password
 	echo ${username}:${password} | chroot ${ROOTFS} chpasswd
 	
 	echo "
