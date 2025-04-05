@@ -349,6 +349,7 @@ echo "Setting Keyboard maps for non graphical console -------------"
         # FIX DEBIAN BUG
         keyboard_maps=$(curl -s https://mirrors.edge.kernel.org/pub/linux/utils/kbd/ | grep tar.gz | cut -d'"' -f2 | tail -n1)
         wget --show-progress -qcN -O $keyboard_maps https://mirrors.edge.kernel.org/pub/linux/utils/kbd/$keyboard_maps 
+	where_am_i=$PWD
         cd /tmp
         tar xzvf $where_am_i/$keyboard_maps   >>$LOG 2>>$ERR
         cd kbd-*/data/keymaps/
