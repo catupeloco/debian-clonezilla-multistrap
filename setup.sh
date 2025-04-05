@@ -457,7 +457,7 @@ echo "Entering chroot ---------------------------------------------"
 	while [ "$REPEAT" == yes ] ; do
 		read -sp "What password do you want for local_admin_user ${username} ?" password
 		read -sp "to be sure, please repeat the password: " password2
-		if [ "$password" == "$password" ] ; then
+		if [ "$password" == "$password2" ] ; then
 			echo ${username}:${password} | chroot ${ROOTFS} chpasswd
 			echo .
 			REPEAT=no
