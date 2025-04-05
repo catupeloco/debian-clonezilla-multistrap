@@ -115,7 +115,7 @@ echo "Full reparted or not? ---------------------------------------"
 	REPARTED=no
 	echo ${REPARTED}
 
-if [ "$REPARTED" == yes ] ; then
+if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
 		parted ${DEVICE} --script mktable gpt                         > /dev/null 2>&1
 
