@@ -67,6 +67,12 @@ echo "To Follow extra details use: tail -F $ERR"
 echo "-------------------------------------------------------------"
 echo "Device $DEVICE"
 
+echo "Installing dependencies for this script ---------------------"
+        apt update								     >/dev/null 2>&1
+	apt install --fix-broken -y						     >/dev/null 2>&1
+	wget --show-progress -q -O /tmp/multistrap.deb ${MULTISTRAP_URL}
+        apt install dosfstools parted gnupg2 unzip wget curl /tmp/multistrap.deb -y  >/dev/null 2>&1
+
 echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
@@ -151,13 +157,6 @@ if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ;
         	do rm -v ${CACHE_FOLDER}/${line}* 
 		done
 	fi
-
-echo "Installing dependencies for this script ---------------------"
-        apt update								     >/dev/null 2>&1
-	apt install --fix-broken -y						     >/dev/null 2>&1
-	wget --show-progress -q -O ${CACHE_FOLDER}/multistrap.deb ${MULTISTRAP_URL}
-        apt install dosfstools parted gnupg2 unzip wget curl ${CACHE_FOLDER}/multistrap.deb -y #>/dev/null 2>&1
-
 
 echo "Downloading Google Chrome keyrings --------------------------"
         echo ---------Creating Directories in ${ROOTFS}
