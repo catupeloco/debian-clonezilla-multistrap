@@ -302,6 +302,16 @@ echo "Running multistrap ------------------------------------------"
                 rm ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
         fi
 
+# TODO: Next big change migration to mmdebstrap for multistrap discontinuation :( SAD FACE	
+# mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory \
+#                --include="${INCLUDES_DEB}"                    "${DEBIAN_VERSION}" "${ROOTFS}" \
+#  "deb [trusted=yes] http://deb.debian.org/debian               ${DEBIAN_VERSION}           main contrib non-free" \
+#  "deb [trusted=yes] http://security.debian.org/debian-security ${DEBIAN_VERSION}-security  main contrib non-free" \
+#  "deb [trusted=yes] http://deb.debian.org/debian               ${DEBIAN_VERSION}-updates   main contrib non-free" \
+#  "deb [trusted=yes] http://deb.debian.org/debian               ${DEBIAN_VERSION}-backports main" \
+#  "deb [arch=amd64]  https://dl.google.com/linux/chrome/deb/    stable                      main"
+
+
 echo "Configurating the network -----------------------------------"
         cp /etc/resolv.conf ${ROOTFS}/etc/resolv.conf
         mkdir -p ${ROOTFS}/etc/network/interfaces.d/            > /dev/null 2>&1
