@@ -2,15 +2,11 @@
 
 ## Download debian live iso standard
 
-<div>
- <a href "https://cdimage.debian.org/cdimage/weekly-live-builds/amd64/iso-hybrid/debian-live-testing-amd64-standard.iso">
-For brand new devices (Weekly build)
- </a>
-<br>
- <a href "https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/" >
-For everything else (Current build)
- </a>
-</div>
+[For brand new devices (Weekly build)]
+(https://cdimage.debian.org/cdimage/weekly-live-builds/amd64/iso-hybrid/debian-live-testing-amd64-standard.iso)
+
+[For everything else (Current build)]
+(https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/)
 
 ## Copy Iso to pendrive using ventoy or dd
 
