@@ -53,6 +53,5 @@ $ sudo bash -c "$(curl -fsSL vicentech.com.ar/notebook)"
 ```
 OR
 ```
-$ sudo su -
-# curl -fsSL vicentech.com.ar/notebook | bash
+$ curl -fsSL vicentech.com.ar/laptop | bash
 ```
