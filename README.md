@@ -2,19 +2,18 @@
 
 ## Download debian live iso standard
 
-[For brand new devices (Weekly build)](https://cdimage.debian.org/cdimage/weekly-live-builds/amd64/iso-hybrid/debian-live-testing-amd64-standard.iso)
+  [For brand new devices (Weekly build)](https://cdimage.debian.org/cdimage/weekly-live-builds/amd64/iso-hybrid/debian-live-testing-amd64-standard.iso)
 
-[For everything else (Current build)](https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/)
+  [For everything else (Current build)](https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/)
 
 ## Copy Iso to pendrive using ventoy or dd
 
 - [Download Ventoy](https://www.ventoy.net/en/download.html)
 
 - Creating USB booteable from iso file: Replace iso file route and usb device
-
-```
-sudo dd bs=4M if=/route/to/file.iso of=/dev/sdx status=progress oflag=sync
-```
+  ```
+  sudo dd bs=4M if=/route/to/file.iso of=/dev/sdx status=progress oflag=sync
+  ```
 
 ## Run live via USB
 
