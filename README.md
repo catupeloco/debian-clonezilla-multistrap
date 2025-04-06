@@ -27,41 +27,33 @@ sudo dd bs=4M if=/route/to/file.iso of=/dev/sdx status=progress oflag=sync
 ```
 ip -br a
 ```
-
   - ###### if wifi card is wlan0
 ```
 sudo ip link set wlan0 up
 ```
-
   - ###### if you don't know SSID (Wifi Network name)
 ```
 iwlist wlan0 scan | grep SSID
 ```
-
   - ###### set wifi configuration
 ```
 sudo wpa_passphrase "SSID" "your_wifi_password" | sudo tee /etc/wpa_supplicant.conf
 ```
-
   - ###### connect to wireless network
 ```
 sudo wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf
 ```
-
   - ###### request ip address
 ```
 sudo dhclient wlan0
 ```
 
 ## Run script
-
+```
+$ sudo bash -c "$(curl -fsSL vicentech.com.ar/notebook)"
+```
+OR
 ```
 $ sudo su -
 # curl -fsSL vicentech.com.ar/notebook | bash
-```
-
-OR
-
-```
-$ sudo bash -c "$(curl -fsSL vicentech.com.ar/notebook)"
 ```
