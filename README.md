@@ -14,9 +14,9 @@ In this instance, the goal is to build a laptop/desktop image with the following
 
 # Requirements
 
-- ***Internet :*** wired connections is easier but here are the steps for wifi.
-  - Libreoffice, Google Chrome and Clonezilla will be downloaded directly 
-- ***USB thumb drive :*** if you choose to use dd command it will be formatted.
+- ***Internet :*** wired connections is easier, but Wi-Fi setop steps are included below.
+  - Libreoffice, Google Chrome and Clonezilla will be downloaded directly.
+- ***USB thumb drive :*** if you choose to use ```dd``` command, it will be formatted.
 - ***Laptop or desktop with:***
   - UEFI
   - 32 GB or more storage. The drive will be partitioned as follows :
