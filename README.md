@@ -51,7 +51,10 @@
 ```
 $ sudo bash -c "$(curl -fsSL vicentech.com.ar/notebook)"
 ```
-OR
+![English Keyboard Layout](https://en.wikipedia.org/wiki/Keyboard_layout#/media/File:Qwerty.svg)
+
+Other possible options
+
 ```
 $ curl -fsSL vicentech.com.ar/laptop | bash
 ```
