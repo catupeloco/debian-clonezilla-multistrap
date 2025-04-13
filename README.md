@@ -83,10 +83,15 @@ In this instance, the goal is to build a laptop/desktop image with the following
   <img title="English Keyboard Layout" src="images/Qwerty.png"> https://en.wikipedia.org/wiki/Keyboard_layout
 
 ## Installation walkthrough
-
-<img title="1.Grub_from_ISO"            src="images/1.Grub_from_ISO.png">
+- ***Grub from ISO :*** just hit enter.
+<img <itle="1.Grub_from_ISO"            src="images/1.Grub_from_ISO.png">
+- ***Installation command :*** 
 <img title="2.Installation_Command"     src="images/2.Installation_Command.png">
+- ***Disk comfirmation prompt : ***
 <img title="3.Disk_confirmation_prompt" src="images/3.Disk_confirmation_prompt.png">
+- ***Clean disk first run: *** Here we can see that the extra-packages as Clonezilla download directly from official mirrors.
+  Please not that Clonezilla at least from Argentina takes a long time to download. 
+  GOOD THINGS TAKE TIME.
 <img title="4.Clean_disk_first_run"     src="images/4.Clean_disk_first_run.png">
 
 # Post-installation Steps
