@@ -1,0 +1,1 @@
+sudo bash -c "$(curl -S https://raw.githubusercontent.com/catupeloco/debian-clonezilla-multistrap/refs/heads/main/setup.sh)"
