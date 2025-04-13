@@ -18,7 +18,7 @@ In this instance, the goal is to build a laptop/desktop image with the following
   - Libreoffice, Google Chrome and Clonezilla will be downloaded directly.
 - ***USB thumb drive :*** if you choose to use ```dd``` command, it will be formatted.
 - ***Laptop or desktop with:***
-  - UEFI
+  - UEFI support.
   - 32 GB or more storage. The drive will be partitioned as follows :
     1. EFI partition
     2. Clonezilla + Recovery partition
