@@ -226,18 +226,18 @@ echo '
 ##PREFIX##
 menuentry  --hotkey=s "Salvar imagen"{
   search --set -f /live-hd/vmlinuz
-  linux /live-hd/vmlinuz boot=live union=overlay username=user config components noquiet noswap edd=on nomodeset noprompt noeject locales= keyboard-layouts=%%KEYBOARD%% ocs_prerun="mount /dev/%%BASE%%2 /home/partimag" ocs_live_run="/usr/sbin/ocs-sr -q2 -c -j2 -z1p -i 4096 -sfsck -scs -enc -p poweroff saveparts debian_image %%BASE%%1 %%BASE%%3" ocs_postrun="/home/partimag/clean" ocs_live_extra_param="" keyboard-layouts="US" ocs_live_batch="no" vga=788 toram=live,syslinux,EFI ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+  linux /live-hd/vmlinuz boot=live union=overlay username=user config components noquiet noswap edd=on nomodeset noprompt noeject locales= keyboard-layouts=%%KEYBOARD%% ocs_prerun="mount /dev/%%BASE%%2 /home/partimag" ocs_live_run="/usr/sbin/ocs-sr -q2 -c -j2 -z1p -i 4096 -sfsck -scs -enc -p poweroff saveparts debian_image %%BASE%%1 %%BASE%%3" ocs_postrun="/home/partimag/clean" ocs_live_extra_param="" keyboard-layouts="US" ocs_live_batch="no" vga=788 toram=live-hd,syslinux,EFI ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
   initrd /live-hd/initrd.img
 }
 ##SUFIX##
 menuentry  --hotkey=r "Restaurar imagen"{
   search --set -f /live-hd/vmlinuz
-  linux /live-hd/vmlinuz boot=live union=overlay username=user config components noquiet noswap edd=on nomodeset noprompt noeject locales= keyboard-layouts=%%KEYBOARD%% ocs_prerun="mount /dev/%%BASE%%2 /home/partimag" ocs_live_run="ocs-sr -g auto -e1 auto -e2 -t -r -j2 -c -k -scr -p reboot restoreparts debian_image %%BASE%%1 %%BASE%%3" ocs_live_extra_param="" keyboard-layouts="US" ocs_live_batch="no" vga=788 toram=live,syslinux,EFI ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+  linux /live-hd/vmlinuz boot=live union=overlay username=user config components noquiet noswap edd=on nomodeset noprompt noeject locales= keyboard-layouts=%%KEYBOARD%% ocs_prerun="mount /dev/%%BASE%%2 /home/partimag" ocs_live_run="ocs-sr -g auto -e1 auto -e2 -t -r -j2 -c -k -scr -p reboot restoreparts debian_image %%BASE%%1 %%BASE%%3" ocs_live_extra_param="" keyboard-layouts="US" ocs_live_batch="no" vga=788 toram=live-hd,syslinux,EFI ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
   initrd /live-hd/initrd.img
 }
 
 
-menuentry "Clonezilla" {
+menuentry "Test" {
 	set root=(hd0,2)
   linux /live-hd/vmlinuz boot=live union=overlay username=user config components   quiet noswap edd=on nomodeset          nolocales                                                                                        ocs_live_run=\"ocs-live-general\"                                                                  locales=           ocs_live_extra_param=\"\" keyboard-layouts= o  cs_live_batch=\"no\" vga=788 toram=live-hd,syslinux,EFI ip=frommedia   nosplash live-media-path=/live-hd bootfrom=%%BASE%%2 
 	initrd /live-hd/initrd.img
