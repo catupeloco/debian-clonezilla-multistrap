@@ -14,7 +14,7 @@ In this instance, the goal is to build a laptop/desktop image with the following
 
 # Requirements
 
-- ***Internet :*** wired is easier but here are the steps for wifi.
+- ***Internet :*** wired connections is easier but here are the steps for wifi.
   - Libreoffice, Google Chrome and Clonezilla will be downloaded directly 
 - ***USB thumb drive :*** if you choose to use dd command it will be formatted.
 - ***Laptop or desktop with:***
