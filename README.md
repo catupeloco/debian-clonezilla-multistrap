@@ -80,7 +80,7 @@ In this instance, the goal is to build a laptop/desktop image with the following
   sudo bash -c "$(curl -fsSL vicentech.com.ar/notebook)"
   ```
   ***Note :*** The default ISO keyboard layout is English. Refer to the layout map to find special charactes :
-  <img title="English Keyboard Layout" src="Qwerty.png"> https://en.wikipedia.org/wiki/Keyboard_layout
+  <img title="English Keyboard Layout" src="images/Qwerty.png"> https://en.wikipedia.org/wiki/Keyboard_layout
 
 # Post-installation Steps
 
