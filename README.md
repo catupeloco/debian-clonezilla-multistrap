@@ -87,7 +87,7 @@ In this instance, the goal is to build a laptop/desktop image with the following
   <img title="1.Grub_from_ISO"            src="images/1.Grub_from_ISO.png">
 - ***Installation command :*** make sure all characters are correct before hitting enter.
   <img title="2.Installation_Command"     src="images/2.Installation_Command.png">
-- ***Disk comfirmation prompt : ***
+- ***Disk confirmation prompt : *** beware from this point storage will be erased. 
   <img title="3.Disk_confirmation_prompt" src="images/3.Disk_confirmation_prompt.png">
 - ***Clean disk first run: *** Here we can see that the extra-packages as Clonezilla download directly from official mirrors.
   Please not that Clonezilla at least from Argentina takes a long time to download. 
