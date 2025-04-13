@@ -82,6 +82,13 @@ In this instance, the goal is to build a laptop/desktop image with the following
   ***Note :*** The default ISO keyboard layout is English. Refer to the layout map to find special charactes :
   <img title="English Keyboard Layout" src="images/Qwerty.png"> https://en.wikipedia.org/wiki/Keyboard_layout
 
+## Installation walkthrough
+
+<img title="1.Grub_from_ISO"            src="images/1.Grub_from_ISO.png">
+<img title="2.Installation_Command"     src="images/2.Installation_Command.png">
+<img title="3.Disk_confirmation_prompt" src="images/3.Disk_confirmation_prompt.png">
+<img title="4.Clean_disk_first_run"     src="images/4.Clean_disk_first_run.png">
+
 # Post-installation Steps
 
 - ## Optional : Create a non-sudoer user with encrypted home
