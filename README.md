@@ -89,12 +89,15 @@ In this instance, the goal is to build a laptop/desktop image with the following
   <img title="2.Installation_Command"     src="images/2.Installation_Command.png">
 - ***Disk confirmation prompt :*** beware from this point storage will be erased. 
   <img title="3.Disk_confirmation_prompt" src="images/3.Disk_confirmation_prompt.png">
-- ***Clean disk first run :*** Here we can see two things: 
-  - On a disk that _doesn't have_ ***this project layout*** is fully repartioned and formatted.
-    - On the other case if the partitionS _DOES has_ ***this project layout*** only partition 1-3 will be only formatted. Leaving the 4th partition intact.
-  - Extra-packages as Clonezilla will be downloaded directly from official mirrors.
-    - Please not that Clonezilla at least from Argentina takes a long time to download. 
-    - GOOD THINGS TAKE TIME.
+- ***Clean disk first run :*** 
+On the first run, the disk will be cleaned according to the following logic: 
+  - If the disk _does not_ already follow this project layout, it will be ***fully repartioned and formatted.***
+  - If the disk ***already has*** the expected layout, only partition 1 to 3 will be reformatted. The 4th partition will be preserved.
+
+Extra-packages such as Clonezilla will be downloaded directly from the official mirrors.
+***Please note:*** From Argentina (and possibly other locations), downloading Clonezilla may take a long time. 
+
+GOOD THINGS TAKE TIME.
   <img title="4.Clean_disk_first_run"     src="images/4.Clean_disk_first_run.png">
 
 # Post-installation Steps
