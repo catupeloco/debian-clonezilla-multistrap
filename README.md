@@ -38,7 +38,7 @@ In this instance, the goal is to build a laptop/desktop image with the following
 - [Download Ventoy](https://www.ventoy.net/en/download.html)
   - [Ventoy guide](https://www.ventoy.net/en/doc_start.html)
 
-- Creating USB booteable from iso file: Replace iso file route and usb device
+- To create a bootable USB from the iso file, replace the file path and USB device as needed :
   ```
   sudo dd bs=4M if=/route/to/file.iso of=/dev/sdx status=progress oflag=sync
   ```
