@@ -2,15 +2,15 @@
 
 # Introduction
 
-This project builds upon my previous work, ***"debian-multistrap"***, which was designed X2go server.
+This project builds upon my previous work, ***"debian-multistrap"***, which was designed to set up an X2go server.
 In this instance, the goal is to build a laptop/desktop image with the following components :
-- Debian 12 Bookworm 
-- Backport kernel for improved hardware compatibility
-- Latest Libreoffice
-- Latest Google Chrome 
-- Latest XFCE 
-- Latest Firefox ESR
-- Latest Clonezilla recovery
+- Debian 12 Bookworm.
+- Backport kernel for improved hardware compatibility.
+- Latest Libreoffice.
+- Latest Google Chrome.
+- Latest XFCE.
+- Latest Firefox ESR.
+- Latest Clonezilla recovery.
 
 # Requirements
 
