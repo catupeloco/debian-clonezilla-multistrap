@@ -239,7 +239,7 @@ menuentry  --hotkey=r "Restaurar imagen"{
 
 menuentry "Test" {
 	set root=(hd0,2)
-  linux /live-hd/vmlinuz boot=live union=overlay username=user config components   quiet noswap edd=on nomodeset          nolocales                                                                                        ocs_live_run=\"ocs-live-general\"                                                                  locales=           ocs_live_extra_param=\"\" keyboard-layouts= o  cs_live_batch=\"no\" vga=788 toram=live-hd,syslinux,EFI ip=frommedia   nosplash live-media-path=/live-hd bootfrom=%%BASE%%2 
+  linux /live-hd/vmlinuz boot=live union=overlay username=user config components   quiet noswap edd=on nomodeset          nolocales                                                                                        ocs_live_run=\"ocs-live-general\"                                                                  locales=           ocs_live_extra_param=\"\" keyboard-layouts= ocs_live_batch=\"no\" vga=788 toram=live-hd,syslinux,EFI ip=frommedia   nosplash live-media-path=/live-hd bootfrom=/dev/%%BASE%%2 
 	initrd /live-hd/initrd.img
 }
 
