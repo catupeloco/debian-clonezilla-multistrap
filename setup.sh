@@ -201,7 +201,7 @@ echo "Extracting clonezilla ---------------------------------------"
 	#mv ${RECOVERYFS}/live ${RECOVERYFS}/live-hd
 
 echo "Creating grub.cfg for clonezilla ----------------------------"
-set +e
+set +e ###################################
 fdisk -l | grep nvme0n1 | wc -l | grep 5                         >/dev/null
 if [ "$?" == "0" ] ; then 
 	BASE=nvme0n1p
@@ -221,6 +221,7 @@ else
 		fi
 	fi
 fi
+set -e ##################################
 echo '
 ##PREFIX##
 menuentry  --hotkey=s "Salvar imagen"{
@@ -259,7 +260,6 @@ chmod +x ${RECOVERYFS}/clean
 sed -i 's/%%KEYBOARD%%/'$CLONEZILLA_KEYBOARD'/g' ${RECOVERYFS}/boot/grub/grub.cfg
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/boot/grub/grub.cfg
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
-set -e
 
 echo "Creating configuration file for multistrap ------------------"
 echo "[General]
@@ -296,7 +296,19 @@ components=main" > multistrap.conf
 
 echo "Running multistrap ------------------------------------------"
         SILENCE="Warning: unrecognised value 'no' for Multi-Arch field in|multistrap-googlechrome.list"
-        multistrap -f multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
+        set +e ####################################################
+	multistrap -f multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
+	if [ "$?" != "0" ] ; then
+		echo ---Removing older versions AGAIN so multistrap wont fail
+                ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
+                do rm -v ${CACHE_FOLDER}/${line}*
+                done
+		echo "Running multistrap AGAIN ------------------------------------"
+		set -e ############################################
+		multistrap -f multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
+	fi
+	set -e ####################################################
+
         #FIXES
         if [ -f ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list ] ; then
                 rm ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
@@ -381,7 +393,7 @@ exec tail -n +3 $0
 # Particion para restaurar
 menuentry "Restaurar" {
    insmod chain
-   search --no-floppy --set=root -f /live-hd/vmlinuz
+   search --no-floppy --set=root -f /live/vmlinuz
    chainloader ($root)/EFI/boot/grubx64.efi
 }'> ${ROOTFS}/etc/grub.d/40_custom
 
@@ -464,7 +476,7 @@ echo "Entering chroot ---------------------------------------------"
         chmod +x ${ROOTFS}/root/chroot.sh
         chroot ${ROOTFS} /bin/bash /root/chroot.sh
 
-        echo Adding local admin ------------------------------------------
+echo "Adding Local admin -------------------------------------------"
         read -p "What username do you want for local_admin_user ?: " username
         chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
         
@@ -480,6 +492,7 @@ echo "Entering chroot ---------------------------------------------"
 		fi
 	done
 	
+echo "Encrypted user script creation -------------------------------"
 	echo "
 	echo Adding local user -------------------------------------------
         read -p \"What username do you want for local_encrypted_user ?: \" username
@@ -506,19 +519,19 @@ echo "Entering chroot ---------------------------------------------"
 	" > ${ROOTFS}/usr/local/bin/useradd-encrypt
 	chmod +x ${ROOTFS}/usr/local/bin/useradd-encrypt
 
-	
-
 echo "Unmounting ${DEVICE} -----------------------------------------"
-        umount ${DEVICE}*                         2>/dev/null || true
-        umount ${ROOTFS}/dev/pts                  2>/dev/null || true
-        umount ${ROOTFS}/dev                      2>/dev/null || true
-        umount ${ROOTFS}/proc                     2>/dev/null || true
-        umount ${ROOTFS}/run                      2>/dev/null || true
-        umount ${ROOTFS}/sys                      2>/dev/null || true
-        umount ${ROOTFS}/tmp                      2>/dev/null || true
-        umount ${ROOTFS}/boot/efi                 2>/dev/null || true
-        umount ${ROOTFS}/var/cache/apt/archives   2>/dev/null || true
-        umount ${ROOTFS}                          2>/dev/null || true
-        umount ${RECOVERYFS}                      2>/dev/null || true
+        umount ${DEVICE}*                       2>/dev/null || true
+        umount ${ROOTFS}/dev/pts                2>/dev/null || true
+        umount ${ROOTFS}/dev                    2>/dev/null || true
+        umount ${ROOTFS}/proc                   2>/dev/null || true
+        umount ${ROOTFS}/run                    2>/dev/null || true
+        umount ${ROOTFS}/sys                    2>/dev/null || true
+        umount ${ROOTFS}/tmp                    2>/dev/null || true
+        umount ${ROOTFS}/boot/efi               2>/dev/null || true
+        umount          /var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}                        2>/dev/null || true
+        umount ${RECOVERYFS}                    2>/dev/null || true
+        umount ${CACHEFOLDER}                   2>/dev/null || true
 
 echo "END of the road!! keep up the good work ---------------------"
