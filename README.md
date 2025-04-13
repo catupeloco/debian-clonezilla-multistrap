@@ -14,7 +14,7 @@ In this instance, the goal is to build a laptop/desktop image with the following
 
 # Requirements
 
-- ***Internet :*** wired connections is easier, but Wi-Fi setop steps are included below.
+- ***Internet :*** wired connections is easier, but Wi-Fi setup steps are included below.
   - Libreoffice, Google Chrome and Clonezilla will be downloaded directly.
 - ***USB thumb drive :*** if you choose to use ```dd``` command, it will be formatted.
 - ***Laptop or desktop with:***
@@ -89,9 +89,12 @@ In this instance, the goal is to build a laptop/desktop image with the following
   <img title="2.Installation_Command"     src="images/2.Installation_Command.png">
 - ***Disk confirmation prompt :*** beware from this point storage will be erased. 
   <img title="3.Disk_confirmation_prompt" src="images/3.Disk_confirmation_prompt.png">
-- ***Clean disk first run :*** Here we can see that the extra-packages as Clonezilla download directly from official mirrors.
-  Please not that Clonezilla at least from Argentina takes a long time to download. 
-  GOOD THINGS TAKE TIME.
+- ***Clean disk first run :*** Here we can see two things: 
+  - On a disk that _doesn't have_ ***this project layout*** is fully repartioned and formatted.
+    - On the other case if the partitionS _DOES has_ ***this project layout*** only partition 1-3 will be only formatted. Leaving the 4th partition intact.
+  - Extra-packages as Clonezilla will be downloaded directly from official mirrors.
+    - Please not that Clonezilla at least from Argentina takes a long time to download. 
+    - GOOD THINGS TAKE TIME.
   <img title="4.Clean_disk_first_run"     src="images/4.Clean_disk_first_run.png">
 
 # Post-installation Steps
