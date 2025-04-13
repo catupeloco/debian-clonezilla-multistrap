@@ -2,7 +2,7 @@
 
 # Introduction
 
-This project is based on my previous work "debian-multistrap" that was ment to build an X2go server.
+This project is based on my previous work "debian-multistrap" that was meant to build an X2go server.
 In this instance the gold is to build a laptop/desktop image with the next items 
 - Debian 12 Bookworm 
 - Backport kernel for newer HW compatibility
