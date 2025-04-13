@@ -84,7 +84,7 @@ In this instance, the goal is to build a laptop/desktop image with the following
 
 ## Installation walkthrough
 - ***Grub from ISO :*** just hit enter.
-<img <itle="1.Grub_from_ISO"            src="images/1.Grub_from_ISO.png">
+<img title="1.Grub_from_ISO"            src="images/1.Grub_from_ISO.png">
 - ***Installation command :*** 
 <img title="2.Installation_Command"     src="images/2.Installation_Command.png">
 - ***Disk comfirmation prompt : ***
