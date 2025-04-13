@@ -2,10 +2,10 @@
 
 # Introduction
 
-This project is based on my previous work "debian-multistrap" that was meant to build an X2go server.
-In this instance the gold is to build a laptop/desktop image with the next items 
+This project builds upon my previous work, ***"debian-multistrap"***, which was designed X2go server.
+In this instance, the goal is to build a laptop/desktop image with the following components :
 - Debian 12 Bookworm 
-- Backport kernel for newer HW compatibility
+- Backport kernel for improved hardware compatibility
 - Latest Libreoffice
 - Latest Google Chrome 
 - Latest XFCE 
@@ -14,108 +14,110 @@ In this instance the gold is to build a laptop/desktop image with the next items
 
 # Requirements
 
-- Internet : wired is easier but here are the steps for wifi.
+- ***Internet :*** wired is easier but here are the steps for wifi.
   - Libreoffice, Google Chrome and Clonezilla will be downloaded directly 
-- USB thumbdrive : if you choose to use dd command it will be formatted.
-- Laptop or desktop with:
+- ***USB thumb drive :*** if you choose to use dd command it will be formatted.
+- ***Laptop or desktop with:***
   - UEFI
-  - 32 GB or more storage device. It will be parted:
-    - 1) EFI partition
-    - 2) Clonezilla + Recovery partition
-    - 3) System partition
-    - 4) Temporally partition to download resources. It may be deleted after to have [Over-provisioning](https://www.kingston.com/en/blog/pc-performance/overprovisioning)
+  - 32 GB or more storage. The drive will be partitioned as follows :
+    1. EFI partition
+    2. Clonezilla + Recovery partition
+    3. System partition
+    4. Temporary partition to download resources (can be deleted afterward to allow for [Over-provisioning](https://www.kingston.com/en/blog/pc-performance/overprovisioning)
 
-# Installation steps.
+# Installation Steps.
 
-## Step 1 : Download debian live iso standard
+## Step 1 : Download Debian Live ISO (Standard).
 
-- [For brand new devices (Weekly build)](https://cdimage.debian.org/cdimage/weekly-live-builds/amd64/iso-hybrid/debian-live-testing-amd64-standard.iso)
+- [For brand-new devices (Weekly build)](https://cdimage.debian.org/cdimage/weekly-live-builds/amd64/iso-hybrid/debian-live-testing-amd64-standard.iso)
 
 - [For everything else (Current build)](https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/)
 
-## Step 2 : Copy Iso to pendrive using ventoy or dd
+## Step 2 : Copy ISO to USB Drive using Ventoy or ```dd```.
 
 - [Download Ventoy](https://www.ventoy.net/en/download.html)
+  - [Ventoy guide](https://www.ventoy.net/en/doc_start.html)
 
 - Creating USB booteable from iso file: Replace iso file route and usb device
   ```
   sudo dd bs=4M if=/route/to/file.iso of=/dev/sdx status=progress oflag=sync
   ```
 
-## Step 4 : Run live via USB
+## Step 3 : Boot into Live System via USB.
 
-## Step 5 : Connect device to internet if necesary
+## Step 4 : Connect Device to the Internet (if needed).
 
-- #### Connect cable if its possible.
+- #### ***Wired connection*** is preferred.
 
-- #### If wifi is only option
-  - ###### Get wireless card name
+- #### ***If Wi-Fi is only option:***
+  - ###### Get the name of your wireless card :
   ```
   ip -br a
   ```
-  - ###### Enable link (If wifi card name is wlan0)
+  - ###### Enable the interface (replace ```wlan0``` with your interface name) :
   ```
   sudo ip link set wlan0 up
   ```
-  - ###### Get network name, if you don't know SSID.
+  - ###### Scan for available networks :
   ```
   iwlist wlan0 scan | grep SSID
   ```
-  - ###### Set wifi configuration
+  - ###### Set up the Wi-Fi configuration :
   ```
   sudo wpa_passphrase "SSID" "your_wifi_password" | sudo tee /etc/wpa_supplicant.conf
   ```
-  - ###### Connect to wireless network
+  - ###### Connect to wireless network :
   ```
   sudo wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf
   ```
-  - ###### Request ip address
+  - ###### Request an IP address :
   ```
   sudo dhclient wlan0
   ```
 
-## Step 6 : Run script
-```
-$ sudo bash -c "$(curl -fsSL vicentech.com.ar/notebook)"
-```
-PS: As default iso layout is english, use the next map to find the special characters keys
-<img title="English Keyboard Layout" src="Qwerty.png"> https://en.wikipedia.org/wiki/Keyboard_layout
+## Step 5 : Run the installation Script
+  ```
+  sudo bash -c "$(curl -fsSL vicentech.com.ar/notebook)"
+  ```
+  ***Note :*** The default ISO keyboard layout is English. Refer to the layout map to find special charactes :
+  <img title="English Keyboard Layout" src="Qwerty.png"> https://en.wikipedia.org/wiki/Keyboard_layout
 
-# Post-installation steps
+# Post-installation Steps
 
-- ## Optional : Create non sudoer user with encrypted home
-  - Boot normally debian install.
-  - Logon with local admin user created during installation.
-  - Open a terminal and run "useradd-encrypt" script.
-    - Complete username.
-    - Enter sudo password.
-    - Enter twice the password for non sudoer encrypted user.
+- ## Optional : Create a non-sudoer user with encrypted home
+  - Boot into the installed Debian system.
+  - Log in with the admin user created during installation.
+  - Open a terminal and run ```useradd-encrypt``` script.
+    - Provide the username.
+    - Enter your sudo password.
+    - Enter the password for the new user twice.
     - Enter a passphrase for emergency decryption.
-    - Enter once again users password.
-    - Wait for automatic reboot.
+    - Enter the user's password again.
+    - Wait for automatic reboot automatically.
 
-- ## Optional : Make additional special changes to image before next step.
+- ## Optional : Make any additional customizations before proceeding.
 
-- ## Create debian image for recovery.
-  - Boot into "Restaurar" option.
-    - Select "Salvar imagen" option.
-    - Wait to password prompt, enter it twice.
-    - Wait for clonezilla to do its jobs. PC will shutdown on completion.
+- ## Create a Debian image for recovery.
+  - Boot into the ***"Restaurar"*** option.
+    - Select ***"Salvar imagen"*** option.
+    - When prompted, enter a recovery password twice.
+    - Wait for clonezilla to complete its process. The system will shut down afterward.
 
-- ## Optional : Remove 4th partition to have spare space to OP.
-  - Boot Debian and login into sudoer user.
-  - Open a terminal and run 
+- ## Optional : Remove the 4th partition to allow Over-Provisioning (OP).
+  - Boot into Debian and log in with a sudo-enabled user.
+  - Open a terminal and run :
     - ```lsblk | grep disk```
-      - You should see the storage device name.
+      - Identify the correct device name (e.g., ```sda```, ```nvme0n1```, etc.).
     - ```sudo parted /dev/${DEVICE} --script rm 4```
-      - Device variable must be replaced to sda, nvme0n1 or whatever name
+      - Replace ```${DEVICE}``` with the actual name.
 
-- ## Optional : Take an entire disk image.
-  - Boot PC with an Image software usb drive.
-  - Take manual steps acording to your software.
+- ## Optional : Take a full disk image.
+  - Boot the PC using a USB drvie with your preferred imaging software.
+  - Connect an external storage to allocate the image.
+  - Follow the software's manual steps to capture the image.
 
 - ## Start using the device.
-  - First time booting it will recovery it self.
-    - This is done for smaller disk image on previous step.
+  - On the first boot, the device will automatically restore itself.
+    - This is done to reduce the size of the disk image created earlier.
 
-# Enjoy
+# Enjoy :rocket:
