@@ -198,7 +198,7 @@ echo "Extracting clonezilla ---------------------------------------"
 	cp -p ${RECOVERYFS}/boot/grub/grub.cfg ${RECOVERYFS}/boot/grub/grub.cfg.old
 	sed -i '/menuentry[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
 	sed -i '/submenu[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
-	#mv ${RECOVERYFS}/live ${RECOVERYFS}/live-hd
+	mv ${RECOVERYFS}/live ${RECOVERYFS}/live-hd
 
 echo "Creating grub.cfg for clonezilla ----------------------------"
 set +e ###################################
@@ -225,15 +225,15 @@ set -e ##################################
 echo '
 ##PREFIX##
 menuentry  --hotkey=s "Salvar imagen"{
-  search --set -f /live/vmlinuz
-  linux /live/vmlinuz boot=live union=overlay username=user config components noquiet noswap edd=on nomodeset noprompt noeject locales= keyboard-layouts=%%KEYBOARD%% ocs_prerun="mount /dev/%%BASE%%2 /home/partimag" ocs_live_run="/usr/sbin/ocs-sr -q2 -c -j2 -z1p -i 4096 -sfsck -scs -enc -p poweroff saveparts debian_image %%BASE%%1 %%BASE%%3" ocs_postrun="/home/partimag/clean" ocs_live_extra_param="" keyboard-layouts="US" ocs_live_batch="no" vga=788 toram=live,syslinux,EFI ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
-  initrd /live/initrd.img
+  search --set -f /live-hd/vmlinuz
+  linux /live-hd/vmlinuz boot=live union=overlay username=user config components noquiet noswap edd=on nomodeset noprompt noeject locales= keyboard-layouts=%%KEYBOARD%% ocs_prerun="mount /dev/%%BASE%%2 /home/partimag" ocs_live_run="/usr/sbin/ocs-sr -q2 -c -j2 -z1p -i 4096 -sfsck -scs -enc -p poweroff saveparts debian_image %%BASE%%1 %%BASE%%3" ocs_postrun="/home/partimag/clean" ocs_live_extra_param="" keyboard-layouts="US" ocs_live_batch="no" vga=788 toram=live,syslinux,EFI ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+  initrd /live-hd/initrd.img
 }
 ##SUFIX##
 menuentry  --hotkey=r "Restaurar imagen"{
-  search --set -f /live/vmlinuz
-  linux /live/vmlinuz boot=live union=overlay username=user config components noquiet noswap edd=on nomodeset noprompt noeject locales= keyboard-layouts=%%KEYBOARD%% ocs_prerun="mount /dev/%%BASE%%2 /home/partimag" ocs_live_run="ocs-sr -g auto -e1 auto -e2 -t -r -j2 -c -k -scr -p reboot restoreparts debian_image %%BASE%%1 %%BASE%%3" ocs_live_extra_param="" keyboard-layouts="US" ocs_live_batch="no" vga=788 toram=live,syslinux,EFI ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
-  initrd /live/initrd.img
+  search --set -f /live-hd/vmlinuz
+  linux /live-hd/vmlinuz boot=live union=overlay username=user config components noquiet noswap edd=on nomodeset noprompt noeject locales= keyboard-layouts=%%KEYBOARD%% ocs_prerun="mount /dev/%%BASE%%2 /home/partimag" ocs_live_run="ocs-sr -g auto -e1 auto -e2 -t -r -j2 -c -k -scr -p reboot restoreparts debian_image %%BASE%%1 %%BASE%%3" ocs_live_extra_param="" keyboard-layouts="US" ocs_live_batch="no" vga=788 toram=live,syslinux,EFI ip= net.ifnames=0  nosplash i915.blacklist=yes radeonhd.blacklist=yes nouveau.blacklist=yes vmwgfx.enable_fbdev=1
+  initrd /live-hd/initrd.img
 }
 
 ' >> ${RECOVERYFS}/boot/grub/grub.cfg
@@ -393,7 +393,7 @@ exec tail -n +3 $0
 # Particion para restaurar
 menuentry "Restaurar" {
    insmod chain
-   search --no-floppy --set=root -f /live/vmlinuz
+   search --no-floppy --set=root -f /live-hd/vmlinuz
    chainloader ($root)/EFI/boot/grubx64.efi
 }'> ${ROOTFS}/etc/grub.d/40_custom
 
