@@ -91,7 +91,7 @@ In this instance, the goal is to build a laptop/desktop image with the following
   <img title="3.Disk_confirmation_prompt" src="images/3.Disk_confirmation_prompt.png">
 - ***Clean disk first run :*** 
 On the first run, the disk will be cleaned according to the following logic: 
-  - If the disk _does not_ already follow this project layout, it will be ***fully repartioned and formatted.***
+  - If the disk ***does not already*** follow this project layout, it will be ***fully repartioned and formatted.***
   - If the disk ***already has*** the expected layout, only partition 1 to 3 will be reformatted. The 4th partition will be preserved.
 
 Extra-packages such as Clonezilla will be downloaded directly from the official mirrors.
