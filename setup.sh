@@ -506,7 +506,7 @@ echo "Encrypted user script creation -------------------------------"
 		echo ecryptfs | sudo tee -a /etc/modules-load.d/modules.conf
 
 	echo --Migrating home
-		sudo ecryptfs-migrate-home -u \$username 2>&1 | grep -i passphrase
+		sudo ecryptfs-migrate-home -u \$username
 		sudo rm -rf /home/\${username}.*
 
 	echo --Login via ssh to complete encryption
