@@ -51,7 +51,7 @@
 ```
 $ sudo bash -c "$(curl -fsSL vicentech.com.ar/notebook)"
 ```
-![English Keyboard Layout](https://en.wikipedia.org/wiki/Keyboard_layout#/media/File:Qwerty.svg)
+[![English Keyboard Layout](https://en.wikipedia.org/wiki/Keyboard_layout#/media/File:Qwerty.svg)](https://en.wikipedia.org/wiki/Keyboard_layout)
 
 Other possible options
 
