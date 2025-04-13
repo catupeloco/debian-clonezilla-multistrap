@@ -40,7 +40,7 @@ In this instance, the goal is to build a laptop/desktop image with the following
 
 - To create a bootable USB from the iso file, replace the file path and USB device as needed :
   ```
-  sudo dd bs=4M if=/route/to/file.iso of=/dev/sdx status=progress oflag=sync
+  sudo dd bs=4M if=/path/to/file.iso of=/dev/sdX status=progress oflag=sync
   ```
 
 ## Step 3 : Boot into Live System via USB.
