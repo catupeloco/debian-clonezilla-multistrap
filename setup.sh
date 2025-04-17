@@ -9,6 +9,10 @@ if [ -z $1 ] ; then
         done <<< "$disk_list"
 	
         DEVICE=$(whiptail --title "Select a Disk" --menu "Choose a disk:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
+	for i in {1..20}; do
+	  tput cuu1  
+	  tput el 
+	done
 else
 	DEVICE=$1
 fi
@@ -193,8 +197,13 @@ echo "Downloading lastest clonezilla ------------------------------"
                 "Official_Fast" "NCHC - Taiwan" \
                 "Official_Slow" "SourceForge" \
                 3>&1 1>&2 2>&3)
-
-        echo Downloading $mirror
+	#clear
+	# Cleaning whiptail menu to show previous steps
+	for i in {1..15}; do
+  		tput cuu1  
+  		tput el    
+	done
+	echo "Downloading lastest clonezilla from $mirror "
 
         case $mirror in
         
