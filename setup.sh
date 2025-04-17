@@ -1,19 +1,23 @@
 #!/bin/bash
-#VARIABLES
-if [ -z $1 ] ; then
-        disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
-
-        menu_options=()
-        while read -r name size; do
-            menu_options+=("/dev/$name" "$size")
-        done <<< "$disk_list"
-        DEVICE=$(whiptail --title "Select a Disk" --menu "Choose a disk:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
-else
-	DEVICE=$1
-fi
-
 set -e # Exit on error
+
+#Selections
+
+disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
+menu_options=()
+while read -r name size; do
+      menu_options+=("/dev/$name" "$size")
+done <<< "$disk_list"
+DEVICE=$(whiptail --title "Select a Disk" --menu "Choose a disk:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
+
+mirror_clonezilla=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 10 20 2 \
+       "Official_Fast" "NCHC - Taiwan" \
+       "Official_Slow" "SourceForge" \
+       3>&1 1>&2 2>&3)
+
 cd /tmp
+
+#VARIABLES
 MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
 
 CACHE_FOLDER=/home/$SUDO_USER/.multistrap
@@ -188,13 +192,9 @@ echo "Downloading lastest clonezilla ------------------------------"
         DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
 
-        mirror=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 10 20 2 \
-                "Official_Fast" "NCHC - Taiwan" \
-                "Official_Slow" "SourceForge" \
-                3>&1 1>&2 2>&3)
-	echo "Downloading lastest clonezilla from $mirror "
+	echo "--------Downloading from $mirror "
 
-        case $mirror in
+        case $mirror_clonezilla in
         
         Official_Fast )
         BASEURL_CLONEZILLA="https://free.nchc.org.tw/clonezilla-live/stable/"
