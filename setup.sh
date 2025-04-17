@@ -186,12 +186,30 @@ echo "Downloading Google Chrome keyrings --------------------------"
         echo deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main    > ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
 
 echo "Downloading lastest clonezilla ------------------------------"
-	BASEURL_CLONEZILLA=https://sourceforge.net/projects/clonezilla/files/latest/download
-	DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
-	mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null
-	URL_CLONEZILLA=$(curl -S $BASEURL_CLONEZILLA 2>/dev/null|grep https| cut -d \" -f 2)
-	FILE_CLONEZILLA=$(echo $URL_CLONEZILLA | cut -f8 -d\/ | cut -f1 -d \?)
-	wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${URL_CLONEZILLA}
+        DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
+        mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null
+        
+        mirror=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 15 60 2 \
+                "Official_Fast" "NCHC - Taiwan" \
+                "Official_Slow" "SourceForge" \
+                3>&1 1>&2 2>&3)
+
+        echo Downloading $mirror
+
+        case $mirror in
+        
+        Official_Fast )
+        BASEURL_CLONEZILLA="https://free.nchc.org.tw/clonezilla-live/stable/"
+        FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+        wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${BASEURL_CLONEZILLA}${FILE_CLONEZILLA} ;;
+        
+        Official_Slow )
+        BASEURL_CLONEZILLA="https://sourceforge.net/projects/clonezilla/files/latest/download"
+        URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA" 2>/dev/null|grep https| cut -d \" -f 2)
+        FILE_CLONEZILLA=$(echo $URL_CLONEZILLA | cut -f8 -d\/ | cut -f1 -d \?)
+        wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${URL_CLONEZILLA} ;;
+        
+        esac
 
 echo "Extracting clonezilla ---------------------------------------"
 	unzip ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} -d ${RECOVERYFS} >>$LOG 2>>$ERR
