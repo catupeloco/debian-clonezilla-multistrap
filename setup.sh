@@ -15,6 +15,7 @@ mirror_clonezilla=$(whiptail --title "Select Clonezilla mirror" --menu "Choose o
        "Official_Slow" "SourceForge" \
        3>&1 1>&2 2>&3)
 
+read -p "What username do you want for local_admin_user ?: " username
 REPEAT=yes
 while [ "$REPEAT" == "yes" ] ; do
 	read -sp "What password do you want for local_admin_user ${username} ?" password && echo " "
@@ -503,7 +504,6 @@ echo "Entering chroot ---------------------------------------------"
         chroot ${ROOTFS} /bin/bash /root/chroot.sh
 
 echo "Adding Local admin -------------------------------------------"
-        read -p "What username do you want for local_admin_user ?: " username
         chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
 	echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
         
