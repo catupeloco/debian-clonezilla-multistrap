@@ -7,13 +7,7 @@ if [ -z $1 ] ; then
         while read -r name size; do
             menu_options+=("/dev/$name" "$size")
         done <<< "$disk_list"
-	tput smcup
         DEVICE=$(whiptail --title "Select a Disk" --menu "Choose a disk:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
-	tput rmcup
-	#for i in {1..80}; do
-	#  tput cuu1  
-	#  tput el 
-	#done
 else
 	DEVICE=$1
 fi
@@ -194,18 +188,10 @@ echo "Downloading lastest clonezilla ------------------------------"
         DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null
 
-	tput smcup
         mirror=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 15 60 2 \
                 "Official_Fast" "NCHC - Taiwan" \
                 "Official_Slow" "SourceForge" \
                 3>&1 1>&2 2>&3)
-	tput rmcup
-	#clear
-	# Cleaning whiptail menu to show previous steps
-	#for i in {1..80}; do
-  	#	tput cuu1  
-  	#	tput el    
-	#done
 	echo "Downloading lastest clonezilla from $mirror "
 
         case $mirror in
