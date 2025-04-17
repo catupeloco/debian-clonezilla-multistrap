@@ -15,6 +15,17 @@ mirror_clonezilla=$(whiptail --title "Select Clonezilla mirror" --menu "Choose o
        "Official_Slow" "SourceForge" \
        3>&1 1>&2 2>&3)
 
+REPEAT=yes
+while [ "$REPEAT" == "yes" ] ; do
+	read -sp "What password do you want for local_admin_user ${username} ?" password && echo " "
+	read -sp "to be sure, please repeat the password: " password2                    && echo " "
+	if [ "$password" == "$password2" ] ; then
+		REPEAT=no
+	else
+		echo "ERROR: Passwords entered dont match"
+	fi
+done
+
 cd /tmp
 
 #VARIABLES
@@ -192,7 +203,7 @@ echo "Downloading lastest clonezilla ------------------------------"
         DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
 
-	echo "--------Downloading from $mirror "
+	echo "--------Downloading from $mirror_clonezilla "
 
         case $mirror_clonezilla in
         
@@ -494,19 +505,8 @@ echo "Entering chroot ---------------------------------------------"
 echo "Adding Local admin -------------------------------------------"
         read -p "What username do you want for local_admin_user ?: " username
         chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
+	echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
         
-	REPEAT=yes
-	while [ "$REPEAT" == "yes" ] ; do
-		read -sp "What password do you want for local_admin_user ${username} ?" password && echo " "
-		read -sp "to be sure, please repeat the password: " password2                    && echo " "
-		if [ "$password" == "$password2" ] ; then
-			echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
-			REPEAT=no
-		else
-			echo "ERROR: Passwords entered dont match"
-		fi
-	done
-	
 echo "Encrypted user script creation -------------------------------"
 	echo "
 	echo Adding local user -------------------------------------------
