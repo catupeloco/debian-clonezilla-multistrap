@@ -188,7 +188,7 @@ echo "Downloading lastest clonezilla ------------------------------"
         DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
 
-        mirror=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 15 60 2 \
+        mirror=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 10 20 2 \
                 "Official_Fast" "NCHC - Taiwan" \
                 "Official_Slow" "SourceForge" \
                 3>&1 1>&2 2>&3)
