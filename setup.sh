@@ -186,7 +186,7 @@ echo "Downloading Google Chrome keyrings --------------------------"
 
 echo "Downloading lastest clonezilla ------------------------------"
         DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
-        mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null
+        mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
 
         mirror=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 15 60 2 \
                 "Official_Fast" "NCHC - Taiwan" \
