@@ -8,9 +8,9 @@ menu_options=()
 while read -r name size; do
       menu_options+=("/dev/$name" "$size")
 done <<< "$disk_list"
-DEVICE=$(whiptail --title "Select a Disk" --menu "Choose a disk:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
+DEVICE=$(whiptail --title "Disk selection" --menu "Choose a disk from below and press enter to begin:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
 
-mirror_clonezilla=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 10 20 2 \
+mirror_clonezilla=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
        "Official_Fast" "NCHC - Taiwan" \
        "Official_Slow" "SourceForge" \
        3>&1 1>&2 2>&3)
