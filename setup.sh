@@ -507,7 +507,7 @@ echo "Entering chroot ---------------------------------------------"
         chmod +x ${ROOTFS}/root/chroot.sh
         chroot ${ROOTFS} /bin/bash /root/chroot.sh
 
-echo "Unattended upgrades ------------------------------------------"
+echo "Unattended upgrades -----------------------------------------"
 
 mv ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades ${ROOTFS}/root/50unattended-upgrades.bak
 	echo -------------Configurations
@@ -616,11 +616,11 @@ Name=_Status '                                     > ${ROOTFS}/usr/share/applica
 	${ROOTFS}/usr/share/applications/status.desktop
 
 
-echo "Adding Local admin -------------------------------------------"
+echo "Adding Local admin ------------------------------------------"
         chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
 	echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
         
-echo "Encrypted user script creation -------------------------------"
+echo "Encrypted user script creation ------------------------------"
 	echo "
 	echo Adding local user -------------------------------------------
         read -p \"What username do you want for local_encrypted_user ?: \" username
