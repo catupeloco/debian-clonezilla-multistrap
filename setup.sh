@@ -588,7 +588,7 @@ Icon=utilities-terminal
 Exec=qterminal -e sudo /usr/local/bin/desactualizar
 Terminal=false
 Categories=Qt;System;TerminalEmulator;
-Name=Desactualizar '                               > ${ROOTFS}/usr/share/applications/desactualizar.desktop
+Name=_Desactualizar '                              > ${ROOTFS}/usr/share/applications/desactualizar.desktop
 
 	echo '[Desktop Entry]
 Type=Application
@@ -596,7 +596,15 @@ Icon=utilities-terminal
 Exec=qterminal -e sudo /usr/local/bin/actualizar
 Terminal=false
 Categories=Qt;System;TerminalEmulator;
-Name=Actualizar '                                 > ${ROOTFS}/usr/share/applications/actualizar.desktop
+Name=_Actualizar '                                 > ${ROOTFS}/usr/share/applications/actualizar.desktop
+
+echo '[Desktop Entry]
+Type=Application
+Icon=utilities-terminal
+Exec=qterminal -e /usr/local/bin/status
+Terminal=false
+Categories=Qt;System;TerminalEmulator;
+Name=_Status '                                     > ${ROOTFS}/usr/share/applications/status.desktop 
 
 
 	echo -------------Permissions
