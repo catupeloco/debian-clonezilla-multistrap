@@ -45,7 +45,7 @@ INCLUDES_DEB="apt initramfs-tools zstd gnupg systemd \
 xfce4 task-xfce-desktop featherpad xorg dbus-x11 gvfs cups system-config-printer thunar-volman synaptic xarchiver vlc \
 fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand fonts-symbola fonts-urw-base35 gsfonts \
 task-web-server task-ssh-server task-laptop qterminal qterminal-l10n \
-sudo vim wget curl dialog nano \
+sudo vim wget curl dialog nano file less \
 network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins \
 pavucontrol pulseaudio \
 grub2-common grub-efi grub-efi-amd64 \
