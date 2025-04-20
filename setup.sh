@@ -567,7 +567,8 @@ FOLDER=/etc/apt/apt.conf.d/
   done
 echo CUANTO FALTA-------------------------
 systemctl list-timers --all | grep apt
-echo ------------------------------------- '                         > ${ROOTFS}/usr/local/bin/status
+echo ------------------------------------- 
+sleep 30'                         > ${ROOTFS}/usr/local/bin/status
 
 
 	echo -------------Repositories
