@@ -509,6 +509,8 @@ echo "Entering chroot ---------------------------------------------"
 
 echo "Unattended upgrades ------------------------------------------"
 
+mv ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades ${ROOTFS}/root/50unattended-upgrades.bak
+	echo -------------Configurations
 	echo '
 Unattended-Upgrade::Origins-Pattern {
 	"origin=Debian,codename=${distro_codename}-updates";
@@ -519,7 +521,8 @@ Unattended-Upgrade::Origins-Pattern {
 
 };
 Unattended-Upgrade::Automatic-Reboot "true";
-Unattended-Upgrade::Automatic-Reboot-Time "02:00";' > ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades
+Unattended-Upgrade::Automatic-Reboot-Time "02:00";
+Unattended-Upgrade::InstallOnShutdown "true";' > ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades
 
 
 	echo '
@@ -528,6 +531,7 @@ APT::Periodic::Download-Upgradeable-Packages "1";
 APT::Periodic::AutocleanInterval "7";
 APT::Periodic::Unattended-Upgrade "1";' >  ${ROOTFS}/etc/apt/apt.conf.d/10periodic
 
+	echo -------------Scripts
 	echo '#!/bin/bash
 echo Obteniendo lista---------------------
 apt update
@@ -554,15 +558,30 @@ rm /etc/apt/sources.list.d/multistrap-debian.list        &>/dev/null
 cp -p /root/new.list /etc/apt/sources.list.d/multistrap-debian.list
 apt update                                               &>/dev/null ' > ${ROOTFS}/usr/local/bin/desactualizar
 
+	echo '#!/bin/bash 
+FOLDER=/etc/apt/apt.conf.d/ 
+ for file in $(ls $FOLDER)
+  do 
+   echo ${FOLDER}${file} --------------------------
+   cat ${FOLDER}${file}
+  done
+echo CUANTO FALTA-------------------------
+systemctl list-timers --all | grep apt
+echo ------------------------------------- '                         > ${ROOTFS}/usr/local/bin/status
+
+
+	echo -------------Repositories
 	echo 'deb [arch=amd64] http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
 deb-src http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware'                                > ${ROOTFS}/root/new.list
 
 	echo 'deb [arch=amd64] https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware
 deb-src https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware' > ${ROOTFS}/root/old.list
 
+	echo -------------Sudoers
 	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
 $username ALL=(ALL) NOPASSWD: /usr/local/bin/desactualizar" > ${ROOTFS}/etc/sudoers.d/apt
 
+	echo -------------Shortcuts
 	echo '[Desktop Entry]
 Type=Application
 Icon=utilities-terminal
@@ -580,11 +599,13 @@ Categories=Qt;System;TerminalEmulator;
 Name=Actualizar '                                 > ${ROOTFS}/usr/share/applications/actualizar.desktop
 
 
-	chmod +x  ${ROOTFS}/usr/local/bin/actualizar ${ROOTFS}/usr/local/bin/desactualizar
+	echo -------------Permissions
+	chmod +x  ${ROOTFS}/usr/local/bin/actualizar ${ROOTFS}/usr/local/bin/desactualizar ${ROOTFS}/usr/local/bin/status
 
 	chmod 644 ${ROOTFS}/root/new.list            ${ROOTFS}/root/old.list \
 	${ROOTFS}/usr/share/applications/desactualizar.desktop \
-	${ROOTFS}/usr/share/applications/actualizar.desktop
+	${ROOTFS}/usr/share/applications/actualizar.desktop \
+	${ROOTFS}/usr/share/applications/status.desktop
 
 
 echo "Adding Local admin -------------------------------------------"
