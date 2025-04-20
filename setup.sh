@@ -45,14 +45,15 @@ INCLUDES_DEB="apt initramfs-tools zstd gnupg systemd \
 xfce4 task-xfce-desktop featherpad xorg dbus-x11 gvfs cups system-config-printer thunar-volman synaptic xarchiver vlc \
 fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand fonts-symbola fonts-urw-base35 gsfonts \
 task-web-server task-ssh-server task-laptop qterminal qterminal-l10n \
-sudo vim wget curl \
-network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager xfce4-power-manager-plugins \
+sudo vim wget curl dialog nano \
+network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins \
 pavucontrol pulseaudio \
 grub2-common grub-efi grub-efi-amd64 \
 fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 firefox-esr firefox-esr-l10n-es-ar \
 console-data console-setup locales \
 ecryptfs-utils rsync lsof cryptsetup \
-libxslt1.1"
+libxslt1.1 \
+unattended-upgrades apt-utils apt-listchanges"
 #Kernel, initrd, basics
 #xfce (xfce4-goodies removed), x11, trashbin, printers, external devices, synaptic, xarchiver, vlc
 #fonts
@@ -64,6 +65,7 @@ libxslt1.1"
 #languaje and terminal tty languaje
 #home and swap encryption
 #libreoffice dependency
+#unattended-upgrades
 
 #default themes
 #gcr gnome-keyring gnome-keyring-pkcs11 libpam-gnome-keyring libgail-common libgail18 libsoup-gnome2.4-1 libxml2 pinentry-gnome3 policykit-1-gnome xdg-desktop-portal-gtk \
@@ -463,7 +465,7 @@ echo "Entering chroot ---------------------------------------------"
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
         echo LibreOffice \$VERSION_LO installation done.
 
-        echo Setting languaje --------------------------------------------
+        echo Setting languaje and unattended-upgrades --------------------
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
         debconf-set-selections <<< \"tzdata                  tzdata/Zones/America                                      select Argentina/Buenos_Aires\"
         debconf-set-selections <<< \"console-data  console-data/keymap/policy      select  Select keymap from full list\"
@@ -482,12 +484,14 @@ echo "Entering chroot ---------------------------------------------"
         debconf-set-selections <<< \"keyboard-configuration  keyboard-configuration/altgr    select  The default for the keyboard layout\"
         debconf-set-selections <<< \"keyboard-configuration  keyboard-configuration/compose  select  No compose key\"
         debconf-set-selections <<< \"locales       locales/locales_to_be_generated multiselect     es_AR.UTF-8 UTF-8\"
-
-        rm -f /etc/localtime /etc/timezone
+        debconf-set-selections <<< \"unattended-upgrades unattended-upgrades/enable_auto_updates boolean true\"
+        
+	rm -f /etc/localtime /etc/timezone
         DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive tzdata			>>\$LOG 2>>\$ERR
         DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-data		>>\$LOG 2>>\$ERR
         DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-setup		>>\$LOG 2>>\$ERR
         DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive keyboard-configuration 	>>\$LOG 2>>\$ERR
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive unattended-upgrades         >>\$LOG 2>>\$ERR
         sed -i '/# es_AR.UTF-8 UTF-8/s/^# //g' /etc/locale.gen
         locale-gen 											>>\$LOG 2>>\$ERR
         DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive locales 			>>\$LOG 2>>\$ERR
@@ -502,6 +506,86 @@ echo "Entering chroot ---------------------------------------------"
         exit" > ${ROOTFS}/root/chroot.sh
         chmod +x ${ROOTFS}/root/chroot.sh
         chroot ${ROOTFS} /bin/bash /root/chroot.sh
+
+echo "Unattended upgrades ------------------------------------------"
+
+	echo '
+Unattended-Upgrade::Origins-Pattern {
+	"origin=Debian,codename=${distro_codename}-updates";
+	"origin=Debian,codename=${distro_codename},label=Debian";
+	"origin=Debian,codename=${distro_codename},label=Debian-Security";
+	"origin=Debian,codename=${distro_codename}-security,label=Debian-Security";
+	"origin=Google LLC,codename=stable";
+
+};
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-Time "02:00";' > ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades
+
+
+	echo '
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Download-Upgradeable-Packages "1";
+APT::Periodic::AutocleanInterval "7";
+APT::Periodic::Unattended-Upgrade "1";' >  ${ROOTFS}/etc/apt/apt.conf.d/10periodic
+
+	echo '#!/bin/bash
+echo Obteniendo lista---------------------
+apt update
+apt list --upgradable
+sleep 1
+echo Actualizando-------------------------
+apt upgrade -y
+echo Listo -------------------------------
+sleep 5'                                                             > ${ROOTFS}/usr/local/bin/actualizar
+
+	echo '#!/bin/bash
+rm /etc/apt/sources.list.d/multistrap-debian.list        &>/dev/null
+cp -p /root/old.list /etc/apt/sources.list.d/multistrap-debian.list
+apt remove --purge firefox-esr google-chrome-stable -y   &>/dev/null
+apt update                                               &>/dev/null
+CHROME_VERSION=131.0.6778.264-1
+wget --show-progress -qcN -O /tmp/google-chrome-stable.deb \
+https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb
+
+apt install firefox-esr /tmp/google-chrome-stable.deb -y &>/dev/null
+dpkg -l | grep -E "firefox-esr|chrome"
+sleep 5
+rm /etc/apt/sources.list.d/multistrap-debian.list        &>/dev/null
+cp -p /root/new.list /etc/apt/sources.list.d/multistrap-debian.list
+apt update                                               &>/dev/null ' > ${ROOTFS}/usr/local/bin/desactualizar
+
+	echo 'deb [arch=amd64] http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+deb-src http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware'                                > ${ROOTFS}/root/new.list
+
+	echo 'deb [arch=amd64] https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware
+deb-src https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware' > ${ROOTFS}/root/old.list
+
+	echo '$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
+$username ALL=(ALL) NOPASSWD: /usr/local/bin/desactualizar' > ${ROOTFS}/etc/sudoers.d/apt
+
+	echo '[Desktop Entry]
+Type=Application
+Icon=utilities-terminal
+Exec=qterminal -e sudo /usr/local/bin/desactualizar
+Terminal=false
+Categories=Qt;System;TerminalEmulator;
+Name=Desactualizar '                               > ${ROOTFS}/usr/share/applications/desactualizar.desktop
+
+	echo '[Desktop Entry]
+Type=Application
+Icon=utilities-terminal
+Exec=qterminal -e sudo /usr/local/bin/actualizar
+Terminal=false
+Categories=Qt;System;TerminalEmulator;
+Name=Actualizar '                                 > ${ROOTFS}/usr/share/applications/actualizar.desktop
+
+
+	chmod +x  ${ROOTFS}/usr/local/bin/actualizar ${ROOTFS}/usr/local/bin/desactualizar
+
+	chmod 644 ${ROOTFS}/root/new.list            ${ROOTFS}/root/old.list \
+	${ROOTFS}/usr/share/applications/desactualizar.desktop \
+	${ROOTFS}/usr/share/applications/actualizar.desktop
+
 
 echo "Adding Local admin -------------------------------------------"
         chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
