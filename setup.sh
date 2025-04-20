@@ -560,8 +560,8 @@ deb-src http://deb.debian.org/debian/ bookworm main contrib non-free non-free-fi
 	echo 'deb [arch=amd64] https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware
 deb-src https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware' > ${ROOTFS}/root/old.list
 
-	echo '$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
-$username ALL=(ALL) NOPASSWD: /usr/local/bin/desactualizar' > ${ROOTFS}/etc/sudoers.d/apt
+	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
+$username ALL=(ALL) NOPASSWD: /usr/local/bin/desactualizar" > ${ROOTFS}/etc/sudoers.d/apt
 
 	echo '[Desktop Entry]
 Type=Application
