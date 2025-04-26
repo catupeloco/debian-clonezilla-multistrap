@@ -509,6 +509,7 @@ echo "Entering chroot ---------------------------------------------"
         chroot ${ROOTFS} /bin/bash /root/chroot.sh
 
 echo "Unattended upgrades -----------------------------------------"
+#https://github.com/mvo5/unattended-upgrades/blob/master/README.md
 
 mv ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades ${ROOTFS}/root/50unattended-upgrades.bak
 	echo -------------Configurations
