@@ -54,7 +54,7 @@ fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 firefox-esr firefox-esr-
 console-data console-setup locales \
 ecryptfs-utils rsync lsof cryptsetup \
 libxslt1.1 \
-unattended-upgrades apt-utils apt-listchanges"
+unattended-upgrades apt-utils apt-listchanges software-properties-gtk"
 #Kernel, initrd, basics
 #xfce (xfce4-goodies removed), x11, trashbin, printers, external devices, synaptic, xarchiver, vlc
 #fonts
