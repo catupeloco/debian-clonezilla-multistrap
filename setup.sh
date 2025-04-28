@@ -43,9 +43,15 @@ APT_CONFIG="`command -v apt-config 2> /dev/null`"
 eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 
 INCLUDES_DEB="apt initramfs-tools zstd gnupg systemd \
-xfce4 task-xfce-desktop featherpad xorg dbus-x11 gvfs cups system-config-printer thunar-volman synaptic xarchiver vlc \
-fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand fonts-symbola fonts-urw-base35 gsfonts \
-task-web-server task-ssh-server task-laptop qterminal qterminal-l10n \
+xfce4 xorg dbus-x11 gvfs cups system-config-printer thunar-volman synaptic xarchiver vlc flameshot mousepad \
+xfce4-battery-plugin       xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfce4-cpugraph-plugin    xfce4-datetime-plugin    xfce4-diskperf-plugin \
+xfce4-fsguard-plugin       xfce4-genmon-plugin      xfce4-mailwatch-plugin   xfce4-netload-plugin     xfce4-places-plugin      xfce4-sensors-plugin  \
+xfce4-smartbookmark-plugin xfce4-systemload-plugin  xfce4-timer-plugin       xfce4-verve-plugin       xfce4-wavelan-plugin     xfce4-weather-plugin  \
+xfce4-xkb-plugin           xfce4-whiskermenu-plugin xfce4-dict xfce4-notifyd xfce4-taskmanager        xfce4-indicator-plugin   xfce4-mpc-plugin      \
+xfce4-radio-plugin         thunar-archive-plugin   thunar-media-tags-plugin                                                                          \
+fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand \
+fonts-symbola fonts-urw-base35 gsfonts arc-theme \
+task-xfce-desktop task-ssh-server task-laptop qterminal qterminal-l10n \
 sudo vim wget curl dialog nano file less \
 network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins \
 pavucontrol pulseaudio \
@@ -57,6 +63,7 @@ libxslt1.1 \
 unattended-upgrades apt-utils apt-listchanges software-properties-gtk"
 #Kernel, initrd, basics
 #xfce (xfce4-goodies removed), x11, trashbin, printers, external devices, synaptic, xarchiver, vlc
+  # I dont like xfce terminal and screenshoter
 #fonts
 #command line tools
 #network
