@@ -186,8 +186,8 @@ echo "Creating cache folder ---------------------------------------"
         mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
 	touch $LOG
 	touch $ERR
-	setsid sh -c 'exec tail $LOG <> /dev/tty2 >&0 2>&1'
-	setsid sh -c 'exec tail $ERR <> /dev/tty3 >&0 2>&1'
+	setsid sh -c 'exec tail -f $LOG <> /dev/tty2 >&0 2>&1' &
+	setsid sh -c 'exec tail -f $ERR <> /dev/tty3 >&0 2>&1' &
 
 echo "Cleaning cache packages if necesary -------------------------"
 if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; then
