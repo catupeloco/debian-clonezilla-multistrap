@@ -48,18 +48,29 @@ xfce4-battery-plugin       xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfc
 xfce4-fsguard-plugin       xfce4-genmon-plugin      xfce4-mailwatch-plugin   xfce4-netload-plugin     xfce4-places-plugin      xfce4-sensors-plugin  \
 xfce4-smartbookmark-plugin xfce4-systemload-plugin  xfce4-timer-plugin       xfce4-verve-plugin       xfce4-wavelan-plugin     xfce4-weather-plugin  \
 xfce4-xkb-plugin           xfce4-whiskermenu-plugin xfce4-dict xfce4-notifyd xfce4-taskmanager        xfce4-indicator-plugin   xfce4-mpc-plugin      \
-xfce4-radio-plugin         thunar-archive-plugin   thunar-media-tags-plugin                                                                          \
+thunar-archive-plugin      thunar-media-tags-plugin \
+
 fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand \
 fonts-symbola fonts-urw-base35 gsfonts arc-theme \
+
 task-xfce-desktop task-ssh-server task-laptop qterminal qterminal-l10n \
+
 sudo vim wget curl dialog nano file less \
+
 network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins \
+
 pavucontrol pulseaudio \
+
 grub2-common grub-efi grub-efi-amd64 \
+
 fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 firefox-esr firefox-esr-l10n-es-ar \
+
 console-data console-setup locales \
+
 ecryptfs-utils rsync lsof cryptsetup \
+
 libxslt1.1 \
+
 unattended-upgrades apt-utils apt-listchanges software-properties-gtk"
 #Kernel, initrd, basics
 #xfce (xfce4-goodies removed), x11, trashbin, printers, external devices, synaptic, xarchiver, vlc
