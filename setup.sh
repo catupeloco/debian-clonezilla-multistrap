@@ -340,6 +340,7 @@ suite=stable
 noauth=true
 
 [Spotify]
+arch=amd64
 packages=spotify-client
 source=${REPOSITORY_SPOTIFY}
 suite=stable
