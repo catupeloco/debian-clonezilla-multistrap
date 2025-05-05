@@ -216,7 +216,7 @@ echo "Downloading Google Chrome keyrings --------------------------"
 
 echo "Downloading Spotify keyring ---------------------------------"
 	# https://www.spotify.com/es/download/linux/
-	curl -sS $SPOTIFY_KEYS | gpg --dearmor --yes -o ${ROOTFS}${APT_TRUSTEDDIR}spotify.gpg
+	curl -sS $SPOTIFY_KEYS | gpg --dearmor --yes -o ${ROOTFS}/etc/apt/trusted.gpg.d/spotify.gpg
 	echo "deb https://repository.spotify.com stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
 
 
