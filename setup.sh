@@ -83,7 +83,8 @@ DEBIAN_VERSION=bookworm
 INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
 REPOSITORY_CHROME="https://dl.google.com/linux/chrome/deb/"
-
+REPOSITORY_SPOTIFY="https://repository.spotify.com"
+SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
 
 echo "Installing dependencies for this script ---------------------"
         apt update							 >/dev/null 2>&1
@@ -103,6 +104,7 @@ Installing on Device ${DEVICE}
         - Latest Google Chrome 
 	- Latest XFCE 
 	- Latest Firefox ESR
+	- Latest Spotify
 	- Latest Clonezilla recovery
 
 To Follow extra details use: 
@@ -212,6 +214,12 @@ echo "Downloading Google Chrome keyrings --------------------------"
         | gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
         echo deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main    > ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
 
+echo "Downloading Spotify keyring ---------------------------------"
+	# https://www.spotify.com/es/download/linux/
+	curl -sS $SPOTIFY_KEYS | gpg --dearmor --yes -o ${ROOTFS}${APT_TRUSTEDDIR}spotify.gpg
+	echo "deb https://repository.spotify.com stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
+
+
 echo "Downloading lastest clonezilla ------------------------------"
         DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
@@ -307,7 +315,7 @@ directory=${ROOTFS}
 cleanup=false
 unpack=true
 omitdebsrc=true
-bootstrap=Debian GoogleChrome Backports
+bootstrap=Debian GoogleChrome Backports Spotify
 aptsources=Debian 
 
 [Debian]
@@ -330,6 +338,14 @@ packages=google-chrome-stable
 source=${REPOSITORY_CHROME}
 suite=stable
 noauth=true
+
+[Spotify]
+arch=amd64
+packages=spotify-client
+source=${REPOSITORY_SPOTIFY}
+suite=stable
+noauth=true
+
 
 components=main" > multistrap.conf
 
