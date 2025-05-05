@@ -217,7 +217,7 @@ echo "Downloading Google Chrome keyrings --------------------------"
 echo "Downloading Spotify keyring ---------------------------------"
 	# https://www.spotify.com/es/download/linux/
 	curl -sS $SPOTIFY_KEYS | gpg --dearmor --yes -o ${ROOTFS}${APT_TRUSTEDDIR}spotify.gpg
-	echo "deb https://repository.spotify.com stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
+	echo "deb https://repository.spotify.com stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
 
 
 echo "Downloading lastest clonezilla ------------------------------"
@@ -344,6 +344,7 @@ arch=amd64
 packages=spotify-client
 source=${REPOSITORY_SPOTIFY}
 suite=stable
+components=non-free
 noauth=true
 
 
