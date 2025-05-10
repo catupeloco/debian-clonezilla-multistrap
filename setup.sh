@@ -83,7 +83,7 @@ qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
 #adwaita-icon-theme gnome-accessibility-themes gnome-icon-theme gnome-themes-extra gnome-themes-extra-data tango-icon-theme \
 
 DEBIAN_VERSION=bookworm
-INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports"
+INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports linux-firmware/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
 REPOSITORY_CHROME="https://dl.google.com/linux/chrome/deb/"
 REPOSITORY_SPOTIFY="https://repository.spotify.com"
@@ -323,7 +323,7 @@ cleanup=false
 unpack=true
 omitdebsrc=true
 bootstrap=Debian GoogleChrome Backports Spotify
-aptsources=Debian 
+aptsources=Debian Spotify Backports
 
 [Debian]
 packages=${INCLUDES_DEB}
