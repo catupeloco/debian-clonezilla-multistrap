@@ -338,6 +338,7 @@ packages=google-chrome-stable
 source=${REPOSITORY_CHROME}
 suite=stable
 noauth=true
+components=main
 
 [Spotify]
 arch=amd64
@@ -345,10 +346,7 @@ packages=spotify-client
 source=${REPOSITORY_SPOTIFY}
 suite=stable
 components=non-free
-noauth=true
-
-
-components=main" > multistrap.conf
+noauth=true" > multistrap.conf
 
 echo "Running multistrap ------------------------------------------"
         SILENCE="Warning: unrecognised value 'no' for Multi-Arch field in|multistrap-googlechrome.list"
