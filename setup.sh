@@ -52,8 +52,9 @@ thunar-archive-plugin      thunar-media-tags-plugin \
 fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand \
 fonts-symbola fonts-urw-base35 gsfonts arc-theme \
 task-xfce-desktop task-ssh-server task-laptop qterminal qterminal-l10n \
-sudo vim wget curl dialog nano file less \
+sudo vim wget curl dialog nano file less pciutils lshw usbutils \
 network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins \
+firmware-realtek firmware-iwlwifi bluez-firmware \
 pavucontrol pulseaudio \
 grub2-common grub-efi grub-efi-amd64 \
 fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 firefox-esr firefox-esr-l10n-es-ar \
