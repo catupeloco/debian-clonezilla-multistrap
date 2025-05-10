@@ -60,7 +60,9 @@ fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 firefox-esr firefox-esr-
 console-data console-setup locales \
 ecryptfs-utils rsync lsof cryptsetup \
 libxslt1.1 \
-unattended-upgrades apt-utils apt-listchanges software-properties-gtk"
+unattended-upgrades apt-utils apt-listchanges software-properties-gtk
+qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
+
 #Kernel, initrd, basics
 #xfce (xfce4-goodies removed), x11, trashbin, printers, external devices, synaptic, xarchiver, vlc
   # I dont like xfce terminal and screenshoter
@@ -74,6 +76,7 @@ unattended-upgrades apt-utils apt-listchanges software-properties-gtk"
 #home and swap encryption
 #libreoffice dependency
 #unattended-upgrades
+#virtualization
 
 #default themes
 #gcr gnome-keyring gnome-keyring-pkcs11 libpam-gnome-keyring libgail-common libgail18 libsoup-gnome2.4-1 libxml2 pinentry-gnome3 policykit-1-gnome xdg-desktop-portal-gtk \
@@ -491,6 +494,9 @@ echo "Entering chroot ---------------------------------------------"
 	      --bootloader-id=debian --recheck --no-nvram --removable  				>>\$LOG 2>>\$ERR 
         update-grub                                                                             >>\$LOG 2>>\$ERR
 
+	echo Enabling virtualization -------------------------------------
+	systemctl enable --now libvirtd
+
         echo Installing LibreOffice and its language pack ----------------
         wait $pid_LO
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
@@ -639,6 +645,9 @@ Terminal=false
 Categories=Qt;System;TerminalEmulator;
 Name=_Status '                                     > ${ROOTFS}/usr/share/applications/status.desktop 
 
+echo "
+%updates ALL = NOPASSWD : /usr/local/bin/actualizar 
+%updates ALL = NOPASSWD : /usr/local/bin/desactualizar " > ${ROOTFS}/etc/sudoers.d/updates
 
 	echo -------------Permissions
 	chmod +x  ${ROOTFS}/usr/local/bin/actualizar ${ROOTFS}/usr/local/bin/desactualizar ${ROOTFS}/usr/local/bin/status
@@ -648,9 +657,16 @@ Name=_Status '                                     > ${ROOTFS}/usr/share/applica
 	${ROOTFS}/usr/share/applications/actualizar.desktop \
 	${ROOTFS}/usr/share/applications/status.desktop
 
+	chmod 440 ${ROOTFS}/etc/sudoers.d/updates
+
+
 
 echo "Adding Local admin ------------------------------------------"
         chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
+	chroot ${ROOTFS} groupadd updates
+        chroot ${ROOTFS} adduser $username updates
+        chroot ${ROOTFS} adduser $username kvm
+        chroot ${ROOTFS} adduser $username libvirt
 	echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
         
 echo "Encrypted user script creation ------------------------------"
@@ -658,6 +674,9 @@ echo "Encrypted user script creation ------------------------------"
 	echo Adding local user -------------------------------------------
         read -p \"What username do you want for local_encrypted_user ?: \" username
         sudo useradd -d /home/\$username -c local_encrypted_user -m -s /bin/bash \$username
+        sudo useradd adduser \$username updates
+        sudo useradd adduser \$username kvm
+        sudo useradd adduser \$username libvirt
         
         sudo passwd \$username
         if [ \"\$?\" != \"0\" ] ; then echo Please repeat the password....; sudo passwd \$username ; fi
