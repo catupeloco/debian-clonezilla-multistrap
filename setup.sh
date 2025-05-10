@@ -61,7 +61,7 @@ console-data console-setup locales \
 ecryptfs-utils rsync lsof cryptsetup \
 libxslt1.1 \
 unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
-qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
+qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
 
 #Kernel, initrd, basics
 #xfce (xfce4-goodies removed), x11, trashbin, printers, external devices, synaptic, xarchiver, vlc
