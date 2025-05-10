@@ -192,8 +192,8 @@ echo "Creating cache folder ---------------------------------------"
 echo "Inicializing logs tails -------------------------------------"
 	#setsid sh -c 'bash <> /dev/tty2 >&0 2>&1' &
 	#setsid sh -c 'bash <> /dev/tty3 >&0 2>&1' &
-	setsid bash -c 'exec tail -f $LOG <> /dev/tty2 >&0 2>&1' &
-	setsid bash -c 'exec tail -f $ERR <> /dev/tty3 >&0 2>&1' &
+	setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
+	setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
 
 echo "Cleaning cache packages if necesary -------------------------"
 if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; then
