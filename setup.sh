@@ -498,6 +498,13 @@ echo "Entering chroot ---------------------------------------------"
 	echo Enabling virtualization -------------------------------------
 	systemctl enable --now libvirtd
 
+	echo Downloading all wifi drivers --------------------------------
+	mkdir firmware && cd firmware
+	wget -r -nd -e robots=no -A \'iwlwifi-*\' --accept-regex \'/plain/\' https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/
+	cp ./\* /lib/firmware
+	modprobe -r iwlwifi && modprobe iwlwifi
+	update-initramfs -u
+
         echo Installing LibreOffice and its language pack ----------------
         wait $pid_LO
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
