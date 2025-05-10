@@ -190,8 +190,8 @@ echo "Creating cache folder ---------------------------------------"
 	touch $ERR
 
 echo "Inicializing logs tails -------------------------------------"
-	setsid sh -c 'bash <> /dev/tty2 >&0 2>&1' 
-	setsid sh -c 'bash <> /dev/tty3 >&0 2>&1' 
+	setsid sh -c 'bash <> /dev/tty2 >&0 2>&1' &
+	setsid sh -c 'bash <> /dev/tty3 >&0 2>&1' &
 	setsid sh -c 'exec tail -f $LOG <> /dev/tty2 >&0 2>&1' &
 	setsid sh -c 'exec tail -f $ERR <> /dev/tty3 >&0 2>&1' &
 
