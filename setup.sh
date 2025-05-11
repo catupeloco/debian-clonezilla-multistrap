@@ -1,8 +1,4 @@
 #!/bin/bash
-
-pkill tail   &>/dev/null
-pkill setsid &>/dev/null
-
 set -e # Exit on error
 
 #Selections
@@ -193,12 +189,9 @@ fi
 
 echo "Formating partitions ----------------------------------------"
 [ "$REPARTED" == yes ] && mkfs.vfat -n EFI ${DEVICE}1           > /dev/null 2>&1
-[ "$REPARTED" == yes ] && mkfs.ext4 -L CLONEZILLA ${DEVICE}2    > /dev/null 2>&1
-[ "$REPARTED" == yes ] && mkfs.ext4 -L LINUX ${DEVICE}3         > /dev/null 2>&1
 [ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES ${DEVICE}4     > /dev/null 2>&1
-
-[ "$REPARTED" == no  ] && mkfs.ext4 -L CLONEZILLA ${DEVICE}2    > /dev/null 2>&1
-[ "$REPARTED" == no  ] && mkfs.ext4 -L LINUX ${DEVICE}3         > /dev/null 2>&1
+		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2    > /dev/null 2>&1
+			  mkfs.ext4 -L LINUX ${DEVICE}3         > /dev/null 2>&1
 
 
 echo "Mounting OS partition ---------------------------------------"
@@ -219,8 +212,12 @@ echo "Creating cache folder ---------------------------------------"
 	touch $ERR
 
 echo "Inicializing logs tails -------------------------------------"
+set +e
+if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
 	setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
 	setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
+fi
+set -e
 
 echo "Cleaning cache packages if necesary -------------------------"
 if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; then
