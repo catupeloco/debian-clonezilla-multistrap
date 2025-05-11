@@ -131,8 +131,8 @@ Installing on Device ${DEVICE}
 	- Latest Clonezilla recovery
 
 To Follow extra details use: 
-	tail -F $LOG or
-	tail -F $ERR
+	tail -F $LOG or Ctrl + Alt + F2
+	tail -F $ERR or Ctrl + Alt + F3
 
 For remote access during installation, you can connect via ssh" 
 ip -br a | grep -v ^lo
@@ -142,6 +142,7 @@ echo ISO Detected. Hint username is \"user\" and password is \"live\"
 echo "============================================================="
 
 echo "Unmounting ${DEVICE}  ----------------------------------------"
+        umount ${DEVICE}*                       2>/dev/null || true
         umount ${DEVICE}*                       2>/dev/null || true
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
         umount ${ROOTFS}/dev                    2>/dev/null || true
@@ -154,6 +155,7 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
+        umount ${CACHEFOLDER}                   2>/dev/null || true
         umount ${CACHEFOLDER}                   2>/dev/null || true
 
 
