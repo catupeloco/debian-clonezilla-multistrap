@@ -58,8 +58,7 @@ ${COMMANDLINE_TOOLS} \
 sudo vim wget curl dialog nano file less pciutils lshw usbutils \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
 network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins ifupdown ethtool \
-firmware-realtek firmware-iwlwifi wpasupplicant amd64-microcode intel-microcod firmware-amd-graphics bluez-firmware \
-firmware-linux-free firmware-linux-nonfree firmware-misc-nonfree \
+firmware-realtek firmware-iwlwifi wpasupplicant amd64-microcode intel-microcode firmware-amd-graphics bluez-firmware \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio firmware-intel-sound \
 ${BOOT_PACKAGES}  \
@@ -97,6 +96,7 @@ qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
 #adwaita-icon-theme gnome-accessibility-themes gnome-icon-theme gnome-themes-extra gnome-themes-extra-data tango-icon-theme \
 
 # extra firmwares just in case
+#firmware-linux-free firmware-linux-nonfree firmware-misc-nonfree \
 #firmware-ast firmware-ath9k-htc firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-cavium \
 #firmware-myricom firmware-netronome firmware-netxen firmware-qlogic  \
 #firmware-ast firmware-ath9k-htc firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-cavium \
