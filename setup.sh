@@ -58,12 +58,10 @@ ${COMMANDLINE_TOOLS} \
 sudo vim wget curl dialog nano file less pciutils lshw usbutils \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
 network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins ifupdown ethtool \
-firmware-realtek firmware-iwlwifi bluez-firmware wpasupplicant amd64-microcode atmel-firmware bluez-firmware dahdi-firmware-nonfree dfu-util firmware-amd-graphics  \
-firmware-ast firmware-ath9k-htc firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-cavium firmware-intel-sound firmware-ipw2x00 firmware-ivtv \
-firmware-iwlwifi firmware-libertas firmware-linux-free firmware-linux-nonfree firmware-misc-nonfree firmware-myricom firmware-netronome firmware-netxen firmware-qlogic  \
-firmware-realtek firmware-realtek-rtl8723cs-bt firmware-siano firmware-sof-signed firmware-tomu firmware-zd1211 hdmi2usb-fx2-firmware intel-microcode  \
+firmware-realtek firmware-iwlwifi wpasupplicant amd64-microcode intel-microcod firmware-amd-graphics bluez-firmware \
+firmware-linux-free firmware-linux-nonfree firmware-misc-nonfree \
 ${AUDIO_PACKAGES} \
-pavucontrol pulseaudio \
+pavucontrol pulseaudio firmware-intel-sound \
 ${BOOT_PACKAGES}  \
 grub2-common grub-efi grub-efi-amd64 \
 ${FIREFOX_AND_CHROME_DEPENDENCIES}  \
@@ -97,6 +95,15 @@ qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
 #default themes
 #gcr gnome-keyring gnome-keyring-pkcs11 libpam-gnome-keyring libgail-common libgail18 libsoup-gnome2.4-1 libxml2 pinentry-gnome3 policykit-1-gnome xdg-desktop-portal-gtk \
 #adwaita-icon-theme gnome-accessibility-themes gnome-icon-theme gnome-themes-extra gnome-themes-extra-data tango-icon-theme \
+
+# extra firmwares just in case
+#firmware-ast firmware-ath9k-htc firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-cavium \
+#firmware-myricom firmware-netronome firmware-netxen firmware-qlogic  \
+#firmware-ast firmware-ath9k-htc firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-cavium \
+#firmware-realtek-rtl8723cs-bt firmware-siano firmware-sof-signed firmware-tomu firmware-zd1211 hdmi2usb-fx2-firmware firmware-ipw2x00 firmware-ivtv \
+#firmware-libertas atmel-firmware dahdi-firmware-nonfree dfu-util \
+
+
 
 DEBIAN_VERSION=bookworm
 INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports linux-firmware/${DEBIAN_VERSION}-backports"
