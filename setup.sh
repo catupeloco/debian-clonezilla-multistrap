@@ -42,29 +42,42 @@ CLONEZILLA_KEYBOARD=latam
 APT_CONFIG="`command -v apt-config 2> /dev/null`"
 eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 
-INCLUDES_DEB="apt initramfs-tools zstd gnupg systemd \
+INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
+apt initramfs-tools zstd gnupg systemd \
+${XFCE_AND_DESKTOP_APPLICATIONS}  \
 xfce4 xorg dbus-x11 gvfs cups system-config-printer thunar-volman synaptic xarchiver vlc flameshot mousepad \
 xfce4-battery-plugin       xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfce4-cpugraph-plugin    xfce4-datetime-plugin    xfce4-diskperf-plugin \
 xfce4-fsguard-plugin       xfce4-genmon-plugin      xfce4-mailwatch-plugin   xfce4-netload-plugin     xfce4-places-plugin      xfce4-sensors-plugin  \
 xfce4-smartbookmark-plugin xfce4-systemload-plugin  xfce4-timer-plugin       xfce4-verve-plugin       xfce4-wavelan-plugin     xfce4-weather-plugin  \
 xfce4-xkb-plugin           xfce4-whiskermenu-plugin xfce4-dict xfce4-notifyd xfce4-taskmanager        xfce4-indicator-plugin   xfce4-mpc-plugin      \
 thunar-archive-plugin      thunar-media-tags-plugin \
+${FONTS_PACKAGES_AND_THEMES}  \
 fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand \
 fonts-symbola fonts-urw-base35 gsfonts arc-theme \
 task-xfce-desktop task-ssh-server task-laptop qterminal qterminal-l10n \
+${COMMANDLINE_TOOLS} \
 sudo vim wget curl dialog nano file less pciutils lshw usbutils \
-network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins ifupdown \
+${NETWORK_PACKAGES_AND_DRIVERS} \
+network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins ifupdown ethtool \
 firmware-realtek firmware-iwlwifi bluez-firmware wpasupplicant amd64-microcode atmel-firmware bluez-firmware dahdi-firmware-nonfree dfu-util firmware-amd-graphics  \
 firmware-ast firmware-ath9k-htc firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-cavium firmware-intel-sound firmware-ipw2x00 firmware-ivtv \
 firmware-iwlwifi firmware-libertas firmware-linux firmware-linux-free firmware-linux-nonfree firmware-misc-nonfree firmware-myricom firmware-netronome firmware-netxen firmware-qlogic  \
 firmware-realtek firmware-realtek-rtl8723cs-bt firmware-siano firmware-sof-signed firmware-tomu firmware-zd1211 hdmi2usb-fx2-firmware intel-microcode  \
+${AUDIO_PACKAGES} \
 pavucontrol pulseaudio \
+${BOOT_PACKAGES}  \
 grub2-common grub-efi grub-efi-amd64 \
+${FIREFOX_AND_CHROME_DEPENDENCIES}  \
 fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 firefox-esr firefox-esr-l10n-es-ar \
+${LANGUAGE_PACKAGES}  \
 console-data console-setup locales \
+${ENCRYPTION_PACKAGES}  \
 ecryptfs-utils rsync lsof cryptsetup \
+${LIBREOFFICE_DEPENDENCIES}  \
 libxslt1.1 \
+${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
+${VIRTUALIZATION_PACKAGES}  \
 qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
 
 #Kernel, initrd, basics
