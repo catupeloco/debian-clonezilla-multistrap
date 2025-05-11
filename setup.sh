@@ -60,7 +60,7 @@ ${NETWORK_PACKAGES_AND_DRIVERS} \
 network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins ifupdown ethtool \
 firmware-realtek firmware-iwlwifi bluez-firmware wpasupplicant amd64-microcode atmel-firmware bluez-firmware dahdi-firmware-nonfree dfu-util firmware-amd-graphics  \
 firmware-ast firmware-ath9k-htc firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-cavium firmware-intel-sound firmware-ipw2x00 firmware-ivtv \
-firmware-iwlwifi firmware-libertas firmware-linux firmware-linux-free firmware-linux-nonfree firmware-misc-nonfree firmware-myricom firmware-netronome firmware-netxen firmware-qlogic  \
+firmware-iwlwifi firmware-libertas firmware-linux-free firmware-linux-nonfree firmware-misc-nonfree firmware-myricom firmware-netronome firmware-netxen firmware-qlogic  \
 firmware-realtek firmware-realtek-rtl8723cs-bt firmware-siano firmware-sof-signed firmware-tomu firmware-zd1211 hdmi2usb-fx2-firmware intel-microcode  \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio \
