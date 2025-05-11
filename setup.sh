@@ -42,7 +42,7 @@ APT_CONFIG="`command -v apt-config 2> /dev/null`"
 eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
-apt initramfs-tools zstd gnupg systemd \
+apt initramfs-tools linux-firmware zstd gnupg systemd \
 ${XFCE_AND_DESKTOP_APPLICATIONS}  \
 xfce4 xorg dbus-x11 gvfs cups system-config-printer thunar-volman synaptic xarchiver vlc flameshot mousepad \
 xfce4-battery-plugin       xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfce4-cpugraph-plugin    xfce4-datetime-plugin    xfce4-diskperf-plugin \
@@ -106,9 +106,9 @@ qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
 
 
 DEBIAN_VERSION=bookworm
-INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-linux/${DEBIAN_VERSION}-backports"
+#INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-linux/${DEBIAN_VERSION}-backports"
 #INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports linux-firmware/${DEBIAN_VERSION}-backports"
-#INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports"
+INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
 REPOSITORY_CHROME="https://dl.google.com/linux/chrome/deb/"
 REPOSITORY_SPOTIFY="https://repository.spotify.com"
