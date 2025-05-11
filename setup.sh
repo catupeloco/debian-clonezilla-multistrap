@@ -105,6 +105,16 @@ REPOSITORY_CHROME="https://dl.google.com/linux/chrome/deb/"
 REPOSITORY_SPOTIFY="https://repository.spotify.com"
 SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
 
+echo "Inicializing logs tails -------------------------------------"
+	touch $LOG
+	touch $ERR
+	set +e
+	if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
+		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
+		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
+	fi
+	set -e
+
 echo "Installing dependencies for this script ---------------------"
         apt update							 >/dev/null 2>&1
 	apt install --fix-broken -y					 >/dev/null 2>&1
@@ -208,16 +218,6 @@ echo "Creating cache folder ---------------------------------------"
 	mount ${DEVICE}4 ${CACHE_FOLDER}
         mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1
         mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
-	touch $LOG
-	touch $ERR
-
-echo "Inicializing logs tails -------------------------------------"
-set +e
-if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
-	setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
-	setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
-fi
-set -e
 
 echo "Cleaning cache packages if necesary -------------------------"
 if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; then
