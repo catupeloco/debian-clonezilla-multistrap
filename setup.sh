@@ -58,7 +58,7 @@ ${COMMANDLINE_TOOLS} \
 sudo vim wget curl dialog nano file less pciutils lshw usbutils \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
 network-manager iputils-ping util-linux iproute2 bind9-host isc-dhcp-client network-manager-gnome xfce4-power-manager powermgmt-base xfce4-power-manager-plugins ifupdown ethtool \
-firmware-realtek firmware-iwlwifi wpasupplicant amd64-microcode intel-microcode firmware-amd-graphics bluez-firmware \
+firmware-realtek firmware-iwlwifi wpasupplicant amd64-microcode intel-microcode firmware-amd-graphics bluez-firmware blueman \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio firmware-intel-sound \
 ${BOOT_PACKAGES}  \
