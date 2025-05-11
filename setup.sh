@@ -1,5 +1,7 @@
 #!/bin/bash
 
+pkill tail >/dev/null
+
 set -e # Exit on error
 
 #Selections
@@ -34,8 +36,8 @@ cd /tmp
 MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
 
 CACHE_FOLDER=/home/$SUDO_USER/.multistrap
-LOG=${CACHE_FOLDER}/multistrap.log
-ERR=${CACHE_FOLDER}/multistrap.err
+LOG=/tmp/multistrap.log
+ERR=/tmp/multistrap.err
 ROOTFS=/tmp/installing-rootfs
 RECOVERYFS=/tmp/recovery-rootfs
 CLONEZILLA_KEYBOARD=latam
@@ -188,9 +190,13 @@ fi
 
 echo "Formating partitions ----------------------------------------"
 [ "$REPARTED" == yes ] && mkfs.vfat -n EFI ${DEVICE}1           > /dev/null 2>&1
+[ "$REPARTED" == yes ] && mkfs.ext4 -L CLONEZILLA ${DEVICE}2    > /dev/null 2>&1
+[ "$REPARTED" == yes ] && mkfs.ext4 -L LINUX ${DEVICE}3         > /dev/null 2>&1
+[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES ${DEVICE}4     > /dev/null 2>&1
+
 [ "$REPARTED" == no  ] && mkfs.ext4 -L CLONEZILLA ${DEVICE}2    > /dev/null 2>&1
 [ "$REPARTED" == no  ] && mkfs.ext4 -L LINUX ${DEVICE}3         > /dev/null 2>&1
-[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES ${DEVICE}4     > /dev/null 2>&1
+
 
 echo "Mounting OS partition ---------------------------------------"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
