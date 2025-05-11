@@ -106,7 +106,8 @@ qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
 
 
 DEBIAN_VERSION=bookworm
-INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports linux-firmware/${DEBIAN_VERSION}-backports"
+#INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports linux-firmware/${DEBIAN_VERSION}-backports"
+INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
 REPOSITORY_CHROME="https://dl.google.com/linux/chrome/deb/"
 REPOSITORY_SPOTIFY="https://repository.spotify.com"
