@@ -442,7 +442,6 @@ set +e
 	for line in "${files[@]}"; do
 	  wget -q "https://git.kernel.org${line}" &
 	  ((running++))
-	  
 	  if [[ $running -ge $MAX_PARALLEL ]]; then
 	    wait
 	    ((done_count+=running))
