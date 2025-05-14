@@ -1,5 +1,4 @@
 #!/bin/bash
-reset  # resetting terminal (for whiptail)
 set -e # Exit on error
 
 #Selections
