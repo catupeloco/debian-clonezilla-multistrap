@@ -221,7 +221,6 @@ echo "Formating partitions ----------------------------------------"
 		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2    > /dev/null 2>&1
 			  mkfs.ext4 -L LINUX      ${DEVICE}3    > /dev/null 2>&1
 
-
 echo "Mounting OS partition ---------------------------------------"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
         mount ${DEVICE}3 ${ROOTFS}                              > /dev/null 2>&1
@@ -262,6 +261,51 @@ echo "Downloading Google Chrome keyrings --------------------------"
 echo "Downloading Spotify keyring ---------------------------------"
 	curl -sS ${SPOTIFY_KEYS} | gpg --dearmor --yes -o ${ROOTFS}/etc/apt/trusted.gpg.d/spotify.gpg
 	echo "deb ${SPOTIFY_REPOSITORY} stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
+
+echo "Downloading keyboard mappings -------------------------------"
+	wget --show-progress -qcN -O ${CACHE_FOLDER}/${KEYBOARD_MAPS} ${KEYBOARD_FIX_URL}${KEYBOARD_MAPS}
+
+echo "Downloading Libreoffice -------------------------------------"
+	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
+        wget --show-progress -qcN ${LIBREOFFICE_MAIN} -P $DOWNLOAD_DIR_LO
+        wget --show-progress -qcN ${LIBREOFFICE_LAPA} -P $DOWNLOAD_DIR_LO
+        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
+        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
+
+echo "Downloading Wifi Drivers ------------------------------------"
+	MAX_PARALLEL=5
+	
+	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
+	cd ${CACHE_FOLDER}/firmware
+set +e
+	echo ---Building list
+	mapfile -t files < <(curl -s $WIFI_URL | grep iwlwifi | grep href | cut -d \' -f 2 | grep -v LICENCE)
+
+	total=${#files[@]}
+	done_count=0
+
+	show_progress() {
+	  percent=$(( done_count * 100 / total ))
+	  echo -ne "---Downloading: ${percent}%      (${done_count}/${total})\r"
+	}
+	
+	for line in "${files[@]}"; do
+	  wget -qN -O ${line##*/} "${WIFI_DOMAIN}/${line}" &
+	  ((running++))
+	  if [[ $running -ge $MAX_PARALLEL ]]; then
+	    wait
+	    ((done_count+=running))
+	    show_progress
+	    running=0
+	  fi
+	done
+
+	wait
+	((done_count+=running))
+	show_progress
+	echo -e "\n---Download complete"
+	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
+set -e
 
 echo "Downloading lastest clonezilla ------------------------------"
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
@@ -412,42 +456,6 @@ echo "Running multistrap ------------------------------------------"
 #  "deb [trusted=yes] http://deb.debian.org/debian               ${DEBIAN_VERSION}-backports main" \
 #  "deb [arch=amd64]  https://dl.google.com/linux/chrome/deb/    stable                      main"
 
-
-echo "Downloading Wifi Drivers ------------------------------------"
-	MAX_PARALLEL=5
-	
-	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
-	cd ${CACHE_FOLDER}/firmware
-set +e
-	echo ---Building list
-	mapfile -t files < <(curl -s $WIFI_URL | grep iwlwifi | grep href | cut -d \' -f 2 | grep -v LICENCE)
-
-	total=${#files[@]}
-	done_count=0
-
-	show_progress() {
-	  percent=$(( done_count * 100 / total ))
-	  echo -ne "---Downloading: ${percent}%      (${done_count}/${total})\r"
-	}
-	
-	for line in "${files[@]}"; do
-	  wget -qN -O ${line##*/} "${WIFI_DOMAIN}/${line}" &
-	  ((running++))
-	  if [[ $running -ge $MAX_PARALLEL ]]; then
-	    wait
-	    ((done_count+=running))
-	    show_progress
-	    running=0
-	  fi
-	done
-
-	wait
-	((done_count+=running))
-	show_progress
-	echo -e "\n---Download complete"
-	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
-set -e
-
 echo "Configurating the network -----------------------------------"
         cp /etc/resolv.conf ${ROOTFS}/etc/resolv.conf
         mkdir -p ${ROOTFS}/etc/network/interfaces.d/            > /dev/null 2>&1
@@ -480,16 +488,8 @@ echo "Getting ready for chroot ------------------------------------"
         mount -t sysfs sysfs ${ROOTFS}/sys
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
 
-echo "Downloading Libreoffice -------------------------------------"
-	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
-        wget --show-progress -qcN ${LIBREOFFICE_MAIN} -P $DOWNLOAD_DIR_LO
-        wget --show-progress -qcN ${LIBREOFFICE_LAPA} -P $DOWNLOAD_DIR_LO
-        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
-        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
-
 echo "Setting Keyboard maps for non graphical console -------------"
         # FIX DEBIAN BUG
-	wget --show-progress -qcN -O ${CACHE_FOLDER}/${KEYBOARD_MAPS} ${KEYBOARD_FIX_URL}${KEYBOARD_MAPS}
         cd /tmp
         tar xzvf ${CACHE_FOLDER}/${KEYBOARD_MAPS}   >>$LOG 2>>$ERR
         cd kbd-*/data/keymaps/
@@ -513,8 +513,6 @@ menuentry "Restaurar" {
    chainloader ($root)/EFI/boot/grubx64.efi
 }'> ${ROOTFS}/etc/grub.d/40_custom
 
-
-
 echo "Entering chroot ---------------------------------------------"
         echo "#!/bin/bash
         export DOWNLOAD_DIR_LO=/var/cache/apt/archives/Libreoffice
@@ -524,7 +522,6 @@ echo "Entering chroot ---------------------------------------------"
         export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
 	export LOG=/var/cache/apt/archives/multistrap.log
 	export ERR=/var/cache/apt/archives/multistrap.err
-
 
         PROC_NEEDS_UMOUNT=0
         if [ ! -e /proc/uptime ]; then
@@ -536,7 +533,6 @@ echo "Entering chroot ---------------------------------------------"
         tasksel install ssh-server laptop xfce --new-install                                    >>\$LOG 2>>\$ERR
         apt remove --purge xfce4-terminal -y                                                    >>\$LOG 2>>\$ERR
 
-
         #Installing Libreoffice in backgroupd
         dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				>>\$LOG 2>>\$ERR &
         pid_LO=$!
@@ -546,10 +542,6 @@ echo "Entering chroot ---------------------------------------------"
         grub-install --target=x86_64-efi --efi-directory=/boot/efi \
 	      --bootloader-id=debian --recheck --no-nvram --removable  				>>\$LOG 2>>\$ERR 
         update-grub                                                                             >>\$LOG 2>>\$ERR
-
-	#echo Installing all wifi drivers ---------------------------------
-	#modprobe iwlwifi
-	#update-initramfs -u
 
         echo Installing LibreOffice and its language pack ----------------
         wait $pid_LO
@@ -713,8 +705,6 @@ echo "
 
 	chmod 440 ${ROOTFS}/etc/sudoers.d/updates
 
-
-
 echo "Adding Local admin ------------------------------------------"
         #chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username 
 	#chroot ${ROOTFS} groupadd updates
@@ -778,6 +768,7 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
-        umount ${CACHEFOLDER}                   2>/dev/null || true
+        umount ${CACHE_FOLDER}                   2>/dev/null || true
 
 echo "END of the road!! keep up the good work ---------------------"
+	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}"
