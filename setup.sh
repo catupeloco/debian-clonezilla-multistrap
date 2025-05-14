@@ -370,7 +370,7 @@ noauth=true
 [GoogleChrome]
 arch=amd64
 packages=google-chrome-stable
-source=${REPOSITORY_CHROME}
+source=${CHROME_REPOSITORY}
 suite=stable
 noauth=true
 components=main
@@ -378,7 +378,7 @@ components=main
 [Spotify]
 arch=amd64
 packages=spotify-client
-source=${REPOSITORY_SPOTIFY}
+source=${SPOTIFY_REPOSITORY}
 suite=stable
 components=non-free
 noauth=true" > multistrap.conf
