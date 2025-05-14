@@ -427,7 +427,7 @@ echo "Downloading Wifi Drivers ------------------------------------"
 	
 	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
 	cd ${CACHE_FOLDER}/firmware
-
+set +e
 	echo ---Building list
 	mapfile -t files < <(curl -s $WIFI_URL | grep iwlwifi | grep href | cut -d \' -f 2)
 
@@ -442,14 +442,13 @@ echo "Downloading Wifi Drivers ------------------------------------"
 	for line in "${files[@]}"; do
 	  wget -q "https://git.kernel.org${line}" &
 	  ((running++))
-	  set +e
+	  
 	  if [[ $running -ge $MAX_PARALLEL ]]; then
 	    wait
 	    ((done_count+=running))
 	    show_progress
 	    running=0
 	  fi
-	  set -e
 	done
 
 	wait
@@ -457,7 +456,7 @@ echo "Downloading Wifi Drivers ------------------------------------"
 	show_progress
 	echo "---Download complete"
 	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
-
+set -e
 
 echo "Configurating the network -----------------------------------"
         cp /etc/resolv.conf ${ROOTFS}/etc/resolv.conf
