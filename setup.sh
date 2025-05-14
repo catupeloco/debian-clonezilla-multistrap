@@ -571,7 +571,7 @@ echo "Entering chroot ---------------------------------------------"
 	ln -s /lib/systemd/system/libvirtd.service /etc/systemd/system/multi-user.target.wants/libvirtd.service
 
 	echo Installing all wifi drivers ---------------------------------
-	modprobe -r iwlwifi && modprobe iwlwifi
+	modprobe iwlwifi
 	update-initramfs -u
 
         echo Installing LibreOffice and its language pack ----------------
@@ -739,11 +739,17 @@ echo "
 
 
 echo "Adding Local admin ------------------------------------------"
-        chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username 
-	chroot ${ROOTFS} groupadd updates
-        chroot ${ROOTFS} adduser $username updates
-        chroot ${ROOTFS} adduser $username kvm
-        chroot ${ROOTFS} adduser $username libvirt
+        #chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username 
+	#chroot ${ROOTFS} groupadd updates
+        #chroot ${ROOTFS} adduser $username updates
+        #chroot ${ROOTFS} adduser $username kvm
+        #chroot ${ROOTFS} adduser $username libvirt
+        chroot ${ROOTFS} $(export LC_ALL=C LANGUAGE=C LANG=C
+	useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username 
+	groupadd updates
+        adduser $username updates
+        adduser $username kvm
+	adduser $username libvirt)
 	echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
         
 echo "Encrypted user script creation ------------------------------"
