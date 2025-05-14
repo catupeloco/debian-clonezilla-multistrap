@@ -741,12 +741,12 @@ echo "Adding Local admin ------------------------------------------"
         #chroot ${ROOTFS} adduser $username kvm
         #chroot ${ROOTFS} adduser $username libvirt
 	#echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
-        echo 'export LC_ALL=C LANGUAGE=C LANG=C; \
-	useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username ; \
-	groupadd updates ; \
-        adduser $username updates ; \
-        adduser $username kvm ; \
-	adduser $username libvirt"
+        echo 'export LC_ALL=C LANGUAGE=C LANG=C
+	useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
+	groupadd updates
+        adduser $username updates
+        adduser $username kvm
+	adduser $username libvirt
 	echo ${username}:${password} | chpasswd
 	rm /tmp/local_admin.sh' > ${ROOTFS}/tmp/local_admin.sh
         chmod +x ${ROOTFS}/tmp/local_admin.sh
