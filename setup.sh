@@ -423,24 +423,25 @@ echo "Running multistrap ------------------------------------------"
 
 echo "Downloading Wifi Drivers ------------------------------------"
 	MAX_PARALLEL=5
-	WIFI_URL="https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
+	WIFI_DOMAIN="https://git.kernel.org"
+	WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
 	
 	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
 	cd ${CACHE_FOLDER}/firmware
 set +e
 	echo ---Building list
-	mapfile -t files < <(curl -s $WIFI_URL | grep iwlwifi | grep href | cut -d \' -f 2)
+	mapfile -t files < <(curl -s $WIFI_URL | grep iwlwifi | grep href | cut -d \' -f 2 | grep -v LICENCE)
 
 	total=${#files[@]}
 	done_count=0
 
 	show_progress() {
 	  percent=$(( done_count * 100 / total ))
-	  echo -ne "Downloading: ${percent}%      (${done_count}/${total})\r"
+	  echo -ne "---Downloading: ${percent}%      (${done_count}/${total})\r"
 	}
 	
 	for line in "${files[@]}"; do
-	  wget -q "https://git.kernel.org${line}" &
+	  wget -qN -O ${line##*/} "${WIFI_DOMAIN}/${line}" &
 	  ((running++))
 	  if [[ $running -ge $MAX_PARALLEL ]]; then
 	    wait
@@ -507,10 +508,9 @@ echo "Downloading Libreoffice -------------------------------------"
 echo "Setting Keyboard maps for non graphical console -------------"
         # FIX DEBIAN BUG
         keyboard_maps=$(curl -s https://mirrors.edge.kernel.org/pub/linux/utils/kbd/ | grep tar.gz | cut -d'"' -f2 | tail -n1)
-        wget --show-progress -qcN -O $keyboard_maps https://mirrors.edge.kernel.org/pub/linux/utils/kbd/$keyboard_maps 
-	where_am_i=$PWD
+	wget --show-progress -qcN -O ${CACHE_FOLDER}/$keyboard_maps https://mirrors.edge.kernel.org/pub/linux/utils/kbd/$keyboard_maps 
         cd /tmp
-        tar xzvf $where_am_i/$keyboard_maps   >>$LOG 2>>$ERR
+        tar xzvf ${CACHE_FOLDER}/$keyboard_maps   >>$LOG 2>>$ERR
         cd kbd-*/data/keymaps/
         mkdir -p ${ROOTFS}/usr/share/keymaps/
         cp -r * ${ROOTFS}/usr/share/keymaps/  >>$LOG 2>>$ERR
