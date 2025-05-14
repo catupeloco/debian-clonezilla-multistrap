@@ -424,30 +424,32 @@ echo "Running multistrap ------------------------------------------"
 echo "Downloading Wifi Drivers ------------------------------------"
 	MAX_PARALLEL=5
 	WIFI_URL="https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
+	echo 1
 	mkdir ${CACHE_FOLDER}/firmware
 	cd ${CACHE_FOLDER}/firmware
-
+	echo 2
 	mapfile -t files < <(curl -s $WIFI_URL | grep iwlwifi | grep href | cut -d \' -f 2)
 
 	total=${#files[@]}
 	done_count=0
-
+	echo 3
 	show_progress() {
 	  percent=$(( done_count * 100 / total ))
 	  echo -ne "Downloading: ${percent}% (${done_count}/${total})\r"
 	}
-
+	echo 4
 	for line in "${files[@]}"; do
 	  wget -q "https://git.kernel.org${line}" &
 	  ((running++))
 	  if [[ $running -ge $MAX_PARALLEL ]]; then
 	    wait
 	    ((done_count+=running))
+	    echo 5
 	    show_progress
 	    running=0
 	  fi
 	done
-
+	echo 6
 	wait
 	((done_count+=running))
 	show_progress
