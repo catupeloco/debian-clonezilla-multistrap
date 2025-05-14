@@ -33,6 +33,7 @@ cd /tmp
 MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
 
 CACHE_FOLDER=/home/$SUDO_USER/.multistrap
+# TODO make symbolic link for chroot
 LOG=/tmp/multistrap.log
 ERR=/tmp/multistrap.err
 ROOTFS=/tmp/installing-rootfs
@@ -142,6 +143,7 @@ echo "
 Installing on Device ${DEVICE}
 	- Debian ${DEBIAN_VERSION}
         - Backport kernel for newer HW compatibility
+	- Latest Wifi drivers
 	- Latest Libreoffice
         - Latest Google Chrome 
 	- Latest XFCE 
@@ -419,6 +421,40 @@ echo "Running multistrap ------------------------------------------"
 #  "deb [arch=amd64]  https://dl.google.com/linux/chrome/deb/    stable                      main"
 
 
+echo "Downloading Wifi Drivers ------------------------------------"
+	MAX_PARALLEL=5
+	WIFI_URL="https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
+	mkdir ${CACHE_FOLDER}/firmware
+	cd ${CACHE_FOLDER}/firmware
+
+	mapfile -t files < <(curl -s $WIFI_URL | grep iwlwifi | grep href | cut -d \' -f 2)
+
+	total=${#files[@]}
+	done_count=0
+
+	show_progress() {
+	  percent=$(( done_count * 100 / total ))
+	  echo -ne "Downloading: ${percent}% (${done_count}/${total})\r"
+	}
+
+	for line in "${files[@]}"; do
+	  wget -q "https://git.kernel.org${line}" &
+	  ((running++))
+	  if [[ $running -ge $MAX_PARALLEL ]]; then
+	    wait
+	    ((done_count+=running))
+	    show_progress
+	    running=0
+	  fi
+	done
+
+	wait
+	((done_count+=running))
+	show_progress
+	echo "--Download complete"
+	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
+
+
 echo "Configurating the network -----------------------------------"
         cp /etc/resolv.conf ${ROOTFS}/etc/resolv.conf
         mkdir -p ${ROOTFS}/etc/network/interfaces.d/            > /dev/null 2>&1
@@ -529,12 +565,9 @@ echo "Entering chroot ---------------------------------------------"
         update-grub                                                                             >>\$LOG 2>>\$ERR
 
 	echo Enabling virtualization -------------------------------------
-	systemctl enable --now libvirtd
+	ln -s /lib/systemd/system/libvirtd.service /etc/systemd/system/multi-user.target.wants/libvirtd.service
 
-	echo Downloading all wifi drivers --------------------------------
-	mkdir firmware && cd firmware
-	wget -r -nd -e robots=no -A \'iwlwifi-*\' --accept-regex \'/plain/\' https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/
-	cp ./\* /lib/firmware
+	echo Installing all wifi drivers ---------------------------------
 	modprobe -r iwlwifi && modprobe iwlwifi
 	update-initramfs -u
 
@@ -703,7 +736,7 @@ echo "
 
 
 echo "Adding Local admin ------------------------------------------"
-        chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username
+        chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username 
 	chroot ${ROOTFS} groupadd updates
         chroot ${ROOTFS} adduser $username updates
         chroot ${ROOTFS} adduser $username kvm
