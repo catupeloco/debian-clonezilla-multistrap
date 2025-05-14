@@ -567,12 +567,9 @@ echo "Entering chroot ---------------------------------------------"
 	      --bootloader-id=debian --recheck --no-nvram --removable  				>>\$LOG 2>>\$ERR 
         update-grub                                                                             >>\$LOG 2>>\$ERR
 
-	echo Enabling virtualization -------------------------------------
-	ln -s /lib/systemd/system/libvirtd.service /etc/systemd/system/multi-user.target.wants/libvirtd.service
-
-	echo Installing all wifi drivers ---------------------------------
-	modprobe iwlwifi
-	update-initramfs -u
+	#echo Installing all wifi drivers ---------------------------------
+	#modprobe iwlwifi
+	#update-initramfs -u
 
         echo Installing LibreOffice and its language pack ----------------
         wait $pid_LO
@@ -744,11 +741,11 @@ echo "Adding Local admin ------------------------------------------"
         #chroot ${ROOTFS} adduser $username updates
         #chroot ${ROOTFS} adduser $username kvm
         #chroot ${ROOTFS} adduser $username libvirt
-        chroot ${ROOTFS} $(export LC_ALL=C LANGUAGE=C LANG=C
-	useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username 
-	groupadd updates
-        adduser $username updates
-        adduser $username kvm
+        chroot ${ROOTFS} $(export LC_ALL=C LANGUAGE=C LANG=C; \
+	useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username ; \
+	groupadd updates ; \
+        adduser $username updates ; \
+        adduser $username kvm ; \
 	adduser $username libvirt)
 	echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
         
