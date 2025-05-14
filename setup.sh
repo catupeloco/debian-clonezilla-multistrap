@@ -436,7 +436,7 @@ set +e
 
 	show_progress() {
 	  percent=$(( done_count * 100 / total ))
-	  echo -ne "Downloading: ${percent}% (${done_count}/${total})\r"
+	  echo -ne "Downloading: ${percent}%      (${done_count}/${total})\r"
 	}
 	
 	for line in "${files[@]}"; do
@@ -453,7 +453,7 @@ set +e
 	wait
 	((done_count+=running))
 	show_progress
-	echo "---Download complete"
+	echo -ne "---Download complete"
 	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
 set -e
 
