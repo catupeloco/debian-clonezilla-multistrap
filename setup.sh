@@ -740,12 +740,12 @@ echo "Adding Local admin ------------------------------------------"
         #chroot ${ROOTFS} adduser $username updates
         #chroot ${ROOTFS} adduser $username kvm
         #chroot ${ROOTFS} adduser $username libvirt
-        chroot ${ROOTFS} $(export LC_ALL=C LANGUAGE=C LANG=C; \
+        chroot ${ROOTFS} "export LC_ALL=C LANGUAGE=C LANG=C; \
 	useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username ; \
 	groupadd updates ; \
         adduser $username updates ; \
         adduser $username kvm ; \
-	adduser $username libvirt)
+	adduser $username libvirt"
 	echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
         
 echo "Encrypted user script creation ------------------------------"
