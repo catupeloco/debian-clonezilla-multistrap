@@ -29,19 +29,64 @@ done
 
 cd /tmp
 
-#VARIABLES
-MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
+echo "Inicializing logs tails -------------------------------------"
+	# TODO make symbolic link for chroot
+	LOG=/tmp/multistrap.log
+	ERR=/tmp/multistrap.err
+	touch $LOG
+	touch $ERR
+set +e
+	if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
+		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
+		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
+	fi
+set -e
+
+echo "Installing dependencies for this script ---------------------"
+	MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
+        apt update							 >/dev/null 2>&1
+	apt install --fix-broken -y					 >/dev/null 2>&1
+        apt install dosfstools parted gnupg2 unzip \
+		             wget curl openssh-server -y		 >/dev/null 2>&1
+	systemctl start sshd						 >/dev/null 2>&1
+	wget --show-progress -q -O /tmp/multistrap.deb ${MULTISTRAP_URL}
+	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
+
+#VARIABLES ##############################################################################################################################################
+
+# TODO MAKE SELECTION MENU FOR $PART_OP_PERCENTAGE
+PART_EFI_END=901
+PART_CZ_END=12901
+PART_OP_PERCENTAGE=7   #More Read  Intensive
+#PART_OP_PERCENTAGE=28 #More Write Intensive
+
+WIFI_DOMAIN="https://git.kernel.org"
+WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
+
+KEYBOARD_FIX_URL=https://mirrors.edge.kernel.org/pub/linux/utils/kbd/
+KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL} | grep tar.gz | cut -d'"' -f2 | tail -n1)
 
 CACHE_FOLDER=/home/$SUDO_USER/.multistrap
-# TODO make symbolic link for chroot
-LOG=/tmp/multistrap.log
-ERR=/tmp/multistrap.err
+
 ROOTFS=/tmp/installing-rootfs
+
 RECOVERYFS=/tmp/recovery-rootfs
 CLONEZILLA_KEYBOARD=latam
+DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
+BASEURL_CLONEZILLA_FAST="https://free.nchc.org.tw/clonezilla-live/stable/"
+BASEURL_CLONEZILLA_SLOW="https://sourceforge.net/projects/clonezilla/files/latest/download"
+
+DOWNLOAD_DIR_LO=${CACHE_FOLDER}/Libreoffice
+LIBREOFFICE_URL="https://download.documentfoundation.org/libreoffice/stable/"
+LO_LANG=es 
+VERSION_LO=$(wget -qO- $LIBREOFFICE_URL | grep -oP '[0-9]+(\.[0-9]+)+' | sort -V | tail -1)
+LIBREOFFICE_MAIN=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz
+LIBREOFFICE_LAPA=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz
+
 APT_CONFIG="`command -v apt-config 2> /dev/null`"
 eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 
+# NOTE: Fictional variables below are only for title proposes ########################################
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
 apt initramfs-tools zstd gnupg systemd \
 ${XFCE_AND_DESKTOP_APPLICATIONS}  \
@@ -82,61 +127,18 @@ unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 ${VIRTUALIZATION_PACKAGES}  \
 qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
 
-#Kernel, initrd, basics
-#xfce (xfce4-goodies removed), x11, trashbin, printers, external devices, synaptic, xarchiver, vlc
-  # I dont like xfce terminal and screenshoter
-#fonts
-#command line tools
-#network
-#sound
-#boot
-#chrome deps and firefox
-#languaje and terminal tty languaje
-#home and swap encryption
-#libreoffice dependency
-#unattended-upgrades
-#virtualization
-
-#default themes
-#gcr gnome-keyring gnome-keyring-pkcs11 libpam-gnome-keyring libgail-common libgail18 libsoup-gnome2.4-1 libxml2 pinentry-gnome3 policykit-1-gnome xdg-desktop-portal-gtk \
-#adwaita-icon-theme gnome-accessibility-themes gnome-icon-theme gnome-themes-extra gnome-themes-extra-data tango-icon-theme \
-
-# extra firmwares just in case
-#firmware-linux-free firmware-linux-nonfree firmware-misc-nonfree \
-#firmware-myricom firmware-netronome firmware-netxen firmware-qlogic  \
-#firmware-ast firmware-ath9k-htc firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-cavium \
-#firmware-realtek-rtl8723cs-bt firmware-siano firmware-sof-signed firmware-tomu firmware-zd1211 hdmi2usb-fx2-firmware firmware-ipw2x00 firmware-ivtv \
-#firmware-libertas atmel-firmware dahdi-firmware-nonfree dfu-util \
-
-
-
 DEBIAN_VERSION=bookworm
-#INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-linux/${DEBIAN_VERSION}-backports"
-#INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports linux-firmware/${DEBIAN_VERSION}-backports"
 INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
-REPOSITORY_CHROME="https://dl.google.com/linux/chrome/deb/"
-REPOSITORY_SPOTIFY="https://repository.spotify.com"
+
+CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
+CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
+
+# https://www.spotify.com/es/download/linux/
+SPOTIFY_REPOSITORY="https://repository.spotify.com"
 SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
 
-echo "Inicializing logs tails -------------------------------------"
-	touch $LOG
-	touch $ERR
-	set +e
-	if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
-		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
-		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
-	fi
-	set -e
-
-echo "Installing dependencies for this script ---------------------"
-        apt update							 >/dev/null 2>&1
-	apt install --fix-broken -y					 >/dev/null 2>&1
-        apt install dosfstools parted gnupg2 unzip \
-		             wget curl openssh-server -y		 >/dev/null 2>&1
-	systemctl start sshd						 >/dev/null 2>&1
-	wget --show-progress -q -O /tmp/multistrap.deb ${MULTISTRAP_URL}
-	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
+########################################################################################################################################################
 
 echo "============================================================="
 echo "
@@ -193,30 +195,31 @@ if [ "$REPARTED" == "yes" ] ; then
 		parted ${DEVICE} --script mktable gpt                         > /dev/null 2>&1
 
 	echo "Creating EFI partition --------------------------------------"
-		parted ${DEVICE} --script mkpart ESP fat32 1MiB 901MiB        > /dev/null 2>&1
-		parted ${DEVICE} --script set 1 esp on                        > /dev/null 2>&1
+		parted ${DEVICE} --script mkpart ESP fat32 1MiB ${PART_EFI_END}MiB > /dev/null 2>&1
+		parted ${DEVICE} --script set 1 esp on                          > /dev/null 2>&1
 
 	echo "Creating Clonezilla partition -------------------------------"
-		parted ${DEVICE} --script mkpart CLONEZILLA ext4 901MiB 12901MiB > /dev/null 2>&1
+		parted ${DEVICE} --script mkpart CLONEZILLA ext4 ${PART_EFI_END}MiB ${PART_CZ_END}MiB > /dev/null 2>&1
 
 	echo "Calculating OS partition size -------------------------------"
 		DISK_SIZE=$(parted ${DEVICE} --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
-		START_X_PART=$((12901 + 1))
-		END_X_PART=$((DISK_SIZE - 20480)) 
+		PART_OP_SIZE=$((DISK_SIZE / 100 * PART_OP_PERCENTAGE))
+		PART_OS_START=$((PART_CZ_END + 1))
+		PART_OS_END=$((DISK_SIZE - PART_OP_SIZE)) 
 
 	echo "Creating OS partition ---------------------------------------"
-		parted ${DEVICE} --script mkpart LINUX ext4 ${START_X_PART}MiB ${END_X_PART}MiB >/dev/null 2>&1
+		parted ${DEVICE} --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
 
 	echo "Creating Resources partition --------------------------------"
-		parted ${DEVICE} --script mkpart RESOURCES ext4 ${END_X_PART}MiB 100% >/dev/null 2>&1
+		parted ${DEVICE} --script mkpart RESOURCES ext4 ${PART_OS_END}MiB 100% >/dev/null 2>&1
 		sleep 2
 fi
 
 echo "Formating partitions ----------------------------------------"
-[ "$REPARTED" == yes ] && mkfs.vfat -n EFI ${DEVICE}1           > /dev/null 2>&1
-[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES ${DEVICE}4     > /dev/null 2>&1
+[ "$REPARTED" == yes ] && mkfs.vfat -n EFI        ${DEVICE}1    > /dev/null 2>&1
+[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES  ${DEVICE}4    > /dev/null 2>&1
 		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2    > /dev/null 2>&1
-			  mkfs.ext4 -L LINUX ${DEVICE}3         > /dev/null 2>&1
+			  mkfs.ext4 -L LINUX      ${DEVICE}3    > /dev/null 2>&1
 
 
 echo "Mounting OS partition ---------------------------------------"
@@ -231,7 +234,7 @@ echo "Creating cache folder ---------------------------------------"
         mkdir -vp ${CACHE_FOLDER}
         chown $SUDO_USER: -R ${CACHE_FOLDER}
 	mount ${DEVICE}4 ${CACHE_FOLDER}
-        mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1
+        mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1 
         mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
 
 echo "Cleaning cache packages if necesary -------------------------"
@@ -250,38 +253,27 @@ echo "Downloading Google Chrome keyrings --------------------------"
         echo ---------Creating Directories in ${ROOTFS}
         mkdir -p ${ROOTFS}/etc/apt/sources.list.d/
         mkdir -p ${ROOTFS}${APT_TRUSTEDDIR}  
-
         echo ---------Installing chrome keyring in ${ROOTFS}
-        wget -qO - https://dl.google.com/linux/linux_signing_key.pub \
+        wget -qO - ${CHROME_KEY} \
         | awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 2 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 2 {exit}' \
         | gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
-        echo deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main    > ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
+        echo deb [arch=amd64] ${CHROME_REPOSITORY} stable main    > ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
 
 echo "Downloading Spotify keyring ---------------------------------"
-	# https://www.spotify.com/es/download/linux/
-	curl -sS $SPOTIFY_KEYS | gpg --dearmor --yes -o ${ROOTFS}/etc/apt/trusted.gpg.d/spotify.gpg
-	echo "deb https://repository.spotify.com stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
-
+	curl -sS ${SPOTIFY_KEYS} | gpg --dearmor --yes -o ${ROOTFS}/etc/apt/trusted.gpg.d/spotify.gpg
+	echo "deb ${SPOTIFY_REPOSITORY} stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
 
 echo "Downloading lastest clonezilla ------------------------------"
-        DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
-
 	echo "--------Downloading from $mirror_clonezilla "
-
         case $mirror_clonezilla in
-        
-        Official_Fast )
-        BASEURL_CLONEZILLA="https://free.nchc.org.tw/clonezilla-live/stable/"
-        FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
-        wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${BASEURL_CLONEZILLA}${FILE_CLONEZILLA} ;;
-        
-        Official_Slow )
-        BASEURL_CLONEZILLA="https://sourceforge.net/projects/clonezilla/files/latest/download"
-        URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA" 2>/dev/null|grep https| cut -d \" -f 2)
-        FILE_CLONEZILLA=$(echo $URL_CLONEZILLA | cut -f8 -d\/ | cut -f1 -d \?)
-        wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${URL_CLONEZILLA} ;;
-        
+		Official_Fast )
+			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
+		Official_Slow )
+			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
+			FILE_CLONEZILLA=$(echo $URL_CLONEZILLA | cut -f8 -d\/ | cut -f1 -d \?)
+			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${URL_CLONEZILLA} ;;
         esac
 
 echo "Extracting clonezilla ---------------------------------------"
@@ -423,8 +415,6 @@ echo "Running multistrap ------------------------------------------"
 
 echo "Downloading Wifi Drivers ------------------------------------"
 	MAX_PARALLEL=5
-	WIFI_DOMAIN="https://git.kernel.org"
-	WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
 	
 	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
 	cd ${CACHE_FOLDER}/firmware
@@ -491,26 +481,17 @@ echo "Getting ready for chroot ------------------------------------"
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
 
 echo "Downloading Libreoffice -------------------------------------"
-        # Variables
-        LO_LANG=es  # Idioma para la instalación
-        DOWNLOAD_DIR_LO=${CACHE_FOLDER}/Libreoffice
-        LIBREOFFICE_URL="https://download.documentfoundation.org/libreoffice/stable/"
-        VERSION_LO=$(wget -qO- $LIBREOFFICE_URL | grep -oP '[0-9]+(\.[0-9]+)+' | sort -V | tail -1)
-
-        mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
-        #wget -qN ${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz -P $DOWNLOAD_DIR_LO
-        #wget -qN ${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -P $DOWNLOAD_DIR_LO
-        wget --show-progress -qcN ${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz -P $DOWNLOAD_DIR_LO
-        wget --show-progress -qcN ${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -P $DOWNLOAD_DIR_LO
+	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
+        wget --show-progress -qcN ${LIBREOFFICE_MAIN} -P $DOWNLOAD_DIR_LO
+        wget --show-progress -qcN ${LIBREOFFICE_LAPA} -P $DOWNLOAD_DIR_LO
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 
 echo "Setting Keyboard maps for non graphical console -------------"
         # FIX DEBIAN BUG
-        keyboard_maps=$(curl -s https://mirrors.edge.kernel.org/pub/linux/utils/kbd/ | grep tar.gz | cut -d'"' -f2 | tail -n1)
-	wget --show-progress -qcN -O ${CACHE_FOLDER}/$keyboard_maps https://mirrors.edge.kernel.org/pub/linux/utils/kbd/$keyboard_maps 
+	wget --show-progress -qcN -O ${CACHE_FOLDER}/${KEYBOARD_MAPS} ${KEYBOARD_FIX_URL}${KEYBOARD_MAPS}
         cd /tmp
-        tar xzvf ${CACHE_FOLDER}/$keyboard_maps   >>$LOG 2>>$ERR
+        tar xzvf ${CACHE_FOLDER}/${KEYBOARD_MAPS}   >>$LOG 2>>$ERR
         cd kbd-*/data/keymaps/
         mkdir -p ${ROOTFS}/usr/share/keymaps/
         cp -r * ${ROOTFS}/usr/share/keymaps/  >>$LOG 2>>$ERR

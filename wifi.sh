@@ -1,6 +1,6 @@
 #!/bin/bash
-mkdir firmware 
-cd firmware
+mkdir /tmp/firmware 
+cd /tmp/firmware
 # Máximo de procesos en paralelo
 MAX_PARALLEL=5
 
@@ -41,13 +41,9 @@ show_progress
 echo -e "\nDescarga completa."
 
 # Instala firmwares
-sudo cp ./* /lib/firmware
+#sudo cp ./* /lib/firmware
 
 # If the modprobe errors because it is in use, rebooting should also work
-sudo modprobe -r iwlwifi && sudo modprobe iwlwifi
+#sudo modprobe -r iwlwifi && sudo modprobe iwlwifi
 # ensure the next time you boot it uses those firmware files
-sudo update-initramfs -u
-
-
-apt install firmware-misc-nonfree firmware-iwlwifi firmware-realtek firmware-ralink
-
+#sudo update-initramfs -u
