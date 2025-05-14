@@ -453,7 +453,7 @@ set +e
 	wait
 	((done_count+=running))
 	show_progress
-	echo -ne "---Download complete"
+	echo -e "\n---Download complete"
 	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
 set -e
 
