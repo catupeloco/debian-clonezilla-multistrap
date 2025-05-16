@@ -276,7 +276,7 @@ echo "Downloading Libreoffice -------------------------------------"
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 
 echo "Downloading Wifi Drivers ------------------------------------"
-	MAX_PARALLEL=5
+	MAX_PARALLEL=10
 	
 	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
 	cd ${CACHE_FOLDER}/firmware
