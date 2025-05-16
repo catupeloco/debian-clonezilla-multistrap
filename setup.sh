@@ -772,7 +772,8 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
-        umount ${CACHE_FOLDER}                   2>/dev/null || true
+        umount ${CACHE_FOLDER}                  2>/dev/null || true
+        umount ${CACHE_FOLDER}                  2>/dev/null || true
 
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}"
