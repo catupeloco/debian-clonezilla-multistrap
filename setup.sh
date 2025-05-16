@@ -253,8 +253,11 @@ echo "Downloading Google Chrome keyrings --------------------------"
         mkdir -p ${ROOTFS}/etc/apt/sources.list.d/
         mkdir -p ${ROOTFS}${APT_TRUSTEDDIR}  
         echo ---------Installing chrome keyring in ${ROOTFS}
+        #wget -qO - ${CHROME_KEY} \
+        #| awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 2 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 2 {exit}' \
+        #| gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
         wget -qO - ${CHROME_KEY} \
-        | awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 2 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 2 {exit}' \
+        | awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 1 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 1 {exit}' \
         | gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
         echo deb [arch=amd64] ${CHROME_REPOSITORY} stable main    > ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
 
