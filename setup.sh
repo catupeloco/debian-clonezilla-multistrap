@@ -255,13 +255,13 @@ echo "Downloading keyrings ----------------------------------------"
         #wget -qO - ${CHROME_KEY} \
         #| awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 2 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 2 {exit}' \
         #| gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
-echo "---Google Chrome"
+	echo "---Google Chrome"
         wget -qO - ${CHROME_KEY} \
         | awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 1 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 1 {exit}' \
         | gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
         echo deb [arch=amd64] ${CHROME_REPOSITORY} stable main    > ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
 
-echo "---Spotify"
+	echo "---Spotify"
 	curl -sS ${SPOTIFY_KEYS} | gpg --dearmor --yes -o ${ROOTFS}/etc/apt/trusted.gpg.d/spotify.gpg
 	echo "deb ${SPOTIFY_REPOSITORY} stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
 
@@ -308,6 +308,7 @@ set +e
 	show_progress
 	echo -e "\n---Download complete"
 	mkdir -p ${ROOTFS}/lib/firmware/ &>/dev/null || true
+	ls -la ${ROOTFS}/lib/firmware/
 	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
 set -e
 
