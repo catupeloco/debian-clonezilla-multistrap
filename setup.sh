@@ -248,20 +248,20 @@ if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ;
 		done
 	fi
 
-echo "Downloading Google Chrome keyrings --------------------------"
-        echo ---------Creating Directories in ${ROOTFS}
+echo "Downloading keyrings ----------------------------------------"
+        echo ---Creating Directories in ${ROOTFS}
         mkdir -p ${ROOTFS}/etc/apt/sources.list.d/
         mkdir -p ${ROOTFS}${APT_TRUSTEDDIR}  
-        echo ---------Installing chrome keyring in ${ROOTFS}
         #wget -qO - ${CHROME_KEY} \
         #| awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 2 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 2 {exit}' \
         #| gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
+echo "---Google Chrome"
         wget -qO - ${CHROME_KEY} \
         | awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 1 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 1 {exit}' \
         | gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
         echo deb [arch=amd64] ${CHROME_REPOSITORY} stable main    > ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
 
-echo "Downloading Spotify keyring ---------------------------------"
+echo "---Spotify"
 	curl -sS ${SPOTIFY_KEYS} | gpg --dearmor --yes -o ${ROOTFS}/etc/apt/trusted.gpg.d/spotify.gpg
 	echo "deb ${SPOTIFY_REPOSITORY} stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
 
