@@ -307,7 +307,7 @@ set +e
 	((done_count+=running))
 	show_progress
 	echo -e "\n---Download complete"
-	mkdir ${ROOTFS}/lib/firmware/ &>/dev/null || true
+	mkdir -p ${ROOTFS}/lib/firmware/ &>/dev/null || true
 	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
 set -e
 
