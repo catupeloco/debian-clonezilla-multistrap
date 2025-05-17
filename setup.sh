@@ -49,7 +49,7 @@ if [ "$PART_OP_PERCENTAGE" == "x" ] ; then
 	REPEAT=yes
 	while [ "$REPEAT" == "yes" ] ; do
 		PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" --inputbox "Enter a positive integer, lower than 100:" 20 60  3>&1 1>&2 2>&3)
-		if [[ "$PART_OP_PERCENTAGE" =~ ^[0-9]+$ ]] && (( valor < 100 )); then
+		if [[ "$PART_OP_PERCENTAGE" =~ ^[0-9]+$ ]] && (( "$PART_OP_PERCENTAGE" < 100 )); then
 			REPEAT=no
 		else
 			whiptail --title "Overprovisioning partition size selection" --msgbox "ERROR: Wrong input, try again" 20 60  3>&1 1>&2 2>&3
