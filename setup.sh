@@ -211,7 +211,7 @@ if [ "$REPARTED" == "yes" ] ; then
 	echo "Creating OS partition ---------------------------------------"
 		parted ${DEVICE} --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
 
-	echo "Creating Resources partition --------------------------------"
+	echo "Creating Resources\/Cache partition --------------------------"
 		parted ${DEVICE} --script mkpart RESOURCES ext4 ${PART_OS_END}MiB 100% >/dev/null 2>&1
 		sleep 2
 fi
@@ -222,22 +222,23 @@ echo "Formating partitions ----------------------------------------"
 		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2    > /dev/null 2>&1
 			  mkfs.ext4 -L LINUX      ${DEVICE}3    > /dev/null 2>&1
 
-echo "Mounting OS partition ---------------------------------------"
+echo "Mounting ----------------------------------------------------"
+echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
         mount ${DEVICE}3 ${ROOTFS}                              > /dev/null 2>&1
 	
-echo "Mounting Recovery partition ---------------------------------"
+echo "---Recovery partition"
         mkdir -p ${RECOVERYFS}                                  > /dev/null 2>&1
         mount ${DEVICE}2 ${RECOVERYFS}                          > /dev/null 2>&1
 
-echo "Creating cache folder ---------------------------------------"
+echo "---Resources\/Cache partition"
         mkdir -vp ${CACHE_FOLDER}
         chown $SUDO_USER: -R ${CACHE_FOLDER}
 	mount ${DEVICE}4 ${CACHE_FOLDER}
         mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1 
         mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
 
-echo "Cleaning cache packages if necesary -------------------------"
+echo "---Cleaning cache packages if necesary"
 if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; then
 		echo ---This packages have more than one version.
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
@@ -367,6 +368,7 @@ menuentry  --hotkey=r "Restaurar imagen"{
   initrd /live-hd/initrd.img
 }' >> ${RECOVERYFS}/boot/grub/grub.cfg
 
+	echo "---Post image creation cleaning script"
 echo "
 mkdir /mnt/%%BASE%%3 /mnt/%%BASE%%4 2>/dev/null
 mount /dev/%%BASE%%3 /mnt/%%BASE%%3 2>/dev/null
