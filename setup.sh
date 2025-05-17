@@ -53,8 +53,7 @@ printf "\033c"
 cd /tmp
 
 echo "============================================================="
-echo "
-Installing on Device ${DEVICE} with ${username} as local admin
+echo "Installing on Device ${DEVICE} with ${username} as local admin
 	- Debian ${DEBIAN_VERSION}
         - Backport kernel for newer HW compatibility
 	- Latest Wifi drivers
