@@ -30,7 +30,9 @@ while [ "$REPEAT" == "yes" ] ; do
 		    whiptail --title "Local admin creation" --msgbox "ERROR: Passwords dont match, try again" 20 60  3>&1 1>&2 2>&3
 	fi
 done
-clear
+
+reset # for clear screen on tty (clear doesnt work)
+
 cd /tmp
 
 echo "Inicializing logs tails -------------------------------------"
