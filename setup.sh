@@ -70,7 +70,7 @@ To Follow extra details use:
 
 For remote access during installation, you can connect via ssh" 
 echo -n "---"
-ip -br a | grep -v ^lo
+ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1
 grep iso /proc/cmdline >/dev/null && \
 echo ---ISO Detected. Hint username is \"user\" and password is \"live\"
 
