@@ -15,15 +15,19 @@ mirror_clonezilla=$(whiptail --title "Select Clonezilla mirror" --menu "Choose o
        "Official_Slow" "SourceForge" \
        3>&1 1>&2 2>&3)
 
-read -p "What username do you want for local_admin_user ?: " username
+#read -p "What username do you want for local_admin_user ?: " username
+username=$(whiptail --title "Local admin creation" --inputbox "Type a username:" 20 60  3>&1 1>&2 2>&3)
 REPEAT=yes
 while [ "$REPEAT" == "yes" ] ; do
-	read -sp "What password do you want for local_admin_user ${username} ?" password && echo " "
-	read -sp "to be sure, please repeat the password: " password2                    && echo " "
+	#read -sp "What password do you want for local_admin_user ${username} ?" password && echo " "
+	#read -sp "to be sure, please repeat the password: " password2                    && echo " "
+	password=$( whiptail --title "Local admin creation" --passwordbox "Type a password:"                  20 60  3>&1 1>&2 2>&3)
+	password2=$(whiptail --title "Local admin creation" --passwordbox "Just in case type it again:"       20 60  3>&1 1>&2 2>&3)
 	if [ "$password" == "$password2" ] ; then
 		REPEAT=no
 	else
-		echo "ERROR: Passwords entered dont match"
+		#echo "ERROR: Passwords entered dont match"
+		    whiptail --title "Local admin creation" --msgbox "ERROR: Passwords dont match, try again" 20 60  3>&1 1>&2 2>&3
 	fi
 done
 
