@@ -63,7 +63,7 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 	- Latest Firefox ESR
 	- Latest Spotify
 	- Latest Clonezilla recovery
-
+	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
 To Follow extra details use: 
 	tail -F $LOG or Ctrl + Alt + F2
 	tail -F $ERR or Ctrl + Alt + F3
