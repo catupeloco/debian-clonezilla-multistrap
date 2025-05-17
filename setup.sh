@@ -538,9 +538,9 @@ echo "Entering chroot ---------------------------------------------"
                 PROC_NEEDS_UMOUNT=1
         fi
 
-        echo ---Setting up additional packages
-        tasksel install ssh-server laptop xfce --new-install                                    >>\$LOG 2>>\$ERR
-        apt remove --purge xfce4-terminal -y                                                    >>\$LOG 2>>\$ERR
+        echo ---Running tasksel for fixes
+	tasksel install ssh-server laptop xfce --new-install                                    >>\$LOG 2>>\$ERR
+        #apt remove --purge xfce4-terminal                                                      >>\$LOG 2>>\$ERR
 
         #Installing Libreoffice in backgroupd
         dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				>>\$LOG 2>>\$ERR &
@@ -603,7 +603,7 @@ echo "Unattended upgrades -----------------------------------------"
 #https://github.com/mvo5/unattended-upgrades/blob/master/README.md
 
 mv ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades ${ROOTFS}/root/50unattended-upgrades.bak
-	echo "---Configurations"
+	echo "---Configuration files"
 	echo '
 Unattended-Upgrade::Origins-Pattern {
 	"origin=Debian,codename=${distro_codename}-updates";
@@ -624,7 +624,7 @@ APT::Periodic::Download-Upgradeable-Packages "1";
 APT::Periodic::AutocleanInterval "7";
 APT::Periodic::Unattended-Upgrade "1";' >  ${ROOTFS}/etc/apt/apt.conf.d/10periodic
 
-	echo "---Scripts"
+	echo "---Testing Scripts"
 	echo '#!/bin/bash
 echo Obteniendo lista---------------------
 apt update
@@ -664,18 +664,18 @@ echo -------------------------------------
 sleep 30'                         > ${ROOTFS}/usr/local/bin/status
 
 
-	echo "---Repositories"
+	echo "---Repositories for testing scripts"
 	echo 'deb [arch=amd64] http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
 deb-src http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware'                                > ${ROOTFS}/root/new.list
 
 	echo 'deb [arch=amd64] https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware
 deb-src https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware' > ${ROOTFS}/root/old.list
 
-	echo "---Sudoers"
+	echo "---Sudoers file for testing scripts"
 	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
 $username ALL=(ALL) NOPASSWD: /usr/local/bin/desactualizar" > ${ROOTFS}/etc/sudoers.d/apt
 
-	echo "---Shortcuts"
+	echo "---Shortcuts for testing scripts"
 	echo '[Desktop Entry]
 Type=Application
 Icon=utilities-terminal
@@ -704,7 +704,7 @@ echo "
 %updates ALL = NOPASSWD : /usr/local/bin/actualizar 
 %updates ALL = NOPASSWD : /usr/local/bin/desactualizar " > ${ROOTFS}/etc/sudoers.d/updates
 
-	echo "---Permissions"
+	echo "---Permissions for testing scripts"
 	chmod +x  ${ROOTFS}/usr/local/bin/actualizar ${ROOTFS}/usr/local/bin/desactualizar ${ROOTFS}/usr/local/bin/status
 
 	chmod 644 ${ROOTFS}/root/new.list            ${ROOTFS}/root/old.list \
@@ -714,7 +714,7 @@ echo "
 
 	chmod 440 ${ROOTFS}/etc/sudoers.d/updates
 
-echo "Adding Local admin ------------------------------------------"
+echo "Setting up local admin account ------------------------------"
         #chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username 
 	#chroot ${ROOTFS} groupadd updates
         #chroot ${ROOTFS} adduser $username updates
