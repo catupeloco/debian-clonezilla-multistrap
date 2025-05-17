@@ -538,7 +538,7 @@ echo "Entering chroot ---------------------------------------------"
                 PROC_NEEDS_UMOUNT=1
         fi
 
-        echo Setting up additional packages ------------------------------
+        echo ---Setting up additional packages
         tasksel install ssh-server laptop xfce --new-install                                    >>\$LOG 2>>\$ERR
         apt remove --purge xfce4-terminal -y                                                    >>\$LOG 2>>\$ERR
 
@@ -546,18 +546,18 @@ echo "Entering chroot ---------------------------------------------"
         dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				>>\$LOG 2>>\$ERR &
         pid_LO=$!
 
-        echo Installing grub ---------------------------------------------
+        echo ---Installing grub
         update-initramfs -c -k all                                                              >>\$LOG 2>>\$ERR
         grub-install --target=x86_64-efi --efi-directory=/boot/efi \
 	      --bootloader-id=debian --recheck --no-nvram --removable  				>>\$LOG 2>>\$ERR 
         update-grub                                                                             >>\$LOG 2>>\$ERR
 
-        echo Installing LibreOffice and its language pack ----------------
+        echo ---Installing LibreOffice and its language pack
         wait $pid_LO
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
         echo LibreOffice \$VERSION_LO installation done.
 
-        echo Setting languaje and unattended-upgrades --------------------
+        echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
         debconf-set-selections <<< \"tzdata                  tzdata/Zones/America                                      select Argentina/Buenos_Aires\"
         debconf-set-selections <<< \"console-data  console-data/keymap/policy      select  Select keymap from full list\"
