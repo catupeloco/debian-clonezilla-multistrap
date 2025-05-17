@@ -1,6 +1,16 @@
 #!/bin/bash
 set -e # Exit on error
 
+echo "Installing dependencies for this script ---------------------"
+	MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
+        apt update							 >/dev/null 2>&1
+	apt install --fix-broken -y					 >/dev/null 2>&1
+        apt install dosfstools parted gnupg2 unzip \
+		             wget curl openssh-server -y		 >/dev/null 2>&1
+	systemctl start sshd						 >/dev/null 2>&1
+	wget --show-progress -qcN -O /tmp/multistrap.deb ${MULTISTRAP_URL}
+	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
+
 #Selections
 
 disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
@@ -52,54 +62,14 @@ printf "\033c"
 
 cd /tmp
 
-echo "============================================================="
-echo "Installing on Device ${DEVICE} with ${username} as local admin
-	- Debian ${DEBIAN_VERSION}
-        - Backport kernel for newer HW compatibility
-	- Latest Wifi drivers
-	- Latest Libreoffice
-        - Latest Google Chrome 
-	- Latest XFCE 
-	- Latest Firefox ESR
-	- Latest Spotify
-	- Latest Clonezilla recovery
-	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
-To Follow extra details use: 
-	tail -F $LOG or Ctrl + Alt + F2
-	tail -F $ERR or Ctrl + Alt + F3
 
-For remote access during installation, you can connect via ssh" 
-
-LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
-grep iso /proc/cmdline >/dev/null && \
-echo ---Connect via: ssh user@$LOCALIP && echo ---password is \"live\"
-
-echo "============================================================="
-
-echo "Inicializing logs tails -------------------------------------"
-	# TODO make symbolic link for chroot
-	LOG=/tmp/multistrap.log
-	ERR=/tmp/multistrap.err
-	touch $LOG
-	touch $ERR
-set +e
-	if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
-		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
-		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
-	fi
-set -e
-
-echo "Installing dependencies for this script ---------------------"
-	MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
-        apt update							 >/dev/null 2>&1
-	apt install --fix-broken -y					 >/dev/null 2>&1
-        apt install dosfstools parted gnupg2 unzip \
-		             wget curl openssh-server -y		 >/dev/null 2>&1
-	systemctl start sshd						 >/dev/null 2>&1
-	wget --show-progress -qcN -O /tmp/multistrap.deb ${MULTISTRAP_URL}
-	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
 
 #VARIABLES ##############################################################################################################################################
+
+CACHE_FOLDER=/home/$SUDO_USER/.multistrap
+ROOTFS=/tmp/installing-rootfs
+LOG=/tmp/multistrap.log
+ERR=/tmp/multistrap.err
 
 PART_EFI_END=901
 PART_CZ_END=12901
@@ -112,10 +82,6 @@ WIFI_MAX_PARALLEL=10
 
 KEYBOARD_FIX_URL=https://mirrors.edge.kernel.org/pub/linux/utils/kbd/
 KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL} | grep tar.gz | cut -d'"' -f2 | tail -n1)
-
-CACHE_FOLDER=/home/$SUDO_USER/.multistrap
-
-ROOTFS=/tmp/installing-rootfs
 
 RECOVERYFS=/tmp/recovery-rootfs
 CLONEZILLA_KEYBOARD=latam
@@ -186,6 +152,41 @@ SPOTIFY_REPOSITORY="https://repository.spotify.com"
 SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
 
 ########################################################################################################################################################
+
+echo "============================================================="
+echo "Installing on Device ${DEVICE} with ${username} as local admin
+	- Debian ${DEBIAN_VERSION}
+        - Backport kernel for newer HW compatibility
+	- Latest Wifi drivers
+	- Latest Libreoffice
+        - Latest Google Chrome 
+	- Latest XFCE 
+	- Latest Firefox ESR
+	- Latest Spotify
+	- Latest Clonezilla recovery
+	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
+To Follow extra details use: 
+	tail -F $LOG or Ctrl + Alt + F2
+	tail -F $ERR or Ctrl + Alt + F3
+
+For remote access during installation, you can connect via ssh" 
+
+LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
+grep iso /proc/cmdline >/dev/null && \
+echo ---Connect via: ssh user@$LOCALIP && echo ---password is \"live\"
+
+echo "============================================================="
+
+echo "Inicializing logs tails -------------------------------------"
+	# TODO make symbolic link for chroot
+	touch $LOG
+	touch $ERR
+set +e
+	if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
+		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
+		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
+	fi
+set -e
 
 
 echo "Unmounting ${DEVICE}  ----------------------------------------"
