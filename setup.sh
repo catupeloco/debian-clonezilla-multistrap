@@ -331,28 +331,28 @@ echo "Downloading lastest clonezilla ------------------------------"
 	sed -i '/submenu[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
 	mv ${RECOVERYFS}/live ${RECOVERYFS}/live-hd
 
-echo "Creating grub.cfg for clonezilla ----------------------------"
-set +e ###################################
-fdisk -l | grep nvme0n1 | wc -l | grep 5                         >/dev/null
-if [ "$?" == "0" ] ; then 
-	BASE=nvme0n1p
-else
-	fdisk -l | grep sda | wc -l | grep 5                     >/dev/null
-	if [ "$?" == "0" ]; then
-		BASE=sda
-       	else
-		fdisk -l | grep xvda | wc -l | grep 5            >/dev/null
+	echo "---Creating grub.cfg for clonezilla"
+	set +e ###################################
+	fdisk -l | grep nvme0n1 | wc -l | grep 5                         >/dev/null
+	if [ "$?" == "0" ] ; then 
+		BASE=nvme0n1p
+	else
+		fdisk -l | grep sda | wc -l | grep 5                     >/dev/null
 		if [ "$?" == "0" ]; then
-			BASE=xvda
-		else	
-			fdisk -l | grep vda | wc -l | grep 5     >/dev/null
+			BASE=sda
+		else
+			fdisk -l | grep xvda | wc -l | grep 5            >/dev/null
 			if [ "$?" == "0" ]; then
-				BASE=vda
+				BASE=xvda
+			else	
+				fdisk -l | grep vda | wc -l | grep 5     >/dev/null
+				if [ "$?" == "0" ]; then
+					BASE=vda
+				fi
 			fi
 		fi
 	fi
-fi
-set -e ##################################
+	set -e ##################################
 echo '
 ##PREFIX##
 menuentry  --hotkey=s "Salvar imagen"{
@@ -391,7 +391,8 @@ sed -i 's/%%KEYBOARD%%/'$CLONEZILLA_KEYBOARD'/g' ${RECOVERYFS}/boot/grub/grub.cf
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/boot/grub/grub.cfg
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
-echo "Creating configuration file for multistrap ------------------"
+echo "Multistrap --------------------------------------------------"
+echo "---Creating configuration file"
 echo "[General]
 arch=amd64
 directory=${ROOTFS}
@@ -431,16 +432,17 @@ suite=stable
 components=non-free
 noauth=true" > multistrap.conf
 
-echo "Running multistrap ------------------------------------------"
+echo "---Running multistrap"
         SILENCE="Warning: unrecognised value 'no' for Multi-Arch field in|multistrap-googlechrome.list"
         set +e ####################################################
 	multistrap -f multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
 	if [ "$?" != "0" ] ; then
+		echo It failed but don\'t worry
 		echo ---Removing older versions AGAIN so multistrap wont fail
                 ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
                 do rm -v ${CACHE_FOLDER}/${line}*
                 done
-		echo "Running multistrap AGAIN ------------------------------------"
+		echo "---Running multistrap AGAIN"
 		set -e ############################################
 		multistrap -f multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
 	fi
@@ -473,10 +475,6 @@ echo "Configurating the network -----------------------------------"
         echo "ff02::2 ip6-allrouters"                       >> ${ROOTFS}/etc/hosts
         touch ${ROOTFS}/ImageDate.$(date +'%Y-%m-%d')
 
-echo "Mounting EFI partition --------------------------------------"
-        mkdir -p ${ROOTFS}/boot/efi
-        mount ${DEVICE}1 ${ROOTFS}/boot/efi
-
 echo "Generating fstab --------------------------------------------"
         root_uuid="$(blkid | grep ^$DEVICE | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         efi_uuid="$(blkid  | grep ^$DEVICE | grep ' LABEL="EFI" '   | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
@@ -484,15 +482,8 @@ echo "Generating fstab --------------------------------------------"
         echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
         echo "$efi_uuid  /boot/efi vfat defaults 0 1" >> $FILE
 
-echo "Getting ready for chroot ------------------------------------"
-        mount --bind /dev ${ROOTFS}/dev
-        mount -t devpts /dev/pts ${ROOTFS}/dev/pts
-        mount --bind /proc ${ROOTFS}/proc
-        mount --bind /run  ${ROOTFS}/run
-        mount -t sysfs sysfs ${ROOTFS}/sys
-        mount -t tmpfs tmpfs ${ROOTFS}/tmp
-
-echo "Setting Keyboard maps for non graphical console -------------"
+echo "Setting Keyboard --------------------------------------------"
+	echo "---For non graphical console"
         # FIX DEBIAN BUG
         cd /tmp
         tar xzvf ${CACHE_FOLDER}/${KEYBOARD_MAPS}   >>$LOG 2>>$ERR
@@ -500,7 +491,7 @@ echo "Setting Keyboard maps for non graphical console -------------"
         mkdir -p ${ROOTFS}/usr/share/keymaps/
         cp -r * ${ROOTFS}/usr/share/keymaps/  >>$LOG 2>>$ERR
 
-echo "Setting Keyboard maps for everything else -------------------"
+	echo "---For everything else"
 	echo 'XKBLAYOUT="latam"' > ${ROOTFS}/etc/default/keyboard
 
 echo "Creating recovery -------------------------------------------"
@@ -516,6 +507,20 @@ menuentry "Restaurar" {
    search --no-floppy --set=root -f /live-hd/vmlinuz
    chainloader ($root)/EFI/boot/grubx64.efi
 }'> ${ROOTFS}/etc/grub.d/40_custom
+
+
+echo "Getting ready for chroot ------------------------------------"
+	echo "---Mounting EFI partition"
+        mkdir -p ${ROOTFS}/boot/efi
+        mount ${DEVICE}1 ${ROOTFS}/boot/efi
+
+	echo "---Mounting pseudo-filesystems"
+        mount --bind /dev ${ROOTFS}/dev
+        mount -t devpts /dev/pts ${ROOTFS}/dev/pts
+        mount --bind /proc ${ROOTFS}/proc
+        mount --bind /run  ${ROOTFS}/run
+        mount -t sysfs sysfs ${ROOTFS}/sys
+        mount -t tmpfs tmpfs ${ROOTFS}/tmp
 
 echo "Entering chroot ---------------------------------------------"
         echo "#!/bin/bash
@@ -598,7 +603,7 @@ echo "Unattended upgrades -----------------------------------------"
 #https://github.com/mvo5/unattended-upgrades/blob/master/README.md
 
 mv ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades ${ROOTFS}/root/50unattended-upgrades.bak
-	echo -------------Configurations
+	echo "---Configurations"
 	echo '
 Unattended-Upgrade::Origins-Pattern {
 	"origin=Debian,codename=${distro_codename}-updates";
@@ -619,7 +624,7 @@ APT::Periodic::Download-Upgradeable-Packages "1";
 APT::Periodic::AutocleanInterval "7";
 APT::Periodic::Unattended-Upgrade "1";' >  ${ROOTFS}/etc/apt/apt.conf.d/10periodic
 
-	echo -------------Scripts
+	echo "---Scripts"
 	echo '#!/bin/bash
 echo Obteniendo lista---------------------
 apt update
@@ -659,18 +664,18 @@ echo -------------------------------------
 sleep 30'                         > ${ROOTFS}/usr/local/bin/status
 
 
-	echo -------------Repositories
+	echo "---Repositories"
 	echo 'deb [arch=amd64] http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
 deb-src http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware'                                > ${ROOTFS}/root/new.list
 
 	echo 'deb [arch=amd64] https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware
 deb-src https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware' > ${ROOTFS}/root/old.list
 
-	echo -------------Sudoers
+	echo "---Sudoers"
 	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
 $username ALL=(ALL) NOPASSWD: /usr/local/bin/desactualizar" > ${ROOTFS}/etc/sudoers.d/apt
 
-	echo -------------Shortcuts
+	echo "---Shortcuts"
 	echo '[Desktop Entry]
 Type=Application
 Icon=utilities-terminal
@@ -699,7 +704,7 @@ echo "
 %updates ALL = NOPASSWD : /usr/local/bin/actualizar 
 %updates ALL = NOPASSWD : /usr/local/bin/desactualizar " > ${ROOTFS}/etc/sudoers.d/updates
 
-	echo -------------Permissions
+	echo "---Permissions"
 	chmod +x  ${ROOTFS}/usr/local/bin/actualizar ${ROOTFS}/usr/local/bin/desactualizar ${ROOTFS}/usr/local/bin/status
 
 	chmod 644 ${ROOTFS}/root/new.list            ${ROOTFS}/root/old.list \
@@ -726,8 +731,6 @@ echo "Adding Local admin ------------------------------------------"
 	rm /tmp/local_admin.sh' > ${ROOTFS}/tmp/local_admin.sh
         chmod +x ${ROOTFS}/tmp/local_admin.sh
         chroot ${ROOTFS} /bin/bash /tmp/local_admin.sh
-
-	#echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
         
 echo "Encrypted user script creation ------------------------------"
 	echo "
