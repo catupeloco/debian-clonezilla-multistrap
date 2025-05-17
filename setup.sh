@@ -30,6 +30,22 @@ while [ "$REPEAT" == "yes" ] ; do
 		    whiptail --title "Local admin creation" --msgbox "ERROR: Passwords dont match, try again" 20 60  3>&1 1>&2 2>&3
 	fi
 done
+PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" --menu "Choose a recomended percentage or Other to enter manually:" 20 60 10 \
+	                               7 "% More Read Intensive " \
+				       25 "% More Write Intensive "  \
+				       "? " "% Other Percentage" 3>&1 1>&2 2>&3)
+if [ "$PART_OP_PERCENTAGE" == "?" ] ; then
+	REPEAT=yes
+	while [ "$REPEAT" == "yes" ] ; do
+		PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" --inputbox "Enter a positive integer, lower than 100:" 20 60  3>&1 1>&2 2>&3)
+		if [[ "$PART_OP_PERCENTAGE" =~ ^[0-9]+$ ]] && (( valor < 100 )); then
+			REPEAT=no
+		else
+			whiptail --title "Overprovisioning partition size selection" --msgbox "ERROR: Wrong input, try again" 20 60  3>&1 1>&2 2>&3
+		fi
+	done
+fi
+
 
 # for clear screen on tty (clear doesnt work)
 printf "\033c"
@@ -38,7 +54,7 @@ cd /tmp
 
 echo "============================================================="
 echo "
-Installing on Device ${DEVICE}
+Installing on Device ${DEVICE} with ${username} as local admin
 	- Debian ${DEBIAN_VERSION}
         - Backport kernel for newer HW compatibility
 	- Latest Wifi drivers
@@ -85,10 +101,9 @@ echo "Installing dependencies for this script ---------------------"
 
 #VARIABLES ##############################################################################################################################################
 
-# TODO MAKE SELECTION MENU FOR $PART_OP_PERCENTAGE
 PART_EFI_END=901
 PART_CZ_END=12901
-PART_OP_PERCENTAGE=7   #More Read  Intensive
+#PART_OP_PERCENTAGE=7  #More Read  Intensive
 #PART_OP_PERCENTAGE=28 #More Write Intensive
 
 WIFI_DOMAIN="https://git.kernel.org"
