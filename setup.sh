@@ -189,7 +189,7 @@ echo "Full reparted or not? ---------------------------------------"
 	blkid | grep ${DEVICE}3 | grep LINUX      >/dev/null && \
 	blkid | grep ${DEVICE}4 | grep RESOURCES  >/dev/null && \
 	REPARTED=no
-	echo ${REPARTED}
+	echo ---${REPARTED}
 
 if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
