@@ -254,7 +254,7 @@ echo "---Recovery partition"
         mkdir -p ${RECOVERYFS}                                  > /dev/null 2>&1
         mount ${DEVICE}2 ${RECOVERYFS}                          > /dev/null 2>&1
 
-echo "---Resources\/Cache partition"
+echo "---Resources/Cache partition"
         mkdir -vp ${CACHE_FOLDER}
         chown $SUDO_USER: -R ${CACHE_FOLDER}
 	mount ${DEVICE}4 ${CACHE_FOLDER}
