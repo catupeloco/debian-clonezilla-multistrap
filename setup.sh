@@ -49,7 +49,7 @@ echo "Installing dependencies for this script ---------------------"
         apt install dosfstools parted gnupg2 unzip \
 		             wget curl openssh-server -y		 >/dev/null 2>&1
 	systemctl start sshd						 >/dev/null 2>&1
-	wget --show-progress -q -O /tmp/multistrap.deb ${MULTISTRAP_URL}
+	wget --show-progress -qcN -O /tmp/multistrap.deb ${MULTISTRAP_URL}
 	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
 
 #VARIABLES ##############################################################################################################################################
@@ -62,6 +62,7 @@ PART_OP_PERCENTAGE=7   #More Read  Intensive
 
 WIFI_DOMAIN="https://git.kernel.org"
 WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
+WIFI_MAX_PARALLEL=10
 
 KEYBOARD_FIX_URL=https://mirrors.edge.kernel.org/pub/linux/utils/kbd/
 KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL} | grep tar.gz | cut -d'"' -f2 | tail -n1)
@@ -252,10 +253,11 @@ echo "Downloading keyrings ----------------------------------------"
         echo ---Creating Directories in ${ROOTFS}
         mkdir -p ${ROOTFS}/etc/apt/sources.list.d/
         mkdir -p ${ROOTFS}${APT_TRUSTEDDIR}  
+	
+	echo "---Google Chrome"
         #wget -qO - ${CHROME_KEY} \
         #| awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 2 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 2 {exit}' \
         #| gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
-	echo "---Google Chrome"
         wget -qO - ${CHROME_KEY} \
         | awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 1 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 1 {exit}' \
         | gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
@@ -276,8 +278,6 @@ echo "Downloading Libreoffice -------------------------------------"
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 
 echo "Downloading Wifi Drivers ------------------------------------"
-	MAX_PARALLEL=10
-	
 	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
 	cd ${CACHE_FOLDER}/firmware
 set +e
@@ -295,7 +295,7 @@ set +e
 	for line in "${files[@]}"; do
 	  wget -qcN -O ${line##*/} "${WIFI_DOMAIN}/${line}" &
 	  ((running++))
-	  if [[ $running -ge $MAX_PARALLEL ]]; then
+	  if [[ $running -ge $WIFI_MAX_PARALLEL ]]; then
 	    wait
 	    ((done_count+=running))
 	    show_progress
@@ -307,8 +307,7 @@ set +e
 	((done_count+=running))
 	show_progress
 	echo -e "\n---Download complete"
-	mkdir -p ${ROOTFS}/lib/firmware/ &>/dev/null || true
-	ls -la ${ROOTFS}/lib/firmware/
+	mkdir -p ${ROOTFS}/lib/firmware/ 2>/dev/null || true
 	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
 set -e
 
