@@ -70,9 +70,10 @@ To Follow extra details use:
 	tail -F $ERR or Ctrl + Alt + F3
 
 For remote access during installation, you can connect via ssh" 
+echo -n "---"
 ip -br a | grep -v ^lo
 grep iso /proc/cmdline >/dev/null && \
-echo ISO Detected. Hint username is \"user\" and password is \"live\"
+echo ---ISO Detected. Hint username is \"user\" and password is \"live\"
 
 echo "============================================================="
 
