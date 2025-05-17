@@ -230,7 +230,7 @@ if [ "$REPARTED" == "yes" ] ; then
 	echo "Creating OS partition ---------------------------------------"
 		parted ${DEVICE} --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
 
-	echo "Creating Resources\/Cache partition --------------------------"
+	echo "Creating Resources/Cache partition --------------------------"
 		parted ${DEVICE} --script mkpart RESOURCES ext4 ${PART_OS_END}MiB 100% >/dev/null 2>&1
 		sleep 2
 fi
