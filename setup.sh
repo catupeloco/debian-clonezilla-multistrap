@@ -31,7 +31,8 @@ while [ "$REPEAT" == "yes" ] ; do
 	fi
 done
 
-tput reset # for clear screen on tty (clear doesnt work)
+# for clear screen on tty (clear doesnt work)
+printf "\033c"
 
 cd /tmp
 
