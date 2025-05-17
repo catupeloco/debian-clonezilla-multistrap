@@ -43,8 +43,8 @@ done
 PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" --menu "Choose a recomended percentage or Other to enter manually:" 20 60 10 \
 	                               7 "% More Read Intensive " \
 				       25 "% More Write Intensive "  \
-				       "? " "% Other Percentage" 3>&1 1>&2 2>&3)
-if [ "$PART_OP_PERCENTAGE" == "?" ] ; then
+				       "x" "% Other Percentage" 3>&1 1>&2 2>&3)
+if [ "$PART_OP_PERCENTAGE" == "x" ] ; then
 	REPEAT=yes
 	while [ "$REPEAT" == "yes" ] ; do
 		PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" --inputbox "Enter a positive integer, lower than 100:" 20 60  3>&1 1>&2 2>&3)
