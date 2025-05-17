@@ -3,6 +3,7 @@ set -e # Exit on error
 
 echo "Installing dependencies for this script ---------------------"
 	MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
+	cd /tmp
         apt update							 >/dev/null 2>&1
 	apt install --fix-broken -y					 >/dev/null 2>&1
         apt install dosfstools parted gnupg2 unzip \
@@ -10,37 +11,37 @@ echo "Installing dependencies for this script ---------------------"
 	systemctl start sshd						 >/dev/null 2>&1
 	wget --show-progress -qcN -O /tmp/multistrap.deb ${MULTISTRAP_URL}
 	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
-
+#####################################################################################################
 #Selections
-
+#####################################################################################################
 disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
 menu_options=()
 while read -r name size; do
       menu_options+=("/dev/$name" "$size")
 done <<< "$disk_list"
 DEVICE=$(whiptail --title "Disk selection" --menu "Choose a disk from below and press enter to begin:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
-
+#####################################################################################################
 mirror_clonezilla=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
        "Official_Fast" "NCHC - Taiwan" \
        "Official_Slow" "SourceForge" \
        3>&1 1>&2 2>&3)
-
-#read -p "What username do you want for local_admin_user ?: " username
+#####################################################################################################
 username=$(whiptail --title "Local admin creation" --inputbox "Type a username:" 20 60  3>&1 1>&2 2>&3)
 REPEAT=yes
 while [ "$REPEAT" == "yes" ] ; do
-	#read -sp "What password do you want for local_admin_user ${username} ?" password && echo " "
-	#read -sp "to be sure, please repeat the password: " password2                    && echo " "
 	password=$( whiptail --title "Local admin creation" --passwordbox "Type a password:"                  20 60  3>&1 1>&2 2>&3)
 	password2=$(whiptail --title "Local admin creation" --passwordbox "Just in case type it again:"       20 60  3>&1 1>&2 2>&3)
 	if [ "$password" == "$password2" ] ; then
 		REPEAT=no
 	else
 		#echo "ERROR: Passwords entered dont match"
-		    whiptail --title "Local admin creation" --msgbox "ERROR: Passwords dont match, try again" 20 60  3>&1 1>&2 2>&3
+		    whiptail --title "Local admin creation" \
+			     --msgbox "ERROR: Passwords dont match, try again" 20 60  3>&1 1>&2 2>&3
 	fi
 done
-PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" --menu "Choose a recomended percentage or Other to enter manually:" 20 60 10 \
+#####################################################################################################
+PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" \
+	                      --menu "Choose a recomended percentage or Other to enter manually:" 20 60 10 \
 	                               7 "% More Read Intensive " \
 				       25 "% More Write Intensive "  \
 				       "x" "% Other Percentage" 3>&1 1>&2 2>&3)
@@ -55,15 +56,6 @@ if [ "$PART_OP_PERCENTAGE" == "x" ] ; then
 		fi
 	done
 fi
-
-
-# for clear screen on tty (clear doesnt work)
-printf "\033c"
-
-cd /tmp
-
-
-
 #VARIABLES ##############################################################################################################################################
 
 CACHE_FOLDER=/home/$SUDO_USER/.multistrap
@@ -152,6 +144,9 @@ SPOTIFY_REPOSITORY="https://repository.spotify.com"
 SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
 
 ########################################################################################################################################################
+
+# for clear screen on tty (clear doesnt work)
+printf "\033c"
 
 echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin
