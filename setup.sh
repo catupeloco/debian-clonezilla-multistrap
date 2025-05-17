@@ -582,7 +582,7 @@ echo "Entering chroot ---------------------------------------------"
         echo ---Installing LibreOffice and its language pack
         wait $pid_LO
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
-        echo LibreOffice \$VERSION_LO installation done.
+        echo ------LibreOffice \$VERSION_LO installation done.
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
