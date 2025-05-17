@@ -36,6 +36,30 @@ printf "\033c"
 
 cd /tmp
 
+echo "============================================================="
+echo "
+Installing on Device ${DEVICE}
+	- Debian ${DEBIAN_VERSION}
+        - Backport kernel for newer HW compatibility
+	- Latest Wifi drivers
+	- Latest Libreoffice
+        - Latest Google Chrome 
+	- Latest XFCE 
+	- Latest Firefox ESR
+	- Latest Spotify
+	- Latest Clonezilla recovery
+
+To Follow extra details use: 
+	tail -F $LOG or Ctrl + Alt + F2
+	tail -F $ERR or Ctrl + Alt + F3
+
+For remote access during installation, you can connect via ssh" 
+ip -br a | grep -v ^lo
+grep iso /proc/cmdline >/dev/null && \
+echo ISO Detected. Hint username is \"user\" and password is \"live\"
+
+echo "============================================================="
+
 echo "Inicializing logs tails -------------------------------------"
 	# TODO make symbolic link for chroot
 	LOG=/tmp/multistrap.log
@@ -148,29 +172,6 @@ SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
 
 ########################################################################################################################################################
 
-echo "============================================================="
-echo "
-Installing on Device ${DEVICE}
-	- Debian ${DEBIAN_VERSION}
-        - Backport kernel for newer HW compatibility
-	- Latest Wifi drivers
-	- Latest Libreoffice
-        - Latest Google Chrome 
-	- Latest XFCE 
-	- Latest Firefox ESR
-	- Latest Spotify
-	- Latest Clonezilla recovery
-
-To Follow extra details use: 
-	tail -F $LOG or Ctrl + Alt + F2
-	tail -F $ERR or Ctrl + Alt + F3
-
-For remote access during installation, you can connect via ssh" 
-ip -br a | grep -v ^lo
-grep iso /proc/cmdline >/dev/null && \
-echo ISO Detected. Hint username is \"user\" and password is \"live\"
-
-echo "============================================================="
 
 echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
