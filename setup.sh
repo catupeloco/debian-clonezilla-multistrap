@@ -129,9 +129,11 @@ ${LIBREOFFICE_DEPENDENCIES}  \
 libxslt1.1 \
 ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
+${PLASMA_DISCOVER} \
+plasma-discover plasma-discover-backend-flatpak plasma-discover-common \
 ${VIRTUALIZATION_PACKAGES}  \
 qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager \
-${OBS-STUDIO} \
+${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
 DEBIAN_VERSION=bookworm
@@ -452,12 +454,12 @@ packages=spotify-client
 source=${SPOTIFY_REPOSITORY}
 suite=stable
 components=non-free
-noauth=true" > multistrap.conf
+noauth=true" > ${CACHE_FOLDER}/multistrap.conf
 
 echo "---Running multistrap"
         SILENCE="Warning: unrecognised value 'no' for Multi-Arch field in|multistrap-googlechrome.list"
         set +e ####################################################
-	multistrap -f multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
+	multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
 	if [ "$?" != "0" ] ; then
 		echo It failed but don\'t worry
 		echo ---Removing older versions AGAIN so multistrap wont fail
@@ -466,7 +468,7 @@ echo "---Running multistrap"
                 done
 		echo "---Running multistrap AGAIN"
 		set -e ############################################
-		multistrap -f multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
+		multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
 	fi
 	set -e ####################################################
 
