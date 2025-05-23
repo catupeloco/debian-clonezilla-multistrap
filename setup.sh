@@ -329,7 +329,7 @@ set +e
 	done
 	
 	wait
-	((done_count+=running))
+	done_count=$((done_count + 1))
 	show_progress
 	echo -e "\n---Download complete"
 	mkdir -p ${ROOTFS}/lib/firmware/ 2>/dev/null || true
