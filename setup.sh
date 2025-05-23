@@ -314,7 +314,8 @@ set +e
 	}
 	
 	for line in "${files[@]}"; do
-	  wget -nv -cN -O ${line##*/} "${WIFI_DOMAIN}/${line}" &
+	  #wget -qcN -O ${line##*/} "${WIFI_DOMAIN}/${line}" &
+	  wget -nv -cN "${WIFI_DOMAIN}/${line}" &
 	  ((running++))
 	  echo esperando 1
 	  if [[ $running -ge $WIFI_MAX_PARALLEL ]]; then
