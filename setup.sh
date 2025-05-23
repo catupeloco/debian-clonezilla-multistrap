@@ -317,13 +317,15 @@ set +e
 	  wget -qcN -O ${line##*/} "${WIFI_DOMAIN}/${line}" &
 	  ((running++))
 	  if [[ $running -ge $WIFI_MAX_PARALLEL ]]; then
+	    echo espando 1
 	    wait
 	    ((done_count+=running))
 	    show_progress
 	    running=0
 	  fi
 	done
-
+	
+	echo esperando 2
 	wait
 	((done_count+=running))
 	show_progress
