@@ -316,13 +316,16 @@ set +e
 	for line in "${files[@]}"; do
 	  #wget -qcN -O ${line##*/} "${WIFI_DOMAIN}/${line}" &
 	  wget -qc "${WIFI_DOMAIN}/${line}" &
-	  ((running++))
-	  if [[ $running -ge $WIFI_MAX_PARALLEL ]]; then
-	    wait
-	    ((done_count+=running))
-	    show_progress
-	    running=0
-	  fi
+	  while [[ $(jobs -rp | wc -l) -ge $WIFI_MAX_PARALLEL ]]; do
+		sleep 0.1
+	  done
+	  #((running++))
+	  #if [[ $running -ge $WIFI_MAX_PARALLEL ]]; then
+	  #  wait
+	  #  ((done_count+=running))
+	  #  show_progress
+	  #  running=0
+	  #fi
 	done
 	
 	wait
