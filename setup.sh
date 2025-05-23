@@ -130,7 +130,9 @@ libxslt1.1 \
 ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 ${VIRTUALIZATION_PACKAGES}  \
-qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager"
+qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager \
+${OBS-STUDIO} \
+ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
 DEBIAN_VERSION=bookworm
 INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports"
@@ -158,6 +160,8 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 	- Latest XFCE 
 	- Latest Firefox ESR
 	- Latest Spotify
+	- Latest Virtual Machine Manager (KVM/QEMU)
+	- Latest OBS Studio
 	- Latest Clonezilla recovery
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
 To Follow extra details use: 
