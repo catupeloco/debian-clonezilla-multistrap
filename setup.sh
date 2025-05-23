@@ -327,11 +327,10 @@ set +e
 	  #  show_progress
 	  #  running=0
 	  #fi
+	  done_count=$((done_count + 1))
+	  show_progress
 	done
 	
-	wait
-	done_count=$((done_count + 1))
-	show_progress
 	echo -e "\n---Download complete"
 	mkdir -p ${ROOTFS}/lib/firmware/ 2>/dev/null || true
 	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
