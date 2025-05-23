@@ -317,9 +317,7 @@ set +e
 	  #wget -qcN -O ${line##*/} "${WIFI_DOMAIN}/${line}" &
 	  wget -qc "${WIFI_DOMAIN}/${line}" &
 	  ((running++))
-	  echo esperando 1
 	  if [[ $running -ge $WIFI_MAX_PARALLEL ]]; then
-	    echo esperando 2
 	    wait
 	    ((done_count+=running))
 	    show_progress
@@ -327,7 +325,6 @@ set +e
 	  fi
 	done
 	
-	echo esperando 3
 	wait
 	((done_count+=running))
 	show_progress
