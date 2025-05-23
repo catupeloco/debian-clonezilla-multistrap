@@ -130,7 +130,7 @@ libxslt1.1 \
 ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 ${PLASMA_DISCOVER} \
-plasma-discover plasma-discover-backend-flatpak plasma-discover-common \
+plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd \
 ${VIRTUALIZATION_PACKAGES}  \
 qemu-system-x86 libvirt-daemon-system libvirt-clients bridge-utils virt-manager \
 ${OBS_STUDIO} \
