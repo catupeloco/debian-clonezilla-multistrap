@@ -318,6 +318,7 @@ set +e
 	  wget -qc "${WIFI_DOMAIN}/${line}" &
 	  while [[ $(jobs -rp | wc -l) -ge $WIFI_MAX_PARALLEL ]]; do
 		sleep 0.1
+		show_progress
 	  done
 	  #((running++))
 	  #if [[ $running -ge $WIFI_MAX_PARALLEL ]]; then
