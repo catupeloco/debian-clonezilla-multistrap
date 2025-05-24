@@ -58,10 +58,10 @@ if [ "$PART_OP_PERCENTAGE" == "x" ] ; then
 fi
 #VARIABLES ##############################################################################################################################################
 
-CACHE_FOLDER=/home/$SUDO_USER/.multistrap
+CACHE_FOLDER=/tmp/resources-fs
 ROOTFS=/tmp/installing-rootfs
-LOG=/tmp/multistrap.log
-ERR=/tmp/multistrap.err
+LOG=/tmp/notebook.log
+ERR=/tmp/notebook.err
 
 PART_EFI_END=901
 PART_CZ_END=12901
