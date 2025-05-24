@@ -59,7 +59,7 @@ fi
 #VARIABLES ##############################################################################################################################################
 
 CACHE_FOLDER=/tmp/resources-fs
-ROOTFS=/tmp/installing-rootfs
+ROOTFS=/tmp/os-rootfs
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
 
