@@ -253,7 +253,6 @@ if [ "$REPARTED" == "yes" ] ; then
 	echo "Creating Clonezilla partition -------------------------------"
 		parted ${DEVICE} --script mkpart CLONEZILLA ext4 ${PART_EFI_END}MiB ${PART_CZ_END}MiB > /dev/null 2>&1
 
-
 	echo "Creating OS partition ---------------------------------------"
 		parted ${DEVICE} --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
 
