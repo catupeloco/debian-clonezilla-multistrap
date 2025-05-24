@@ -208,13 +208,39 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${CACHEFOLDER}                   2>/dev/null || true
 
 
-echo "Full reparted or not? ---------------------------------------"
-	REPARTED=yes
+echo "Comparing target partition squema vs actual partition squema "
+	echo "---Labels test"
+	LABELS_MATCH=no
 	blkid | grep ${DEVICE}2 | grep CLONEZILLA >/dev/null && \
 	blkid | grep ${DEVICE}3 | grep LINUX      >/dev/null && \
 	blkid | grep ${DEVICE}4 | grep RESOURCES  >/dev/null && \
-	REPARTED=no
-	echo ---${REPARTED}
+	LABELS_MATCH=yes && echo They DO match || echo They DON\'T match
+
+	echo "---Calculating OS partition size"
+	DISK_SIZE=$(parted ${DEVICE} --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
+	PART_OP_SIZE=$((DISK_SIZE / 100 * PART_OP_PERCENTAGE))
+	PART_OS_START=$((PART_CZ_END + 1))
+	PART_OS_END=$((DISK_SIZE - PART_OP_SIZE)) 
+
+	echo "---Sizes match or not?"
+	PART_OP_SIZE_REAL=$( parted ${DEVICE} --script unit MiB print | awk '$1 == "4" {print $4}' | tr -d 'MiB')
+	PART_OS_START_REAL=$(parted ${DEVICE} --script unit MiB print | awk '$1 == "3" {print $2}' | tr -d 'MiB')
+	PART_OS_END_REAL=$(  parted ${DEVICE} --script unit MiB print | awk '$1 == "3" {print $3}' | tr -d 'MiB')
+
+	if [ "$((PART_OP_SIZE - 1))" == "$PART_OP_SIZE_REAL" ] && [ "$PART_OS_START" == "$PART_OS_START_REAL" ] && [ "$PART_OS_END" == "$PART_OS_END_REAL" ] ; then
+               	echo They DO match
+		SIZES_MATCH=yes
+	else
+               	echo They DON\'T match
+		SIZES_MATCH=no
+	fi
+
+	if [ "$LABELS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
+		REPARTED=no
+	else
+		REPARTED=yes
+	fi
+	echo ---Reparted? : ${REPARTED}
 
 if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
@@ -227,11 +253,6 @@ if [ "$REPARTED" == "yes" ] ; then
 	echo "Creating Clonezilla partition -------------------------------"
 		parted ${DEVICE} --script mkpart CLONEZILLA ext4 ${PART_EFI_END}MiB ${PART_CZ_END}MiB > /dev/null 2>&1
 
-	echo "Calculating OS partition size -------------------------------"
-		DISK_SIZE=$(parted ${DEVICE} --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
-		PART_OP_SIZE=$((DISK_SIZE / 100 * PART_OP_PERCENTAGE))
-		PART_OS_START=$((PART_CZ_END + 1))
-		PART_OS_END=$((DISK_SIZE - PART_OP_SIZE)) 
 
 	echo "Creating OS partition ---------------------------------------"
 		parted ${DEVICE} --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
