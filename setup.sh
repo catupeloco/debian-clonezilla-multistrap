@@ -214,7 +214,7 @@ echo "Comparing target partition squema vs actual partition squema "
 	blkid | grep ${DEVICE}2 | grep CLONEZILLA >/dev/null && \
 	blkid | grep ${DEVICE}3 | grep LINUX      >/dev/null && \
 	blkid | grep ${DEVICE}4 | grep RESOURCES  >/dev/null && \
-	LABELS_MATCH=yes && echo They DO match || echo They DON\'T match
+	LABELS_MATCH=yes && echo ------They DO match || echo ------They DON\'T match
 
 	echo "---Calculating OS partition size"
 	DISK_SIZE=$(parted ${DEVICE} --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
@@ -228,10 +228,10 @@ echo "Comparing target partition squema vs actual partition squema "
 	PART_OS_END_REAL=$(  parted ${DEVICE} --script unit MiB print | awk '$1 == "3" {print $3}' | tr -d 'MiB')
 
 	if [ "$((PART_OP_SIZE - 1))" == "$PART_OP_SIZE_REAL" ] && [ "$PART_OS_START" == "$PART_OS_START_REAL" ] && [ "$PART_OS_END" == "$PART_OS_END_REAL" ] ; then
-               	echo They DO match
+               	echo ------They DO match
 		SIZES_MATCH=yes
 	else
-               	echo They DON\'T match
+               	echo ------They DON\'T match
 		SIZES_MATCH=no
 	fi
 
