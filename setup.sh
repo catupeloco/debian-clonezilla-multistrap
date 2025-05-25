@@ -249,7 +249,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		else
 			REPARTED=yes
 		fi
-		echo ${REPARTED}
+		echo ------${REPARTED}
 
 if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
