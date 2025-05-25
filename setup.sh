@@ -521,13 +521,14 @@ echo "Configurating the network -----------------------------------"
         mkdir -p ${ROOTFS}/etc/network/interfaces.d/            > /dev/null 2>&1
         echo "allow-hotplug enp1s0"                          > ${ROOTFS}/etc/network/interfaces.d/enp1s0
         echo "iface enp1s0 inet dhcp"                       >> ${ROOTFS}/etc/network/interfaces.d/enp1s0
-        echo "debian-$(date +'%Y-%m-%d')"                    > ${ROOTFS}/etc/hostname
         echo "127.0.0.1       localhost"                     > ${ROOTFS}/etc/hosts
         echo "127.0.1.1       debian-$(date +'%Y-%m-%d')"   >> ${ROOTFS}/etc/hosts
         echo "::1     localhost ip6-localhost ip6-loopback" >> ${ROOTFS}/etc/hosts
         echo "ff02::1 ip6-allnodes"                         >> ${ROOTFS}/etc/hosts
         echo "ff02::2 ip6-allrouters"                       >> ${ROOTFS}/etc/hosts
 BYPASS
+echo "Setting build date in hostname and filesystem ---------------"
+        echo "debian-$(date +'%Y-%m-%d')"                    > ${ROOTFS}/etc/hostname
         touch ${ROOTFS}/ImageDate.$(date +'%Y-%m-%d')
 
 echo "Generating fstab --------------------------------------------"
