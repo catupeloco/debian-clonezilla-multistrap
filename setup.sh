@@ -22,7 +22,7 @@ while read -r name size; do
 done <<< "$disk_list"
 DEVICE=$(whiptail --title "Disk selection" --menu "Choose a disk from below and press enter to begin:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
 #####################################################################################################
-mirror_clonezilla=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
+MIRROR_CLONEZILLA=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
        "Official_Fast" "NCHC - Taiwan" \
        "Official_Slow" "SourceForge" \
        3>&1 1>&2 2>&3)
@@ -365,8 +365,8 @@ set -e
 
 echo "Downloading lastest clonezilla ------------------------------"
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
-	echo "---Downloading from $mirror_clonezilla "
-        case $mirror_clonezilla in
+	echo "---Downloading from ${MIRROR_CLONEZILLA}"
+        case ${MIRROR_CLONEZILLA} in
 		Official_Fast )
 			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
 			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
