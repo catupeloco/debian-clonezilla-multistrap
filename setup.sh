@@ -527,8 +527,8 @@ echo "Configurating the network -----------------------------------"
         echo "::1     localhost ip6-localhost ip6-loopback" >> ${ROOTFS}/etc/hosts
         echo "ff02::1 ip6-allnodes"                         >> ${ROOTFS}/etc/hosts
         echo "ff02::2 ip6-allrouters"                       >> ${ROOTFS}/etc/hosts
-        touch ${ROOTFS}/ImageDate.$(date +'%Y-%m-%d')
 BYPASS
+        touch ${ROOTFS}/ImageDate.$(date +'%Y-%m-%d')
 
 echo "Generating fstab --------------------------------------------"
         root_uuid="$(blkid | grep ^$DEVICE | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
