@@ -11,6 +11,7 @@ echo "Installing dependencies for this script ---------------------"
 	systemctl start sshd						 >/dev/null 2>&1
 	wget --show-progress -qcN -O /tmp/multistrap.deb ${MULTISTRAP_URL}
 	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
+
 #####################################################################################################
 #Selections
 #####################################################################################################
@@ -56,7 +57,10 @@ if [ "$PART_OP_PERCENTAGE" == "x" ] ; then
 		fi
 	done
 fi
-#VARIABLES ##############################################################################################################################################
+
+#####################################################################################################
+#VARIABLES 
+#####################################################################################################
 
 CACHE_FOLDER=/tmp/resources-fs
 ROOTFS=/tmp/os-rootfs
@@ -65,8 +69,6 @@ ERR=/tmp/notebook.err
 
 PART_EFI_END=901
 PART_CZ_END=12901
-#PART_OP_PERCENTAGE=7  #More Read  Intensive
-#PART_OP_PERCENTAGE=28 #More Write Intensive
 
 WIFI_DOMAIN="https://git.kernel.org"
 WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
@@ -147,6 +149,8 @@ CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
 SPOTIFY_REPOSITORY="https://repository.spotify.com"
 SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
 
+LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
+
 ########################################################################################################################################################
 
 # for clear screen on tty (clear doesnt work)
@@ -154,27 +158,30 @@ printf "\033c"
 
 echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin
-	- Debian ${DEBIAN_VERSION}
-        - Backport kernel for newer HW compatibility
-	- Latest Wifi drivers
-	- Latest Libreoffice
-        - Latest Google Chrome 
-	- Latest XFCE 
-	- Latest Firefox ESR
-	- Latest Spotify
-	- Latest Virtual Machine Manager (KVM/QEMU)
-	- Latest OBS Studio
-	- Latest Clonezilla recovery
-	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
-To Follow extra details use: 
+	- Debian ${DEBIAN_VERSION} with :
+		- XFCE.
+		- Firefox ESR.
+		- Virtual Machine Manager (KVM/QEMU).
+		- OBS Studio.
+		- Unattended upgrades.
+		- Optional : encrypted home.
+        - Backport kernel for newer HW compatibility.
+	- External latest :
+		- Wifi drivers.
+		- Libreoffice.
+		- Google Chrome. 
+		- Clonezilla recovery.
+		- Spotify.
+	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %"
+
+echo "To Follow extra details use: 
 	tail -F $LOG or Ctrl + Alt + F2
-	tail -F $ERR or Ctrl + Alt + F3
+	tail -F $ERR or Ctrl + Alt + F3"
 
-For remote access during installation, you can connect via ssh" 
-
-LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 grep iso /proc/cmdline >/dev/null && \
-echo ---Connect via: ssh user@$LOCALIP && echo ---password is \"live\"
+echo "For remote access during installation, you can connect via ssh
+	---Connect via: ssh user@$LOCALIP
+	---password is \"live\""
 
 echo "============================================================="
 
@@ -209,38 +216,40 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
 
 
 echo "Comparing partitions target scheme vs actual schema ---------"
-	echo "---Labels test"
-	LABELS_MATCH=no
-	blkid | grep ${DEVICE}2 | grep CLONEZILLA >/dev/null && \
-	blkid | grep ${DEVICE}3 | grep LINUX      >/dev/null && \
-	blkid | grep ${DEVICE}4 | grep RESOURCES  >/dev/null && \
-	LABELS_MATCH=yes && echo ------They DO match || echo ------They DON\'T match
 
 	echo "---Calculating OS partition size"
-	DISK_SIZE=$(parted ${DEVICE} --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
-	PART_OP_SIZE=$((DISK_SIZE / 100 * PART_OP_PERCENTAGE))
-	PART_OS_START=$((PART_CZ_END + 1))
-	PART_OS_END=$((DISK_SIZE - PART_OP_SIZE)) 
+		DISK_SIZE=$(parted ${DEVICE} --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
+		PART_OP_SIZE=$((DISK_SIZE / 100 * PART_OP_PERCENTAGE))
+		PART_OS_START=$((PART_CZ_END + 1))
+		PART_OS_END=$((DISK_SIZE - PART_OP_SIZE)) 
+	
+	echo "---Labels test"
+		LABELS_MATCH=no
+		blkid | grep ${DEVICE}2 | grep CLONEZILLA >/dev/null && \
+		blkid | grep ${DEVICE}3 | grep LINUX      >/dev/null && \
+		blkid | grep ${DEVICE}4 | grep RESOURCES  >/dev/null && \
+		LABELS_MATCH=yes && echo ------They DO match || echo ------They DON\'T match
 
-	echo "---Sizes match or not?"
-	PART_OP_SIZE_REAL=$( parted ${DEVICE} --script unit MiB print | awk '$1 == "4" {print $4}' | tr -d 'MiB')
-	PART_OS_START_REAL=$(parted ${DEVICE} --script unit MiB print | awk '$1 == "3" {print $2}' | tr -d 'MiB')
-	PART_OS_END_REAL=$(  parted ${DEVICE} --script unit MiB print | awk '$1 == "3" {print $3}' | tr -d 'MiB')
+	echo "---Sizes test"
+		PART_OP_SIZE_REAL=$( parted ${DEVICE} --script unit MiB print | awk '$1 == "4" {print $4}' | tr -d 'MiB')
+		PART_OS_START_REAL=$(parted ${DEVICE} --script unit MiB print | awk '$1 == "3" {print $2}' | tr -d 'MiB')
+		PART_OS_END_REAL=$(  parted ${DEVICE} --script unit MiB print | awk '$1 == "3" {print $3}' | tr -d 'MiB')
 
-	if [ "$((PART_OP_SIZE - 1))" == "$PART_OP_SIZE_REAL" ] && [ "$PART_OS_START" == "$PART_OS_START_REAL" ] && [ "$PART_OS_END" == "$PART_OS_END_REAL" ] ; then
-               	echo ------They DO match
-		SIZES_MATCH=yes
-	else
-               	echo ------They DON\'T match
-		SIZES_MATCH=no
-	fi
+		if [ "$((PART_OP_SIZE - 1))" == "$PART_OP_SIZE_REAL" ] && [ "$PART_OS_START" == "$PART_OS_START_REAL" ] && [ "$PART_OS_END" == "$PART_OS_END_REAL" ] ; then
+			echo ------They DO match
+			SIZES_MATCH=yes
+		else
+			echo ------They DON\'T match
+			SIZES_MATCH=no
+		fi
 
-	if [ "$LABELS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
-		REPARTED=no
-	else
-		REPARTED=yes
-	fi
-	echo ---Reparted? : ${REPARTED}
+	echo "---Reparted? :"
+		if [ "$LABELS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
+			REPARTED=no
+		else
+			REPARTED=yes
+		fi
+		echo ${REPARTED}
 
 if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
@@ -481,8 +490,8 @@ echo "---Running multistrap"
         set +e ####################################################
 	multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
 	if [ "$?" != "0" ] ; then
-		echo It failed but don\'t worry
-		echo ---Removing older versions AGAIN so multistrap wont fail
+		echo "------It failed but don\'t worry"
+		echo "---Removing older versions AGAIN so multistrap wont fail"
                 ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
                 do rm -v ${CACHE_FOLDER}/${line}*
                 done
@@ -506,6 +515,7 @@ echo "---Running multistrap"
 #  "deb [trusted=yes] http://deb.debian.org/debian               ${DEBIAN_VERSION}-backports main" \
 #  "deb [arch=amd64]  https://dl.google.com/linux/chrome/deb/    stable                      main"
 
+<<'BYPASS'
 echo "Configurating the network -----------------------------------"
         cp /etc/resolv.conf ${ROOTFS}/etc/resolv.conf
         mkdir -p ${ROOTFS}/etc/network/interfaces.d/            > /dev/null 2>&1
@@ -518,6 +528,7 @@ echo "Configurating the network -----------------------------------"
         echo "ff02::1 ip6-allnodes"                         >> ${ROOTFS}/etc/hosts
         echo "ff02::2 ip6-allrouters"                       >> ${ROOTFS}/etc/hosts
         touch ${ROOTFS}/ImageDate.$(date +'%Y-%m-%d')
+BYPASS
 
 echo "Generating fstab --------------------------------------------"
         root_uuid="$(blkid | grep ^$DEVICE | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
