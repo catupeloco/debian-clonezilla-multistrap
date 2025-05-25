@@ -208,7 +208,7 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${CACHEFOLDER}                   2>/dev/null || true
 
 
-echo "Comparing target partition squema vs actual partition squema "
+echo "Comparing partitions target scheme vs actual schema ---------"
 	echo "---Labels test"
 	LABELS_MATCH=no
 	blkid | grep ${DEVICE}2 | grep CLONEZILLA >/dev/null && \
