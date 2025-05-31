@@ -116,7 +116,7 @@ firmware-linux-free firmware-linux-nonfree firmware-misc-nonfree \
 firmware-myricom firmware-netronome firmware-netxen firmware-qlogic  \
 firmware-ast firmware-ath9k-htc firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-cavium \
 firmware-realtek-rtl8723cs-bt firmware-siano firmware-sof-signed firmware-tomu firmware-zd1211 hdmi2usb-fx2-firmware firmware-ipw2x00 firmware-ivtv \
-firmware-libertas atmel-firmware dahdi-firmware-nonfree dfu-util dnsmask-base \
+firmware-libertas atmel-firmware dahdi-firmware-nonfree dfu-util dnsmasq-base \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio firmware-intel-sound \
 ${BOOT_PACKAGES}  \
