@@ -116,7 +116,7 @@ firmware-linux-free firmware-linux-nonfree firmware-misc-nonfree \
 firmware-myricom firmware-netronome firmware-netxen firmware-qlogic  \
 firmware-ast firmware-ath9k-htc firmware-atheros firmware-bnx2 firmware-bnx2x firmware-brcm80211 firmware-cavium \
 firmware-realtek-rtl8723cs-bt firmware-siano firmware-sof-signed firmware-tomu firmware-zd1211 hdmi2usb-fx2-firmware firmware-ipw2x00 firmware-ivtv \
-firmware-libertas atmel-firmware dahdi-firmware-nonfree dfu-util \
+firmware-libertas atmel-firmware dahdi-firmware-nonfree dfu-util dnsmask-base \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio firmware-intel-sound \
 ${BOOT_PACKAGES}  \
@@ -594,6 +594,12 @@ echo "Entering chroot ---------------------------------------------"
                 PROC_NEEDS_UMOUNT=1
         fi
 
+	echo ---Enabling virtual-networks
+	virsh net-autostart default
+
+	echo ---Adding virtual-networks to kernel modules
+	echo vhost_net >> /etc/modules
+
         echo ---Running tasksel for fixes
 	tasksel install ssh-server laptop xfce --new-install                                    >>\$LOG 2>>\$ERR
         #apt remove --purge xfce4-terminal                                                      >>\$LOG 2>>\$ERR
@@ -783,6 +789,7 @@ echo "Setting up local admin account ------------------------------"
         adduser '$username' updates
         adduser '$username' kvm
 	adduser '$username' libvirt
+	adduser '$username' libvirt-qemu
 	echo '${username}:${password}' | chpasswd
 	rm /tmp/local_admin.sh' > ${ROOTFS}/tmp/local_admin.sh
         chmod +x ${ROOTFS}/tmp/local_admin.sh
@@ -796,6 +803,7 @@ echo "Encrypted user script creation ------------------------------"
         sudo useradd adduser \$username updates
         sudo useradd adduser \$username kvm
         sudo useradd adduser \$username libvirt
+        sudo useradd adduser \$username libvirt-qemu
         
         sudo passwd \$username
         if [ \"\$?\" != \"0\" ] ; then echo Please repeat the password....; sudo passwd \$username ; fi
