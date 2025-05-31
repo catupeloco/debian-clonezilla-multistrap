@@ -134,7 +134,7 @@ unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 ${PLASMA_DISCOVER} \
 plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd \
 ${VIRTUALIZATION_PACKAGES}  \
-qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virt-manager \
+qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virtinst libvirt-daemon virt-manager \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
