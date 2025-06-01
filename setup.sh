@@ -577,6 +577,8 @@ echo "Getting ready for chroot ------------------------------------"
         mount --bind /run  ${ROOTFS}/run
         mount -t sysfs sysfs ${ROOTFS}/sys
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
+	ln -s ${LOG} ${ROOTFS}/tmp/${LOG}
+	ln -s ${ERR} ${ROOTFS}/tmp/${ERR}
 
 echo "Entering chroot ---------------------------------------------"
         echo "#!/bin/bash
@@ -585,8 +587,8 @@ echo "Entering chroot ---------------------------------------------"
         export LO_LANG=es  # Idioma para la instalación
         export LC_ALL=C LANGUAGE=C LANG=C
         export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
-	export LOG=/var/cache/apt/archives/multistrap.log
-	export ERR=/var/cache/apt/archives/multistrap.err
+	export LOG=$LOG
+	export ERR=$ERR
 
         PROC_NEEDS_UMOUNT=0
         if [ ! -e /proc/uptime ]; then
@@ -595,9 +597,9 @@ echo "Entering chroot ---------------------------------------------"
         fi
 	
 	echo ---Enabling virtual-networks
-	/usr/sbin/libvirtd &
-	virsh net-autostart default
-	pkill libvirtd
+	/usr/sbin/libvirtd & 		>/dev/null 2>&1
+	virsh net-autostart default	>/dev/null 2>&1
+	pkill libvirtd			>/dev/null 2>&1
 
 	echo ---Adding virtual-networks to kernel modules
 	echo vhost_net >> /etc/modules
@@ -779,19 +781,13 @@ echo "
 	chmod 440 ${ROOTFS}/etc/sudoers.d/updates
 
 echo "Setting up local admin account ------------------------------"
-        #chroot ${ROOTFS} useradd -d /home/$username -c local_admin_user -G sudo -m -s /bin/bash $username 
-	#chroot ${ROOTFS} groupadd updates
-        #chroot ${ROOTFS} adduser $username updates
-        #chroot ${ROOTFS} adduser $username kvm
-        #chroot ${ROOTFS} adduser $username libvirt
-	#echo ${username}:${password} | chroot ${ROOTFS} chpasswd                 
         echo 'export LC_ALL=C LANGUAGE=C LANG=C
 	useradd -d /home/'$username' -c local_admin_user -G sudo -m -s /bin/bash '$username'
 	groupadd updates
-        adduser '$username' updates
-        adduser '$username' kvm
-	adduser '$username' libvirt
-	adduser '$username' libvirt-qemu
+        adduser '$username' updates		>/dev/null
+        adduser '$username' kvm			>/dev/null
+	adduser '$username' libvirt		>/dev/null
+	adduser '$username' libvirt-qemu	>/dev/null
 	echo '${username}:${password}' | chpasswd
 	rm /tmp/local_admin.sh' > ${ROOTFS}/tmp/local_admin.sh
         chmod +x ${ROOTFS}/tmp/local_admin.sh
