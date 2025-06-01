@@ -577,8 +577,8 @@ echo "Getting ready for chroot ------------------------------------"
         mount --bind /run  ${ROOTFS}/run
         mount -t sysfs sysfs ${ROOTFS}/sys
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
-	ln -s ${LOG} ${ROOTFS}/tmp/${LOG}
-	ln -s ${ERR} ${ROOTFS}/tmp/${ERR}
+	ln -s ${LOG} ${ROOTFS}/${LOG}
+	ln -s ${ERR} ${ROOTFS}/${ERR}
 
 echo "Entering chroot ---------------------------------------------"
         echo "#!/bin/bash
