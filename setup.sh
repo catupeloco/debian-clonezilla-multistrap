@@ -593,6 +593,8 @@ echo "Entering chroot ---------------------------------------------"
                 mount proc -t proc /proc
                 PROC_NEEDS_UMOUNT=1
         fi
+	
+	bash
 
 	echo ---Enabling virtual-networks
 	systemctl start libvirtd
