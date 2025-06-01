@@ -594,10 +594,8 @@ echo "Entering chroot ---------------------------------------------"
                 PROC_NEEDS_UMOUNT=1
         fi
 	
-	bash
-
 	echo ---Enabling virtual-networks
-	systemctl start libvirtd
+	/usr/sbin/libvirtd &
 	virsh net-autostart default
 
 	echo ---Adding virtual-networks to kernel modules
