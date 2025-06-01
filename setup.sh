@@ -597,6 +597,7 @@ echo "Entering chroot ---------------------------------------------"
 	echo ---Enabling virtual-networks
 	/usr/sbin/libvirtd &
 	virsh net-autostart default
+	pkill libvirtd
 
 	echo ---Adding virtual-networks to kernel modules
 	echo vhost_net >> /etc/modules
