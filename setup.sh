@@ -577,8 +577,8 @@ echo "Getting ready for chroot ------------------------------------"
         mount --bind /run  ${ROOTFS}/run
         mount -t sysfs sysfs ${ROOTFS}/sys
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
-	ln -s ${LOG} ${ROOTFS}/${LOG}
-	ln -s ${ERR} ${ROOTFS}/${ERR}
+	ln -s ${LOG} ${ROOTFS}/var/log/notebook.log
+	ln -s ${ERR} ${ROOTFS}/var/log/notebook.err
 
 echo "Entering chroot ---------------------------------------------"
         echo "#!/bin/bash
@@ -587,8 +587,8 @@ echo "Entering chroot ---------------------------------------------"
         export LO_LANG=es  # Idioma para la instalación
         export LC_ALL=C LANGUAGE=C LANG=C
         export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
-	export LOG=$LOG
-	export ERR=$ERR
+	export LOG=/var/log/notebook.log
+	export ERR=/var/log/notebook.err
 
         PROC_NEEDS_UMOUNT=0
         if [ ! -e /proc/uptime ]; then
