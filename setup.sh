@@ -624,6 +624,7 @@ echo "Entering chroot ---------------------------------------------"
         echo ---Installing LibreOffice and its language pack
 	echo -----Cloning script for future updates
 	cd /opt
+	echo nameserver 8.8.8.8 > /etc/resolv.conf
 	git clone https://github.com/catupeloco/install-libreoffice-from-web
         wait $pid_LO
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
