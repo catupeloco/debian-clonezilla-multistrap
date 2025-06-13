@@ -128,7 +128,7 @@ console-data console-setup locales \
 ${ENCRYPTION_PACKAGES}  \
 ecryptfs-utils rsync lsof cryptsetup \
 ${LIBREOFFICE_DEPENDENCIES}  \
-libxslt1.1 \
+libxslt1.1 git \
 ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 ${PLASMA_DISCOVER} \
@@ -621,6 +621,9 @@ echo "Entering chroot ---------------------------------------------"
         update-grub                                                                             >>\$LOG 2>>\$ERR
 
         echo ---Installing LibreOffice and its language pack
+	echo -----Cloning script for future updates
+	cd /opt
+	git clone https://github.com/catupeloco/install-libreoffice-from-web
         wait $pid_LO
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
         echo ------LibreOffice \$VERSION_LO installation done.
@@ -699,7 +702,10 @@ apt update
 apt list --upgradable
 sleep 1
 echo Actualizando-------------------------
+echo --Debian
 apt upgrade -y
+echo --Libreoffice
+/opt/install-libreoffice-from-web/setup.sh
 echo Listo -------------------------------
 sleep 5'                                                             > ${ROOTFS}/usr/local/bin/actualizar
 
