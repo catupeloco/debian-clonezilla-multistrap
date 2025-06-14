@@ -626,6 +626,8 @@ echo "Entering chroot ---------------------------------------------"
 	cd /opt
 	echo nameserver 8.8.8.8 > /etc/resolv.conf
 	git clone https://github.com/catupeloco/install-libreoffice-from-web
+	chmod +x /opt/install-libreoffice-from-web/setup.sh
+	rm /etc/resolv.conf
         wait $pid_LO
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
         echo ------LibreOffice \$VERSION_LO installation done.
