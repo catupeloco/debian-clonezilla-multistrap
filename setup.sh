@@ -1,4 +1,5 @@
 #!/bin/bash
+reset # Re-Set terminal for multiple runs
 set -e # Exit on error
 
 echo "Installing dependencies for this script ---------------------"
