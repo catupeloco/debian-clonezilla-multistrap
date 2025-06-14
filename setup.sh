@@ -599,9 +599,9 @@ echo "Entering chroot ---------------------------------------------"
 	
 	echo ---Enabling virtual-networks
 	/usr/sbin/libvirtd & 		>/dev/null 2>&1
-	virsh net-list
+	#virsh net-list
 	virsh net-autostart default	>/dev/null 2>&1
-	virsh net-list
+	#virsh net-list
 	pkill libvirtd			>/dev/null 2>&1
 
 	echo ---Adding virtual-networks to kernel modules
@@ -625,7 +625,7 @@ echo "Entering chroot ---------------------------------------------"
 	echo -----Cloning script for future updates
 	cd /opt
 	echo nameserver 8.8.8.8 > /etc/resolv.conf
-	git clone https://github.com/catupeloco/install-libreoffice-from-web
+	git clone https://github.com/catupeloco/install-libreoffice-from-web >/dev/null
 	chmod +x /opt/install-libreoffice-from-web/setup.sh
 	rm /etc/resolv.conf
         wait $pid_LO
