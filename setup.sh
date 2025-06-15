@@ -141,7 +141,7 @@ ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
 DEBIAN_VERSION=bookworm
-INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports"
+INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
 
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
@@ -335,7 +335,7 @@ echo "Downloading Libreoffice -------------------------------------"
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 	tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 
-
+<<'BYPASS'
 echo "Downloading Wifi Drivers ------------------------------------"
 	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
 	cd ${CACHE_FOLDER}/firmware
@@ -365,7 +365,7 @@ set +e
 	mkdir -p ${ROOTFS}/lib/firmware/ 2>/dev/null || true
 	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
 set -e
-
+BYPASS
 echo "Downloading lastest clonezilla ------------------------------"
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
 	echo "---Downloading from ${MIRROR_CLONEZILLA}"
@@ -469,7 +469,7 @@ components=main contrib non-free non-free-firmware
 packages=${INCLUDES_BACKPORTS}
 source=${REPOSITORY_DEB}
 suite=${DEBIAN_VERSION}-backports
-components=main
+components=main non-free-firmware
 noauth=true
 
 [GoogleChrome]
