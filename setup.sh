@@ -168,8 +168,8 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 		- Unattended upgrades.
 		- Optional : encrypted home.
         - Backport kernel for newer HW compatibility.
+        - Backport Wifi drivers.
 	- External latest :
-		- Wifi drivers.
 		- Libreoffice.
 		- Google Chrome. 
 		- Clonezilla recovery.
