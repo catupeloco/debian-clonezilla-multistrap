@@ -813,10 +813,10 @@ echo "Encrypted user script creation ------------------------------"
 	echo Adding local user -------------------------------------------
         read -p \"What username do you want for local_encrypted_user ?: \" username
         sudo useradd -d /home/\$username -c local_encrypted_user -m -s /bin/bash \$username
-        sudo useradd adduser \$username updates
-        sudo useradd adduser \$username kvm
-        sudo useradd adduser \$username libvirt
-        sudo useradd adduser \$username libvirt-qemu
+        sudo adduser \$username updates
+        sudo adduser \$username kvm
+        sudo adduser \$username libvirt
+        sudo adduser \$username libvirt-qemu
         
         sudo passwd \$username
         if [ \"\$?\" != \"0\" ] ; then echo Please repeat the password....; sudo passwd \$username ; fi
