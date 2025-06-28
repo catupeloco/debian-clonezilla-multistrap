@@ -547,6 +547,13 @@ echo "Setting Keyboard --------------------------------------------"
 	echo "---For everything else"
 	echo 'XKBLAYOUT="latam"' > ${ROOTFS}/etc/default/keyboard
 
+echo "Fixing nm-applet from empty icon bug ------------------------"
+	echo --Before
+	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
+	sed -i '/^Exec=/c\Exec=nm-applet --indicator' ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
+	echo --After
+	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop
+
 echo "Creating recovery -------------------------------------------"
 echo '#!/bin/sh
 exec tail -n +3 $0
