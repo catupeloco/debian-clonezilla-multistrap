@@ -493,6 +493,7 @@ components=non-free
 noauth=true" > ${CACHE_FOLDER}/multistrap.conf
 
 echo "---Running multistrap"
+        mount --bind /proc ${ROOTFS}/proc
         SILENCE="Warning: unrecognised value 'no' for Multi-Arch field in|multistrap-googlechrome.list"
         set +e ####################################################
 	multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
@@ -581,7 +582,6 @@ echo "Getting ready for chroot ------------------------------------"
 	echo "---Mounting pseudo-filesystems"
         mount --bind /dev ${ROOTFS}/dev
         mount -t devpts /dev/pts ${ROOTFS}/dev/pts
-        mount --bind /proc ${ROOTFS}/proc
         mount --bind /run  ${ROOTFS}/run
         mount -t sysfs sysfs ${ROOTFS}/sys
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
