@@ -493,7 +493,9 @@ components=non-free
 noauth=true" > ${CACHE_FOLDER}/multistrap.conf
 
 echo "---Running multistrap"
-        mount --bind /proc ${ROOTFS}/proc
+	mkdir ${ROOTFS}/proc  2>/dev/null || true
+	umount ${ROOTFS}/proc 2>/dev/null || true
+        mount --bind /proc ${ROOTFS}/proc || true
         SILENCE="Warning: unrecognised value 'no' for Multi-Arch field in|multistrap-googlechrome.list"
         set +e ####################################################
 	multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
