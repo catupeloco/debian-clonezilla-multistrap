@@ -99,7 +99,7 @@ eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
 apt initramfs-tools zstd gnupg systemd dkms \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
-xfce4 xorg dbus-x11 gvfs cups system-config-printer thunar-volman synaptic xarchiver vlc flameshot mousepad \
+xfce4 xorg dbus-x11 gvfs cups system-config-printer thunar-volman synaptic xarchiver vlc flameshot mousepad lm-sensors \
 xfce4-battery-plugin       xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfce4-cpugraph-plugin    xfce4-datetime-plugin    xfce4-diskperf-plugin \
 xfce4-fsguard-plugin       xfce4-genmon-plugin      xfce4-mailwatch-plugin   xfce4-netload-plugin     xfce4-places-plugin      xfce4-sensors-plugin  \
 xfce4-smartbookmark-plugin xfce4-systemload-plugin  xfce4-timer-plugin       xfce4-verve-plugin       xfce4-wavelan-plugin     xfce4-weather-plugin  \
@@ -124,13 +124,13 @@ firmware-libertas atmel-firmware dahdi-firmware-nonfree dfu-util dnsmasq-base \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio firmware-intel-sound \
 ${BOOT_PACKAGES}  \
-grub2-common grub-efi grub-efi-amd64 \
+grub2-common grub-efi grub-efi-amd64 os-prober \
 ${FIREFOX_AND_CHROME_DEPENDENCIES}  \
 fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 firefox-esr \
 ${LANGUAGE_PACKAGES}  \
 console-data console-setup locales \
 ${SPANISH} \
-aspell-es task-spanish task-spanish-desktop qterminal-l10n firefox-esr-l10n-es-ar \
+aspell-es task-spanish task-spanish-desktop qterminal-l10n firefox-esr-l10n-es-ar ispanish wspanish \
 ${ENCRYPTION_PACKAGES}  \
 ecryptfs-utils rsync lsof cryptsetup \
 ${LIBREOFFICE_DEPENDENCIES}  \
