@@ -124,7 +124,7 @@ firmware-libertas atmel-firmware dahdi-firmware-nonfree dfu-util dnsmasq-base \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio firmware-intel-sound \
 ${BOOT_PACKAGES}  \
-grub2-common grub-efi grub-efi-amd64 os-prober \
+grub2-common grub-efi grub-efi-amd64 \
 ${FIREFOX_AND_CHROME_DEPENDENCIES}  \
 fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 firefox-esr \
 ${LANGUAGE_PACKAGES}  \
@@ -145,7 +145,7 @@ ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
 
-#aspell-es aspell
+#aspell-es aspell os-prober
 
 DEBIAN_VERSION=bookworm
 INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports"
