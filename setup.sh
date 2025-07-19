@@ -117,7 +117,7 @@ ${NETWORK_PACKAGES_AND_DRIVERS} \
 amd64-microcode	atmel-firmware	bind9-host		blueman	bluetooth		bluez			bluez-firmware 		\
 dahdi-firmware-nonfree		dfu-util		dnsmasq-base			ethtool			firmware-amd-graphics	firmware-ast \
 firmware-ath9k-htc		firmware-atheros	firmware-bnx2			firmware-bnx2x		firmware-brcm80211 	\
-firmware-cavium			firmware-ipw2x00	firmware-ivtv			firmware-libertas	firmware-linux-free 	\
+firmware-cavium			                	             			firmware-libertas	firmware-linux-free 	\
 firmware-linux-nonfree		firmware-misc-nonfree	firmware-myricom		firmware-netronome 				\
 firmware-netxen			firmware-qlogic		firmware-realtek-rtl8723cs-bt	firmware-siano					\
 firmware-sof-signed		firmware-tomu		firmware-zd1211			hdmi2usb-fx2-firmware	ifupdown		\
@@ -132,7 +132,7 @@ fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 firefox-esr \
 ${LANGUAGE_PACKAGES}  \
 console-data console-setup locales \
 ${SPANISH} \
-task-spanish task-spanish-desktop qterminal-l10n firefox-esr-l10n-es-ar ispanish wspanish \
+task-spanish task-spanish-desktop qterminal-l10n firefox-esr-l10n-es-ar \
 ${ENCRYPTION_PACKAGES}  \
 ecryptfs-utils rsync lsof cryptsetup \
 ${LIBREOFFICE_DEPENDENCIES}  \
@@ -147,7 +147,7 @@ ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
 
-#aspell-es aspell os-prober
+#aspell-es aspell os-prober firmware-ipw2x00 firmware-ivtv ispanish wspanish
 
 DEBIAN_VERSION=bookworm
 INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports"
