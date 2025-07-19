@@ -110,7 +110,7 @@ fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liber
 fonts-symbola fonts-urw-base35 gsfonts arc-theme \
 task-xfce-desktop task-ssh-server task-laptop qterminal \
 ${COMMANDLINE_TOOLS} \
-sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils fdisk file git zenity build-essential gcc \
+sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils fdisk file git zenity build-essential \
 ${CRON_TOOLS} \
 anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
