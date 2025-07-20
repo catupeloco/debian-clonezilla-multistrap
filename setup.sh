@@ -512,7 +512,7 @@ echo "---Running multistrap"
                 done
 		echo "---Running multistrap AGAIN"
 		rm -rf ${ROOTFS}/var/lib/dpkg
-		set -e ############################################
+		#set -e ############################################
 		multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
 	fi
 	set -e ####################################################
