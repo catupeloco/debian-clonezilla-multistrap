@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-1611
+SCRIPT_DATE=20250824-1612
 reset # Re-Set terminal for multiple runs
 set -e # Exit on error
 
