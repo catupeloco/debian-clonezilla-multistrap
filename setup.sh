@@ -141,16 +141,20 @@ ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 ${PLASMA_DISCOVER} \
 plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd \
-${VIRTUALIZATION_PACKAGES}  \
-qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virtinst libvirt-daemon virt-manager \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
+#${VIRTUALIZATION_PACKAGES}  \
+#qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virtinst libvirt-daemon virt-manager \
 
 
 #aspell-es aspell os-prober firmware-ipw2x00 firmware-ivtv ispanish wspanish
 
 DEBIAN_VERSION=bookworm
-INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports"
+INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports \
+                      qemu-system-x86/${DEBIAN_VERSION}-backports      qemu-utils/${DEBIAN_VERSION}-backports \
+                libvirt-daemon-system/${DEBIAN_VERSION}-backports libvirt-clients/${DEBIAN_VERSION}-backports \
+                         bridge-utils/${DEBIAN_VERSION}-backports        virtinst/${DEBIAN_VERSION}-backports \
+		       libvirt-daemon/${DEBIAN_VERSION}-backports    virt-manager/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
 
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
@@ -172,12 +176,12 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 	- Debian ${DEBIAN_VERSION} with :
 		- XFCE.
 		- Firefox ESR.
-		- Virtual Machine Manager (KVM/QEMU).
 		- OBS Studio.
 		- Unattended upgrades.
 		- Optional : encrypted home.
         - Backport kernel for newer HW compatibility.
         - Backport Wifi drivers.
+        - Backport Virtual Machine Manager (KVM/QEMU).
 	- External latest :
 		- Libreoffice.
 		- Google Chrome. 
