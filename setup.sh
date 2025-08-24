@@ -1,20 +1,21 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-2011
+SCRIPT_DATE=20250824-2013
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
 set -e # Exit on error
 
 echo "Installing dependencies for this script ---------------------"
-	MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
+	#MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
 	cd /tmp
         apt update							 >/dev/null 2>&1
 	apt install --fix-broken -y					 >/dev/null 2>&1
         apt install dosfstools parted gnupg2 unzip \
 		             wget curl openssh-server -y		 >/dev/null 2>&1
+	apt install -y mmdebstrap					 >/dev/null 2>&1
 	systemctl start sshd						 >/dev/null 2>&1
-	wget --show-progress -qcN -O /tmp/multistrap.deb ${MULTISTRAP_URL}
-	apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
+	#wget --show-progress -qcN -O /tmp/multistrap.deb ${MULTISTRAP_URL}
+	#apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
 
 #####################################################################################################
 #Selections
