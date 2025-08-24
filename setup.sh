@@ -141,6 +141,8 @@ ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 ${PLASMA_DISCOVER} \
 plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd \
+${VIRTUALIZATION_PACKAGES}  \
+bridge-utils virtinst virt-manager \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 #${VIRTUALIZATION_PACKAGES}  \
@@ -153,8 +155,7 @@ DEBIAN_VERSION=bookworm
 INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports \
                       qemu-system-x86/${DEBIAN_VERSION}-backports      qemu-utils/${DEBIAN_VERSION}-backports \
                 libvirt-daemon-system/${DEBIAN_VERSION}-backports libvirt-clients/${DEBIAN_VERSION}-backports \
-                         bridge-utils/${DEBIAN_VERSION}-backports        virtinst/${DEBIAN_VERSION}-backports \
-		       libvirt-daemon/${DEBIAN_VERSION}-backports    virt-manager/${DEBIAN_VERSION}-backports"
+                       libvirt-daemon/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
 
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
