@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-1935
+SCRIPT_DATE=20250824-2011
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -141,15 +141,15 @@ ${ENCRYPTION_PACKAGES}  \
 ecryptfs-utils rsync lsof cryptsetup \
 ${LIBREOFFICE_DEPENDENCIES}  \
 libxslt1.1 git \
+${PLASMA_DISCOVER} \
+plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd \
 ${UNATTENDED_UPGRADES_PACKAGES}  \
-unattended-upgrades apt-utils apt-listchanges \
+unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 ${VIRTUALIZATION_PACKAGES}  \
 qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virtinst libvirt-daemon virt-manager \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
-#${PLASMA_DISCOVER} \
-#plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd \
 #firmware-tomu			firmware-zd1211		hdmi2usb-fx2-firmware		ifupdown		\
 #firmware-netxen			firmware-qlogic		firmware-realtek-rtl8723cs-bt	firmware-siano					\
 #firmware-zd1211			hdmi2usb-fx2-firmware	ifupdown			intel-microcode		iproute2		\
@@ -435,6 +435,7 @@ sed -i 's/%%KEYBOARD%%/'$CLONEZILLA_KEYBOARD'/g' ${RECOVERYFS}/boot/grub/grub.cf
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/boot/grub/grub.cfg
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
+<<'BYEBYEMULTISTRAP'
 echo "Multistrap --------------------------------------------------"
 echo "---Creating configuration file"
 echo "[General]
@@ -502,15 +503,17 @@ echo "---Running multistrap"
         if [ -f ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list ] ; then
                 rm ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
         fi
-
+BYEBYEMULTISTRAP
 # TODO: Next big change migration to mmdebstrap for multistrap discontinuation :( SAD FACE	
-# mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory \
-#                --include="${INCLUDES_DEB}"                    "${DEBIAN_VERSION}" "${ROOTFS}" \
-#  "deb [trusted=yes] http://deb.debian.org/debian               ${DEBIAN_VERSION}           main contrib non-free" \
-#  "deb [trusted=yes] http://security.debian.org/debian-security ${DEBIAN_VERSION}-security  main contrib non-free" \
-#  "deb [trusted=yes] http://deb.debian.org/debian               ${DEBIAN_VERSION}-updates   main contrib non-free" \
-#  "deb [trusted=yes] http://deb.debian.org/debian               ${DEBIAN_VERSION}-backports main" \
-#  "deb [arch=amd64]  https://dl.google.com/linux/chrome/deb/    stable                      main"
+ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory \
+                --include="${INCLUDES_DEB} spotify-client google-chrome-stable" \
+			   "${DEBIAN_VERSION}" "${ROOTFS}" \
+  "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}           main contrib non-free" \
+  "deb [trusted=yes] http://security.debian.org/debian-security ${DEBIAN_VERSION}-security  main contrib non-free" \
+  "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}-updates   main contrib non-free" \
+  "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}-backports main" \
+  "deb [arch=amd64]  ${CHROME_REPOSITORY}                       stable                      main" \
+  "deb [trusted=yes] ${SPOTIFY_REPOSITORY}			stable			    non-free"
 
 echo "Setting build date in hostname and filesystem ---------------"
         echo "127.0.0.1       localhost"                     > ${ROOTFS}/etc/hosts
