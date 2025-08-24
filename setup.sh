@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-1919
+SCRIPT_DATE=20250824-1934
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -156,8 +156,8 @@ ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubunt
 #unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 #aspell-es aspell os-prober firmware-ipw2x00 firmware-ivtv ispanish wspanish
 
-DEBIAN_VERSION=bookworm
-#DEBIAN_VERSION=trixie
+#DEBIAN_VERSION=bookworm
+DEBIAN_VERSION=trixie
 #INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
 
