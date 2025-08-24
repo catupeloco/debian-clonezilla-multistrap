@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-2015
+SCRIPT_DATE=20250824-2016
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -12,7 +12,7 @@ echo "Installing dependencies for this script ---------------------"
 	apt install --fix-broken -y					 >/dev/null 2>&1
         apt install dosfstools parted gnupg2 unzip \
 		             wget curl openssh-server -y		 >/dev/null 2>&1
-	apt install mmdebstrap	-y					 >/dev/null 2>&1
+	apt install mmdebstrap	-y					 #>/dev/null 2>&1
 	systemctl start sshd						 >/dev/null 2>&1
 	#wget --show-progress -qcN -O /tmp/multistrap.deb ${MULTISTRAP_URL}
 	#apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
