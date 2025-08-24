@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-1616
+SCRIPT_DATE=20250824-1618
 reset # Re-Set terminal for multiple runs
 set -e # Exit on error
 
@@ -122,7 +122,7 @@ firmware-ath9k-htc		firmware-atheros	firmware-bnx2			firmware-bnx2x		firmware-br
 firmware-cavium			                	             			firmware-libertas	firmware-linux-free 	\
 firmware-linux-nonfree		firmware-misc-nonfree	firmware-myricom		firmware-netronome 				\
 firmware-netxen			firmware-qlogic		firmware-siano 			firmware-sof-signed				\
-firmware-zd1211			hdmi2usb-fx2-firmware	ifupdown			intel-microcode		iproute2		\
+firmware-zd1211			ifupdown		intel-microcode			iproute2					\
 iputils-ping			isc-dhcp-client		network-manager			network-manager-gnome 				\
 powermgmt-base			util-linux		wpasupplicant			xfce4-power-manager	xfce4-power-manager-plugins \
 ${AUDIO_PACKAGES} \
@@ -150,6 +150,7 @@ ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubunt
 
 #firmware-tomu			firmware-zd1211		hdmi2usb-fx2-firmware		ifupdown		\
 #firmware-netxen			firmware-qlogic		firmware-realtek-rtl8723cs-bt	firmware-siano					\
+#firmware-zd1211			hdmi2usb-fx2-firmware	ifupdown			intel-microcode		iproute2		\
 #unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 #aspell-es aspell os-prober firmware-ipw2x00 firmware-ivtv ispanish wspanish
 
