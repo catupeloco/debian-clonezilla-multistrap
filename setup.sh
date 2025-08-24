@@ -114,6 +114,7 @@ sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils f
 ${CRON_TOOLS} \
 anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
+firmware-iwlwifi \
 amd64-microcode	atmel-firmware	bind9-host		blueman	bluetooth		bluez			bluez-firmware 		\
 dahdi-firmware-nonfree		dfu-util		dnsmasq-base			ethtool			firmware-amd-graphics	firmware-ast \
 firmware-ath9k-htc		firmware-atheros	firmware-bnx2			firmware-bnx2x		firmware-brcm80211 	\
@@ -149,9 +150,9 @@ ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubunt
 
 #aspell-es aspell os-prober firmware-ipw2x00 firmware-ivtv ispanish wspanish
 
-DEBIAN_VERSION=bookworm
+#DEBIAN_VERSION=bookworm
+DEBIAN_VERSION=trixie
 #INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports"
-INCLUDES_BACKPORTS="firmware-iwlwifi/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
 
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
@@ -176,15 +177,16 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 		- OBS Studio.
 		- Unattended upgrades.
 		- Optional : encrypted home.
-        - Backport kernel for newer HW compatibility.
-        - Backport Wifi drivers.
-        - Backport Virtual Machine Manager (KVM/QEMU).
+        	- Virtual Machine Manager (KVM/QEMU).
+        	- Wifi drivers.
 	- External latest :
 		- Libreoffice.
 		- Google Chrome. 
 		- Clonezilla recovery.
 		- Spotify.
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %"
+#        - Backport kernel for newer HW compatibility.
+#        - Backport Wifi drivers.
 
 echo "To Follow extra details use: 
 	tail -F $LOG or Ctrl + Alt + F2
@@ -465,8 +467,10 @@ directory=${ROOTFS}
 cleanup=false
 unpack=true
 omitdebsrc=true
-bootstrap=Debian GoogleChrome Backports Spotify
-aptsources=Debian Spotify Backports
+#bootstrap=Debian GoogleChrome Backports Spotify
+#aptsources=Debian Spotify Backports
+bootstrap=Debian GoogleChrome Spotify
+aptsources=Debian Spotify
 
 [Debian]
 packages=${INCLUDES_DEB}
@@ -475,12 +479,12 @@ keyring=debian-archive-keyring
 suite=${DEBIAN_VERSION}
 components=main contrib non-free non-free-firmware
 
-[Backports]
-packages=${INCLUDES_BACKPORTS}
-source=${REPOSITORY_DEB}
-suite=${DEBIAN_VERSION}-backports
-components=main non-free-firmware
-noauth=true
+#[Backports]
+#packages=${INCLUDES_BACKPORTS}
+#source=${REPOSITORY_DEB}
+#suite=${DEBIAN_VERSION}-backports
+#components=main non-free-firmware
+#noauth=true
 
 [GoogleChrome]
 arch=amd64
