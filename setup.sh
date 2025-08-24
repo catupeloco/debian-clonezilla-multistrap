@@ -764,11 +764,11 @@ sleep 30'                         > ${ROOTFS}/usr/local/bin/status
 
 
 	echo "---Repositories for testing scripts"
-	echo 'deb [arch=amd64] http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
-deb-src http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware'                                > ${ROOTFS}/root/new.list
+	echo 'deb [arch=amd64] http://deb.debian.org/debian/ $DEBIAN_VERSION main contrib non-free non-free-firmware
+deb-src http://deb.debian.org/debian/ $DEBIAN_VERSION main contrib non-free non-free-firmware'                                > ${ROOTFS}/root/new.list
 
-	echo 'deb [arch=amd64] https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware
-deb-src https://snapshot.debian.org/archive/debian/20250101T023759Z/ bookworm main contrib non-free non-free-firmware' > ${ROOTFS}/root/old.list
+	echo 'deb [arch=amd64] https://snapshot.debian.org/archive/debian/20250101T023759Z/ $DEBIAN_VERSION main contrib non-free non-free-firmware
+deb-src https://snapshot.debian.org/archive/debian/20250101T023759Z/ $DEBIAN_VERSION main contrib non-free non-free-firmware' > ${ROOTFS}/root/old.list
 
 	echo "---Sudoers file for testing scripts"
 	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
