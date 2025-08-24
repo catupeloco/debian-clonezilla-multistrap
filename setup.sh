@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-1612
+SCRIPT_DATE=20250824-1616
 reset # Re-Set terminal for multiple runs
 set -e # Exit on error
 
@@ -351,37 +351,6 @@ echo "Downloading Libreoffice -------------------------------------"
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 	tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 
-<<'BYPASS'
-echo "Downloading Wifi Drivers ------------------------------------"
-	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
-	cd ${CACHE_FOLDER}/firmware
-set +e
-	echo ---Building list
-	mapfile -t files < <(curl -s $WIFI_URL | grep iwlwifi | grep href | cut -d \' -f 2 | grep -v LICENCE)
-
-	total=${#files[@]}
-	done_count=0
-
-	show_progress() {
-	  percent=$(( done_count * 100 / total ))
-	  echo -ne "---Downloading: ${percent}%      (${done_count}/${total})\r"
-	}
-	
-	for line in "${files[@]}"; do
-	  wget -qc "${WIFI_DOMAIN}/${line}" &
-	  while [[ $(jobs -rp | wc -l) -ge $WIFI_MAX_PARALLEL ]]; do
-		sleep 0.1
-		show_progress
-	  done
-	  done_count=$((done_count + 1))
-	  show_progress
-	done
-	
-	echo -e "\n---Download complete"
-	mkdir -p ${ROOTFS}/lib/firmware/ 2>/dev/null || true
-	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
-set -e
-BYPASS
 echo "Downloading lastest clonezilla ------------------------------"
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
 	echo "---Downloading from ${MIRROR_CLONEZILLA}"
@@ -877,3 +846,37 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}"
+
+
+<<'BYPASS'
+
+echo "Downloading Wifi Drivers ------------------------------------"
+	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
+	cd ${CACHE_FOLDER}/firmware
+set +e
+	echo ---Building list
+	mapfile -t files < <(curl -s $WIFI_URL | grep iwlwifi | grep href | cut -d \' -f 2 | grep -v LICENCE)
+
+	total=${#files[@]}
+	done_count=0
+
+	show_progress() {
+	  percent=$(( done_count * 100 / total ))
+	  echo -ne "---Downloading: ${percent}%      (${done_count}/${total})\r"
+	}
+	
+	for line in "${files[@]}"; do
+	  wget -qc "${WIFI_DOMAIN}/${line}" &
+	  while [[ $(jobs -rp | wc -l) -ge $WIFI_MAX_PARALLEL ]]; do
+		sleep 0.1
+		show_progress
+	  done
+	  done_count=$((done_count + 1))
+	  show_progress
+	done
+	
+	echo -e "\n---Download complete"
+	mkdir -p ${ROOTFS}/lib/firmware/ 2>/dev/null || true
+	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
+set -e
+BYPASS
