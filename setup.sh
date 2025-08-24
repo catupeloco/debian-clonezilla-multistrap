@@ -120,9 +120,9 @@ dahdi-firmware-nonfree		dfu-util		dnsmasq-base			ethtool			firmware-amd-graphics
 firmware-ath9k-htc		firmware-atheros	firmware-bnx2			firmware-bnx2x		firmware-brcm80211 	\
 firmware-cavium			                	             			firmware-libertas	firmware-linux-free 	\
 firmware-linux-nonfree		firmware-misc-nonfree	firmware-myricom		firmware-netronome 				\
-firmware-netxen			firmware-qlogic		firmware-siano 			firmware-sof-signed	\
-firmware-tomu			firmware-zd1211		hdmi2usb-fx2-firmware		ifupdown		\
-intel-microcode			iproute2		iputils-ping			isc-dhcp-client		network-manager		network-manager-gnome \
+firmware-netxen			firmware-qlogic		firmware-siano 			firmware-sof-signed				\
+firmware-zd1211			hdmi2usb-fx2-firmware	ifupdown			intel-microcode		iproute2		\
+iputils-ping			isc-dhcp-client		network-manager			network-manager-gnome 				\
 powermgmt-base			util-linux		wpasupplicant			xfce4-power-manager	xfce4-power-manager-plugins \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio firmware-intel-sound \
@@ -147,6 +147,7 @@ qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils vi
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
+#firmware-tomu			firmware-zd1211		hdmi2usb-fx2-firmware		ifupdown		\
 #firmware-netxen			firmware-qlogic		firmware-realtek-rtl8723cs-bt	firmware-siano					\
 #unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 #aspell-es aspell os-prober firmware-ipw2x00 firmware-ivtv ispanish wspanish
