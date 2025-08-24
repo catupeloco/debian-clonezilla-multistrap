@@ -1,4 +1,5 @@
 #!/bin/bash
+SCRIPT_DATE=20250824-1609
 reset # Re-Set terminal for multiple runs
 set -e # Exit on error
 
@@ -186,7 +187,8 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 		- Google Chrome. 
 		- Clonezilla recovery.
 		- Spotify.
-	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %"
+	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
+	Script Version=${SCRIPT_DATE=20250824-1609
 #        - Backport kernel for newer HW compatibility.
 #        - Backport Wifi drivers.
 
