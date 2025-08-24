@@ -97,7 +97,7 @@ eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 
 # NOTE: Fictional variables below are only for title proposes ########################################
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
-apt initramfs-tools zstd gnupg systemd \
+apt initramfs-tools zstd gnupg systemd linux-image-amd64 \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
 xfce4 xorg dbus-x11 gvfs cups system-config-printer thunar-volman synaptic xarchiver vlc flameshot mousepad lm-sensors \
 xfce4-battery-plugin       xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfce4-cpugraph-plugin    xfce4-datetime-plugin    xfce4-diskperf-plugin \
@@ -142,20 +142,16 @@ unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
 ${PLASMA_DISCOVER} \
 plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd \
 ${VIRTUALIZATION_PACKAGES}  \
-bridge-utils virtinst virt-manager \
+qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virtinst libvirt-daemon virt-manager \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
-#${VIRTUALIZATION_PACKAGES}  \
-#qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virtinst libvirt-daemon virt-manager \
 
 
 #aspell-es aspell os-prober firmware-ipw2x00 firmware-ivtv ispanish wspanish
 
 DEBIAN_VERSION=bookworm
-INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports \
-                      qemu-system-x86/${DEBIAN_VERSION}-backports      qemu-utils/${DEBIAN_VERSION}-backports \
-                libvirt-daemon-system/${DEBIAN_VERSION}-backports libvirt-clients/${DEBIAN_VERSION}-backports \
-                       libvirt-daemon/${DEBIAN_VERSION}-backports"
+#INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports"
+INCLUDES_BACKPORTS="firmware-iwlwifi/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
 
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
