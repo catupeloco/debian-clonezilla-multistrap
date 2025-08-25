@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-2016
+SCRIPT_DATE=20250824-2202
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -312,8 +312,8 @@ echo "---Resources/Cache partition"
         mkdir -vp ${CACHE_FOLDER}
         chown $SUDO_USER: -R ${CACHE_FOLDER}
 	mount ${DEVICE}4 ${CACHE_FOLDER}
-        mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1 
-        mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
+        #mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1 
+        #mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
 
 echo "---Cleaning cache packages if necesary"
 if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; then
