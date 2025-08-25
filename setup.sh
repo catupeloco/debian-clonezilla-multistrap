@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-2217
+SCRIPT_DATE=20250824-2220
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -509,7 +509,6 @@ BYEBYEMULTISTRAP
  mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory \
                 --include="${INCLUDES_DEB} spotify-client google-chrome-stable" \
       		--customize-hook='chroot "$1" bash -c "mkdir -p /usr/share/keyrings && curl -fsSL ${CHROME_KEY} | gpg --dearmor > /usr/share/keyrings/google.gpg"' \
-
 			   "${DEBIAN_VERSION}" "${ROOTFS}" \
   "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}           main contrib non-free" \
   "deb [trusted=yes] http://security.debian.org/debian-security ${DEBIAN_VERSION}-security  main contrib non-free" \
