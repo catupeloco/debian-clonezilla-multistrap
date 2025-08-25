@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-2202
+SCRIPT_DATE=20250824-2207
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -326,7 +326,7 @@ if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ;
         	do rm -v ${CACHE_FOLDER}/${line}* 
 		done
 	fi
-
+<<'BYEBYEKEYRINGS'
 echo "Downloading keyrings ----------------------------------------"
         echo ---Creating Directories in ${ROOTFS}
         mkdir -p ${ROOTFS}/etc/apt/sources.list.d/
@@ -341,7 +341,7 @@ echo "Downloading keyrings ----------------------------------------"
 	echo "---Spotify"
 	curl -sS ${SPOTIFY_KEYS} | gpg --dearmor --yes -o ${ROOTFS}/etc/apt/trusted.gpg.d/spotify.gpg
 	echo "deb ${SPOTIFY_REPOSITORY} stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
-
+BYEBYEKEYRINGS
 echo "Downloading keyboard mappings -------------------------------"
 	wget --show-progress -qcN -O ${CACHE_FOLDER}/${KEYBOARD_MAPS} ${KEYBOARD_FIX_URL}${KEYBOARD_MAPS}
 
