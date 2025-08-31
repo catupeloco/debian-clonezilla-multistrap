@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-2002
+SCRIPT_DATE=20250831-2051
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -144,7 +144,7 @@ ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubunt
 DEBIAN_VERSION=trixie
 REPOSITORY_DEB="http://deb.debian.org/debian/"
   SECURITY_DEB="http://security.debian.org/debian-security"
-  SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250101T023759Z/"
+  SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250701T022643Z/"
 
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
 CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
