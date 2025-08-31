@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250830-2145
+SCRIPT_DATE=20250830-2209
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -118,14 +118,13 @@ sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils f
 ${CRON_TOOLS} \
 anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
-firmware-iwlwifi \
-amd64-microcode	atmel-firmware	bind9-host		blueman	bluetooth		bluez			bluez-firmware 		\
-dahdi-firmware-nonfree		dfu-util		dnsmasq-base			ethtool			firmware-amd-graphics	firmware-ast \
-firmware-ath9k-htc		firmware-atheros	firmware-bnx2			firmware-bnx2x		firmware-brcm80211 	\
-firmware-cavium			                	             			firmware-libertas	firmware-linux-free 	\
-firmware-linux-nonfree		firmware-misc-nonfree	firmware-myricom		firmware-netronome 				\
+atmel-firmware	bind9-host	blueman	bluetooth	bluez		bluez-firmware 		\
+dahdi-firmware-nonfree		dfu-util		dnsmasq-base	ethtool		firmware-ast \
+firmware-ath9k-htc		firmware-brcm80211 	\
+firmware-cavium			firmware-libertas	firmware-linux-free 	\
+firmware-myricom		firmware-netronome 	\
 firmware-netxen			firmware-qlogic		firmware-siano 			firmware-sof-signed				\
-firmware-zd1211			ifupdown		intel-microcode			iproute2					\
+firmware-zd1211			ifupdown		iproute2					\
 iputils-ping			isc-dhcp-client		network-manager			network-manager-gnome 				\
 powermgmt-base			util-linux		wpasupplicant			xfce4-power-manager	xfce4-power-manager-plugins \
 ${AUDIO_PACKAGES} \
@@ -145,7 +144,7 @@ libxslt1.1 git \
 ${PLASMA_DISCOVER} \
 plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd \
 ${UNATTENDED_UPGRADES_PACKAGES}  \
-unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
+unattended-upgrades apt-utils apt-listchanges \
 ${VIRTUALIZATION_PACKAGES}  \
 qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virtinst libvirt-daemon virt-manager \
 ${OBS_STUDIO} \
@@ -293,10 +292,10 @@ if [ "$REPARTED" == "yes" ] ; then
 fi
 
 echo "Formating partitions ----------------------------------------"
-[ "$REPARTED" == yes ] && mkfs.vfat -n EFI        ${DEVICE}1    #> /dev/null 2>&1
-[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES  ${DEVICE}4    #> /dev/null 2>&1
-		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2    #> /dev/null 2>&1
-			  mkfs.ext4 -L LINUX      ${DEVICE}3    #> /dev/null 2>&1
+[ "$REPARTED" == yes ] && mkfs.vfat -n EFI        ${DEVICE}1    > /dev/null 2>&1
+[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES  ${DEVICE}4    > /dev/null 2>&1
+		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2    > /dev/null 2>&1
+			  mkfs.ext4 -L LINUX      ${DEVICE}3    > /dev/null 2>&1
 
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
