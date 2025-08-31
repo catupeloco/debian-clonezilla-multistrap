@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1852
+SCRIPT_DATE=20250831-1938
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -144,6 +144,7 @@ ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubunt
 DEBIAN_VERSION=trixie
 REPOSITORY_DEB="http://deb.debian.org/debian/"
   SECURITY_DEB="http://security.debian.org/debian-security"
+  SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250101T023759Z/"
 
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
 CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
@@ -428,12 +429,19 @@ echo "Running mmdebstrap ------------------------------------------"
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} spotify-client google-chrome-stable" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
-	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free" \
-	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free" \
-	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free" \
-	"deb [trusted=yes] ${CHROME_REPOSITORY}                           stable main"           \
-	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable non-free"       \
+	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free-firmware" \
+	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free-firmware" \
+	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free-firmware" \
+	"deb [trusted=yes] ${CHROME_REPOSITORY}                           stable main"                    \
+	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable non-free"                \
         > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
+
+
+echo "Splitting sources.list's in sources.list.d ------------------"
+	grep debian  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/debian.list
+	grep chrome  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
+	grep spotify ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
+	rm ${ROOTFS}/etc/apt/sources.list 
 
 echo "Setting build date in hostname and filesystem ---------------"
         echo "127.0.0.1       localhost"                     > ${ROOTFS}/etc/hosts
@@ -622,18 +630,19 @@ APT::Periodic::Unattended-Upgrade "1";' >  ${ROOTFS}/etc/apt/apt.conf.d/10period
 echo Obteniendo lista---------------------
 apt update
 apt list --upgradable
-sleep 1
+sleep 3
 echo Actualizando-------------------------
 echo --Debian
 apt upgrade -y
+sleep 3
 echo --Libreoffice
 /opt/install-libreoffice-from-web/setup.sh
 echo Listo -------------------------------
-sleep 5'                                                             > ${ROOTFS}/usr/local/bin/actualizar
+sleep 10'                                                             > ${ROOTFS}/usr/local/bin/actualizar
 
 	echo '#!/bin/bash
-rm /etc/apt/sources.list.d/multistrap-debian.list        &>/dev/null
-cp -p /root/old.list /etc/apt/sources.list.d/multistrap-debian.list
+rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
+cp -p /root/old.list /etc/apt/sources.list.d/debian.list
 apt remove --purge firefox-esr google-chrome-stable -y   &>/dev/null
 apt update                                               &>/dev/null
 CHROME_VERSION=131.0.6778.264-1
@@ -643,8 +652,8 @@ https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-c
 apt install firefox-esr /tmp/google-chrome-stable.deb -y &>/dev/null
 dpkg -l | grep -E "firefox-esr|chrome"
 sleep 5
-rm /etc/apt/sources.list.d/multistrap-debian.list        &>/dev/null
-cp -p /root/new.list /etc/apt/sources.list.d/multistrap-debian.list
+rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
+cp -p /root/new.list /etc/apt/sources.list.d/debian.list
 apt update                                               &>/dev/null ' > ${ROOTFS}/usr/local/bin/desactualizar
 
 	echo '#!/bin/bash 
@@ -661,11 +670,10 @@ sleep 30'                         > ${ROOTFS}/usr/local/bin/status
 
 
 	echo "---Repositories for testing scripts"
-	echo "deb [arch=amd64] http://deb.debian.org/debian/ $DEBIAN_VERSION main contrib non-free non-free-firmware
-deb-src http://deb.debian.org/debian/ $DEBIAN_VERSION main contrib non-free non-free-firmware"                                > ${ROOTFS}/root/new.list
-
-	echo "deb [arch=amd64] https://snapshot.debian.org/archive/debian/20250101T023759Z/ $DEBIAN_VERSION main contrib non-free non-free-firmware
-deb-src https://snapshot.debian.org/archive/debian/20250101T023759Z/ $DEBIAN_VERSION main contrib non-free non-free-firmware" > ${ROOTFS}/root/old.list
+	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free-firmware"  > ${ROOTFS}/root/new.list
+	echo "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free-firmware" >> ${ROOTFS}/root/new.list
+	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free-firmware" >> ${ROOTFS}/root/new.list
+        echo "deb [arch=amd64] ${SNAPSHOT_DEB} $DEBIAN_VERSION                 main contrib non-free-firmware"  > ${ROOTFS}/root/old.list
 
 	echo "---Sudoers file for testing scripts"
 	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
