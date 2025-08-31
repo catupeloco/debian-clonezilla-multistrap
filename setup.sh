@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1245
+SCRIPT_DATE=20250831-1259
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -285,10 +285,10 @@ if [ "$REPARTED" == "yes" ] ; then
 fi
 
 echo "Formating partitions ----------------------------------------"
-[ "$REPARTED" == yes ] && mkfs.vfat -n EFI        ${DEVICE}1
-[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES  ${DEVICE}4
-		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2 
-			  mkfs.ext4 -L LINUX      ${DEVICE}3 
+[ "$REPARTED" == yes ] && mkfs.vfat -n EFI        ${DEVICE}1 >/dev/null || true
+[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES  ${DEVICE}4 >/dev/null || true
+		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2 >/dev/null || true
+			  mkfs.ext4 -L LINUX      ${DEVICE}3 >/dev/null || true
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
@@ -493,7 +493,6 @@ echo "Getting ready for chroot ------------------------------------"
 
 echo "Entering chroot ---------------------------------------------"
         echo "#!/bin/bash
-	systemctl daemon-reload
         export DOWNLOAD_DIR_LO=/var/cache/apt/archives/Libreoffice
         export VERSION_LO=${VERSION_LO}
         export LO_LANG=es  # Idioma para la instalación
@@ -504,7 +503,7 @@ echo "Entering chroot ---------------------------------------------"
 
         PROC_NEEDS_UMOUNT=0
         if [ ! -e /proc/uptime ]; then
-                mount proc -t proc /proc
+                mount proc -t proc /proc 2>/dev/null
                 PROC_NEEDS_UMOUNT=1
         fi
 	
