@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1938
+SCRIPT_DATE=20250831-2002
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -429,11 +429,11 @@ echo "Running mmdebstrap ------------------------------------------"
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} spotify-client google-chrome-stable" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
-	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free-firmware" \
-	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free-firmware" \
-	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free-firmware" \
-	"deb [trusted=yes] ${CHROME_REPOSITORY}                           stable main"                    \
-	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable non-free"                \
+	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware" \
+	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" \
+	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" \
+	"deb [trusted=yes] ${CHROME_REPOSITORY}                           stable main"                             \
+	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable non-free"                         \
         > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
 
@@ -638,23 +638,30 @@ sleep 3
 echo --Libreoffice
 /opt/install-libreoffice-from-web/setup.sh
 echo Listo -------------------------------
-sleep 10'                                                             > ${ROOTFS}/usr/local/bin/actualizar
+sleep 10' > ${ROOTFS}/usr/local/bin/actualizar
 
 	echo '#!/bin/bash
+echo Asi empezamos ----------------------
+dpkg -l | grep -E "firefox-esr|chrome"
 rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
 cp -p /root/old.list /etc/apt/sources.list.d/debian.list
+echo Borramos ---------------------------
 apt remove --purge firefox-esr google-chrome-stable -y   &>/dev/null
 apt update                                               &>/dev/null
 CHROME_VERSION=131.0.6778.264-1
 wget --show-progress -qcN -O /tmp/google-chrome-stable.deb \
 https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb
 
+echo Instalamos -------------------------
 apt install firefox-esr /tmp/google-chrome-stable.deb -y &>/dev/null
+echo Asi quedamos -----------------------
 dpkg -l | grep -E "firefox-esr|chrome"
 sleep 5
 rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
 cp -p /root/new.list /etc/apt/sources.list.d/debian.list
-apt update                                               &>/dev/null ' > ${ROOTFS}/usr/local/bin/desactualizar
+apt update                                               &>/dev/null 
+apt list --upgradable
+sleep 10' > ${ROOTFS}/usr/local/bin/desactualizar
 
 	echo '#!/bin/bash 
 FOLDER=/etc/apt/apt.conf.d/ 
@@ -670,10 +677,11 @@ sleep 30'                         > ${ROOTFS}/usr/local/bin/status
 
 
 	echo "---Repositories for testing scripts"
-	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free-firmware"  > ${ROOTFS}/root/new.list
-	echo "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free-firmware" >> ${ROOTFS}/root/new.list
-	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free-firmware" >> ${ROOTFS}/root/new.list
-        echo "deb [arch=amd64] ${SNAPSHOT_DEB} $DEBIAN_VERSION                 main contrib non-free-firmware"  > ${ROOTFS}/root/old.list
+	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/new.list
+	echo "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
+	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
+        echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/old.list
+	echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/old.list
 
 	echo "---Sudoers file for testing scripts"
 	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
