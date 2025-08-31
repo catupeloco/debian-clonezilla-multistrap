@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1111
+SCRIPT_DATE=20250831-1245
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -493,6 +493,7 @@ echo "Getting ready for chroot ------------------------------------"
 
 echo "Entering chroot ---------------------------------------------"
         echo "#!/bin/bash
+	systemctl daemon-reload
         export DOWNLOAD_DIR_LO=/var/cache/apt/archives/Libreoffice
         export VERSION_LO=${VERSION_LO}
         export LO_LANG=es  # Idioma para la instalación
