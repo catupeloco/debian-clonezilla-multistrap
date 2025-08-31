@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250830-2209
+SCRIPT_DATE=20250830-2217
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -118,17 +118,10 @@ sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils f
 ${CRON_TOOLS} \
 anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
-atmel-firmware	bind9-host	blueman	bluetooth	bluez		bluez-firmware 		\
-dahdi-firmware-nonfree		dfu-util		dnsmasq-base	ethtool		firmware-ast \
-firmware-ath9k-htc		firmware-brcm80211 	\
-firmware-cavium			firmware-libertas	firmware-linux-free 	\
-firmware-myricom		firmware-netronome 	\
-firmware-netxen			firmware-qlogic		firmware-siano 			firmware-sof-signed				\
-firmware-zd1211			ifupdown		iproute2					\
-iputils-ping			isc-dhcp-client		network-manager			network-manager-gnome 				\
-powermgmt-base			util-linux		wpasupplicant			xfce4-power-manager	xfce4-power-manager-plugins \
+bind9-host blueman bluetooth bluez dfu-util dnsmasq-base ethtool firmware-ath9k-htc firmware-linux-free ifupdown iproute2 \
+iputils-ping isc-dhcp-client network-manager network-manager-gnome powermgmt-base util-linux wpasupplicant xfce4-power-manager xfce4-power-manager-plugins \
 ${AUDIO_PACKAGES} \
-pavucontrol pulseaudio firmware-intel-sound \
+pavucontrol pulseaudio \
 ${BOOT_PACKAGES}  \
 grub2-common grub-efi grub-efi-amd64 \
 ${FIREFOX_AND_CHROME_DEPENDENCIES}  \
