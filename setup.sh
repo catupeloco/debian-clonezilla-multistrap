@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1707
+SCRIPT_DATE=20250831-1715
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -429,12 +429,12 @@ echo "Running mmdebstrap ------------------------------------------"
 
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} spotify-client google-chrome-stable" "${DEBIAN_VERSION}" "${ROOTFS}" \
-                      "deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}                            main contrib non-free"                                                   \
-    --setup-hook="echo deb [trusted=yes]   ${SECURITY_DEB}     ${DEBIAN_VERSION}-security                   main contrib non-free  >  $1/etc/apt/sources.list.d/security.list"       \
-    --setup-hook="echo deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates                    main contrib non-free  >  $1/etc/apt/sources.list.d/updates.list"        \
-    --setup-hook="echo deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] ${CHROME_REPOSITORY}     stable main  >  $1/etc/apt/sources.list.d/google-chrome.list"  \
-    --setup-hook="echo deb [trusted=yes]   ${SPOTIFY_REPOSITORY}                                                  stable non-free  >  $1/etc/apt/sources.list.d/spotify.list"        \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '"${CACHE_FOLDER}"' "$1/var/cache/apt/archives"' \
+	"deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}                            main contrib non-free" \
+	"deb [trusted=yes]   ${SECURITY_DEB}     ${DEBIAN_VERSION}-security                   main contrib non-free" \
+	"deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates                    main contrib non-free" \
+	"deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] ${CHROME_REPOSITORY}     stable main" \
+	"deb [trusted=yes]   ${SPOTIFY_REPOSITORY}                                                  stable non-free" \
     > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
 echo "Setting build date in hostname and filesystem ---------------"
