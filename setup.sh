@@ -1,12 +1,11 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1808
+SCRIPT_DATE=20250831-1817
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
 set -e # Exit on error
 
 echo "Installing dependencies for this script ---------------------"
-	#MULTISTRAP_URL=http://ftp.debian.org/debian/pool/main/m/multistrap/multistrap_2.2.11_all.deb
 	cd /tmp
         apt update							 >/dev/null 2>&1
 	apt install --fix-broken -y					 >/dev/null 2>&1
@@ -14,8 +13,6 @@ echo "Installing dependencies for this script ---------------------"
 		             wget curl openssh-server -y		 >/dev/null 2>&1
 	apt install mmdebstrap	-y					 #>/dev/null 2>&1
 	systemctl start sshd						 >/dev/null 2>&1
-	#wget --show-progress -qcN -O /tmp/multistrap.deb ${MULTISTRAP_URL}
-	#apt install /tmp/multistrap.deb -y				 >/dev/null 2>&1
 
 #####################################################################################################
 #Selections
@@ -143,15 +140,8 @@ qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils vi
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
-#firmware-tomu			firmware-zd1211		hdmi2usb-fx2-firmware		ifupdown		\
-#firmware-netxen			firmware-qlogic		firmware-realtek-rtl8723cs-bt	firmware-siano					\
-#firmware-zd1211			hdmi2usb-fx2-firmware	ifupdown			intel-microcode		iproute2		\
-#unattended-upgrades apt-utils apt-listchanges software-properties-gtk \
-#aspell-es aspell os-prober firmware-ipw2x00 firmware-ivtv ispanish wspanish
 
-#DEBIAN_VERSION=bookworm
 DEBIAN_VERSION=trixie
-#INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
   SECURITY_DEB="http://security.debian.org/debian-security"
 
@@ -186,8 +176,6 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 		- Spotify.
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
 	Script Version=${SCRIPT_DATE}"
-#        - Backport kernel for newer HW compatibility.
-#        - Backport Wifi drivers.
 
 echo "To Follow extra details use: 
 	tail -F $LOG or Ctrl + Alt + F2
@@ -201,7 +189,6 @@ echo "For remote access during installation, you can connect via ssh
 echo "============================================================="
 
 echo "Inicializing logs tails -------------------------------------"
-	# TODO make symbolic link for chroot
 	touch $LOG
 	touch $ERR
 set +e
@@ -290,6 +277,7 @@ echo "Formating partitions ----------------------------------------"
 [ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES  ${DEVICE}4 >/dev/null 2>&1 || true
 		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2 >/dev/null 2>&1 || true
 			  mkfs.ext4 -L LINUX      ${DEVICE}3 >/dev/null 2>&1 || true
+
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
@@ -318,6 +306,7 @@ if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ;
         	do rm -v ${CACHE_FOLDER}/${line}* 
 		done
 	fi
+
 echo "Downloading keyboard mappings -------------------------------"
 	wget --show-progress -qcN -O ${CACHE_FOLDER}/${KEYBOARD_MAPS} ${KEYBOARD_FIX_URL}${KEYBOARD_MAPS}
 
@@ -438,7 +427,7 @@ echo "Running mmdebstrap ------------------------------------------"
 
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} spotify-client google-chrome-stable" "${DEBIAN_VERSION}" "${ROOTFS}" \
-    --setup-hook="mkdir -p $1/var/cache/apt/archives"  --setup-hook="mount --bind ${CACHE_FOLDER} $1/var/cache/apt/archives" \
+    --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind "${CACHE_FOLDER}" "$1/var/cache/apt/archives"' \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free" \
 	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free" \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free" \
