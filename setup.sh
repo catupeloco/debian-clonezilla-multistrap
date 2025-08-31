@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_DATE=20250830-2322
+SCRIPT_DATE=20250831-1043
 echo ahora $(date) script  $SCRIPT_DATE
-sleep 3
+sleep 8
 reset # Re-Set terminal for multiple runs
 set -e # Exit on error
 
@@ -415,6 +415,8 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 echo "Running mmdebstrap ------------------------------------------"
  mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory \
                 --include="${INCLUDES_DEB} spotify-client google-chrome-stable" \
+		--customize-hook='mkdir -p "$1/var/cache/apt/archives"' \
+		--customize-hook='mount --bind '${CACHE_FOLDER}' "$1/var/cache/apt/archives"' \
       		--customize-hook='chroot "$1" bash -c "mkdir -p /usr/share/keyrings && curl -fsSL '${CHROME_KEY}' | gpg --dearmor > /usr/share/keyrings/google.gpg"' \
 			   "${DEBIAN_VERSION}" "${ROOTFS}" \
   "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}           main contrib non-free" \
@@ -432,7 +434,8 @@ echo "Setting build date in hostname and filesystem ---------------"
         echo "ff02::2 ip6-allrouters"                       >> ${ROOTFS}/etc/hosts
         echo "debian-$(date +'%Y-%m-%d')"                    > ${ROOTFS}/etc/hostname
         touch ${ROOTFS}/ImageDate.$(date +'%Y-%m-%d')
-<<BYEBYEFSTAB
+
+<<'BYEBYEFSTAB'
 echo "Generating fstab --------------------------------------------"
         root_uuid="$(blkid | grep ^$DEVICE | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         efi_uuid="$(blkid  | grep ^$DEVICE | grep ' LABEL="EFI" '   | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
@@ -440,6 +443,7 @@ echo "Generating fstab --------------------------------------------"
         echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
         echo "$efi_uuid  /boot/efi vfat defaults 0 1" >> $FILE
 BYEBYEFSTAB
+
 echo "Setting Keyboard --------------------------------------------"
 	echo "---For non graphical console"
         # FIX DEBIAN BUG
