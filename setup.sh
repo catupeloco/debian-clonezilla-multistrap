@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1627
+SCRIPT_DATE=20250831-1641
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -432,7 +432,7 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"' \
     --setup-hook='mount --bind '"${CACHE_FOLDER}"' "$1/var/cache/apt/archives"' \
     --setup-hook='rm -f "$1/etc/apt/sources.list"' \
-    --setup-hook='echo "deb [trusted=yes] '"${REPOSITORY_DEB}"' ${DEBIAN_VERSION}                            main contrib non-free" > "$1/etc/apt/sources.list.d/debian.list"'        \
+                       "deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}                            main contrib non-free"                                                   \
     --setup-hook='echo "deb [trusted=yes] '"${SECURITY_DEB}"'   ${DEBIAN_VERSION}-security                   main contrib non-free" > "$1/etc/apt/sources.list.d/security.list"'      \
     --setup-hook='echo "deb [trusted=yes] '"${REPOSITORY_DEB}"' ${DEBIAN_VERSION}-updates                    main contrib non-free" > "$1/etc/apt/sources.list.d/updates.list"'       \
     --setup-hook='echo "deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] '"${CHROME_REPOSITORY}"' stable main" > "$1/etc/apt/sources.list.d/google-chrome.list"' \
