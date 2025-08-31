@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250830-2257
+SCRIPT_DATE=20250830-2309
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -432,14 +432,14 @@ echo "Setting build date in hostname and filesystem ---------------"
         echo "ff02::2 ip6-allrouters"                       >> ${ROOTFS}/etc/hosts
         echo "debian-$(date +'%Y-%m-%d')"                    > ${ROOTFS}/etc/hostname
         touch ${ROOTFS}/ImageDate.$(date +'%Y-%m-%d')
-
+<<BYEBYEFSTAB
 echo "Generating fstab --------------------------------------------"
         root_uuid="$(blkid | grep ^$DEVICE | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         efi_uuid="$(blkid  | grep ^$DEVICE | grep ' LABEL="EFI" '   | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         FILE=${ROOTFS}/etc/fstab
         echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
         echo "$efi_uuid  /boot/efi vfat defaults 0 1" >> $FILE
-
+BYEBYEFSTAB
 echo "Setting Keyboard --------------------------------------------"
 	echo "---For non graphical console"
         # FIX DEBIAN BUG
