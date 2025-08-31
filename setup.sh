@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1049
+SCRIPT_DATE=20250831-1053
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -286,9 +286,9 @@ fi
 
 echo "Formating partitions ----------------------------------------"
 [ "$REPARTED" == yes ] && mkfs.vfat -I -n EFI        ${DEVICE}1  > /dev/null 2>&1
-[ "$REPARTED" == yes ] && mkfs.ext4 -I -L RESOURCES  ${DEVICE}4  > /dev/null 2>&1
-		 	  mkfs.ext4 -I -L CLONEZILLA ${DEVICE}2  > /dev/null 2>&1
-			  mkfs.ext4 -I -L LINUX      ${DEVICE}3  > /dev/null 2>&1
+[ "$REPARTED" == yes ] && mkfs.ext4 -F -L RESOURCES  ${DEVICE}4  > /dev/null 2>&1
+		 	  mkfs.ext4 -F -L CLONEZILLA ${DEVICE}2  > /dev/null 2>&1
+			  mkfs.ext4 -F -L LINUX      ${DEVICE}3  > /dev/null 2>&1
 
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
