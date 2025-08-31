@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1444
+SCRIPT_DATE=20250831-1627
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -153,6 +153,7 @@ ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubunt
 DEBIAN_VERSION=trixie
 #INCLUDES_BACKPORTS="linux-image-amd64/${DEBIAN_VERSION}-backports firmware-iwlwifi/${DEBIAN_VERSION}-backports"
 REPOSITORY_DEB="http://deb.debian.org/debian/"
+  SECURITY_DEB="http://security.debian.org/debian-security"
 
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
 CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
@@ -412,18 +413,31 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/boot/grub/grub.cf
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
 echo "Running mmdebstrap ------------------------------------------"
- mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
-                --include="${INCLUDES_DEB} spotify-client google-chrome-stable" \
-		--setup-hook='mkdir -p "$1/var/cache/apt/archives"' \
-		--setup-hook='mount --bind '${CACHE_FOLDER}' "$1/var/cache/apt/archives"' \
-			   "${DEBIAN_VERSION}" "${ROOTFS}" \
-  "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}           main contrib non-free" \
-  "deb [trusted=yes] http://security.debian.org/debian-security ${DEBIAN_VERSION}-security  main contrib non-free" \
-  "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}-updates   main contrib non-free" \
-  "deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] ${CHROME_REPOSITORY}                       stable                      main" \
-  "deb [trusted=yes] ${SPOTIFY_REPOSITORY}			stable			    non-free"  > >(tee -a $LOG) 2> >(tee -a $ERR >&2)
-#      		--customize-hook='chroot "$1" bash -c "mkdir -p /usr/share/keyrings && curl -fsSL '${CHROME_KEY}' | gpg --dearmor > /usr/share/keyrings/google.gpg"' \
-# "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}-backports main" \
+
+#mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
+#                --include="${INCLUDES_DEB} spotify-client google-chrome-stable" \
+#		--setup-hook='mkdir -p "$1/var/cache/apt/archives"' \
+#		--setup-hook='mount --bind '${CACHE_FOLDER}' "$1/var/cache/apt/archives"' \
+#			   "${DEBIAN_VERSION}" "${ROOTFS}" \
+#  "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}           main contrib non-free" \
+#  "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security  main contrib non-free" \
+#  "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates   main contrib non-free" \
+#  "deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] ${CHROME_REPOSITORY}                       stable                      main" \
+#  "deb [trusted=yes] ${SPOTIFY_REPOSITORY}			stable			    non-free"  > >(tee -a $LOG) 2> >(tee -a $ERR >&2)
+##      		--customize-hook='chroot "$1" bash -c "mkdir -p /usr/share/keyrings && curl -fsSL '${CHROME_KEY}' | gpg --dearmor > /usr/share/keyrings/google.gpg"' \
+## "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}-backports main" \
+
+mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
+    --include="${INCLUDES_DEB} spotify-client google-chrome-stable" \
+    --setup-hook='mkdir -p "$1/var/cache/apt/archives"' \
+    --setup-hook='mount --bind '"${CACHE_FOLDER}"' "$1/var/cache/apt/archives"' \
+    --setup-hook='rm -f "$1/etc/apt/sources.list"' \
+    --setup-hook='echo "deb [trusted=yes] '"${REPOSITORY_DEB}"' ${DEBIAN_VERSION}                            main contrib non-free" > "$1/etc/apt/sources.list.d/debian.list"'        \
+    --setup-hook='echo "deb [trusted=yes] '"${SECURITY_DEB}"'   ${DEBIAN_VERSION}-security                   main contrib non-free" > "$1/etc/apt/sources.list.d/security.list"'      \
+    --setup-hook='echo "deb [trusted=yes] '"${REPOSITORY_DEB}"' ${DEBIAN_VERSION}-updates                    main contrib non-free" > "$1/etc/apt/sources.list.d/updates.list"'       \
+    --setup-hook='echo "deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] '"${CHROME_REPOSITORY}"' stable main" > "$1/etc/apt/sources.list.d/google-chrome.list"' \
+    --setup-hook='echo "deb [trusted=yes] '"${SPOTIFY_REPOSITORY}"'                                                stable non-free" > "$1/etc/apt/sources.list.d/spotify.list"'       \
+    "${DEBIAN_VERSION}" "${ROOTFS}" \    > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
 echo "Setting build date in hostname and filesystem ---------------"
         echo "127.0.0.1       localhost"                     > ${ROOTFS}/etc/hosts
@@ -651,11 +665,11 @@ sleep 30'                         > ${ROOTFS}/usr/local/bin/status
 
 
 	echo "---Repositories for testing scripts"
-	echo 'deb [arch=amd64] http://deb.debian.org/debian/ $DEBIAN_VERSION main contrib non-free non-free-firmware
-deb-src http://deb.debian.org/debian/ $DEBIAN_VERSION main contrib non-free non-free-firmware'                                > ${ROOTFS}/root/new.list
+	echo "deb [arch=amd64] http://deb.debian.org/debian/ $DEBIAN_VERSION main contrib non-free non-free-firmware
+deb-src http://deb.debian.org/debian/ $DEBIAN_VERSION main contrib non-free non-free-firmware"                                > ${ROOTFS}/root/new.list
 
-	echo 'deb [arch=amd64] https://snapshot.debian.org/archive/debian/20250101T023759Z/ $DEBIAN_VERSION main contrib non-free non-free-firmware
-deb-src https://snapshot.debian.org/archive/debian/20250101T023759Z/ $DEBIAN_VERSION main contrib non-free non-free-firmware' > ${ROOTFS}/root/old.list
+	echo "deb [arch=amd64] https://snapshot.debian.org/archive/debian/20250101T023759Z/ $DEBIAN_VERSION main contrib non-free non-free-firmware
+deb-src https://snapshot.debian.org/archive/debian/20250101T023759Z/ $DEBIAN_VERSION main contrib non-free non-free-firmware" > ${ROOTFS}/root/old.list
 
 	echo "---Sudoers file for testing scripts"
 	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
