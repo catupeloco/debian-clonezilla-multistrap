@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250830-2233
+SCRIPT_DATE=20250830-2257
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -318,22 +318,6 @@ if [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ;
         	do rm -v ${CACHE_FOLDER}/${line}* 
 		done
 	fi
-<<'BYEBYEKEYRINGS'
-echo "Downloading keyrings ----------------------------------------"
-        echo ---Creating Directories in ${ROOTFS}
-        mkdir -p ${ROOTFS}/etc/apt/sources.list.d/
-        mkdir -p ${ROOTFS}${APT_TRUSTEDDIR}  
-	
-	echo "---Google Chrome"
-        wget -qO - ${CHROME_KEY} \
-        | awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 1 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 1 {exit}' \
-        | gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
-        echo deb [arch=amd64] ${CHROME_REPOSITORY} stable main    > ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
-
-	echo "---Spotify"
-	curl -sS ${SPOTIFY_KEYS} | gpg --dearmor --yes -o ${ROOTFS}/etc/apt/trusted.gpg.d/spotify.gpg
-	echo "deb ${SPOTIFY_REPOSITORY} stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
-BYEBYEKEYRINGS
 echo "Downloading keyboard mappings -------------------------------"
 	wget --show-progress -qcN -O ${CACHE_FOLDER}/${KEYBOARD_MAPS} ${KEYBOARD_FIX_URL}${KEYBOARD_MAPS}
 
@@ -428,77 +412,7 @@ sed -i 's/%%KEYBOARD%%/'$CLONEZILLA_KEYBOARD'/g' ${RECOVERYFS}/boot/grub/grub.cf
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/boot/grub/grub.cfg
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
-<<'BYEBYEMULTISTRAP'
-echo "Multistrap --------------------------------------------------"
-echo "---Creating configuration file"
-echo "[General]
-arch=amd64
-directory=${ROOTFS}
-cleanup=false
-unpack=true
-omitdebsrc=true
-#bootstrap=Debian GoogleChrome Backports Spotify
-#aptsources=Debian Spotify Backports
-bootstrap=Debian GoogleChrome Spotify
-aptsources=Debian Spotify
-
-[Debian]
-packages=${INCLUDES_DEB}
-source=${REPOSITORY_DEB}
-keyring=debian-archive-keyring
-suite=${DEBIAN_VERSION}
-components=main contrib non-free non-free-firmware
-
-#[Backports]
-#packages=${INCLUDES_BACKPORTS}
-#source=${REPOSITORY_DEB}
-#suite=${DEBIAN_VERSION}-backports
-#components=main non-free-firmware
-#noauth=true
-
-[GoogleChrome]
-arch=amd64
-packages=google-chrome-stable
-source=${CHROME_REPOSITORY}
-suite=stable
-noauth=true
-components=main
-
-[Spotify]
-arch=amd64
-packages=spotify-client
-source=${SPOTIFY_REPOSITORY}
-suite=stable
-components=non-free
-noauth=true" > ${CACHE_FOLDER}/multistrap.conf
-
-echo "---Running multistrap"
-	mkdir ${ROOTFS}/proc  2>/dev/null || true
-	umount ${ROOTFS}/proc 2>/dev/null || true
-        mount --bind /proc ${ROOTFS}/proc || true
-        SILENCE="Warning: unrecognised value 'no' for Multi-Arch field in|multistrap-googlechrome.list"
-        set +e ####################################################
-	multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
-	if [ "$?" != "0" ] ; then
-		echo "------It failed but don\'t worry"
-		echo "---Removing older versions AGAIN so multistrap wont fail"
-                ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
-                do rm -v ${CACHE_FOLDER}/${line}*
-                done
-		echo "---Running multistrap AGAIN"
-		rm -rf ${ROOTFS}/var/lib/dpkg
-		#set -e ############################################
-		multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
-	fi
-	set -e ####################################################
-
-        #FIXES
-        if [ -f ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list ] ; then
-                rm ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
-        fi
-BYEBYEMULTISTRAP
 echo "Running mmdebstrap ------------------------------------------"
-# TODO: Next big change migration to mmdebstrap for multistrap discontinuation :( SAD FACE	
  mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory \
                 --include="${INCLUDES_DEB} spotify-client google-chrome-stable" \
       		--customize-hook='chroot "$1" bash -c "mkdir -p /usr/share/keyrings && curl -fsSL '${CHROME_KEY}' | gpg --dearmor > /usr/share/keyrings/google.gpg"' \
@@ -881,3 +795,88 @@ set +e
 	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
 set -e
 BYPASS
+<<'BYEBYEMULTISTRAP'
+echo "Multistrap --------------------------------------------------"
+echo "---Creating configuration file"
+echo "[General]
+arch=amd64
+directory=${ROOTFS}
+cleanup=false
+unpack=true
+omitdebsrc=true
+#bootstrap=Debian GoogleChrome Backports Spotify
+#aptsources=Debian Spotify Backports
+bootstrap=Debian GoogleChrome Spotify
+aptsources=Debian Spotify
+
+[Debian]
+packages=${INCLUDES_DEB}
+source=${REPOSITORY_DEB}
+keyring=debian-archive-keyring
+suite=${DEBIAN_VERSION}
+components=main contrib non-free non-free-firmware
+
+#[Backports]
+#packages=${INCLUDES_BACKPORTS}
+#source=${REPOSITORY_DEB}
+#suite=${DEBIAN_VERSION}-backports
+#components=main non-free-firmware
+#noauth=true
+
+[GoogleChrome]
+arch=amd64
+packages=google-chrome-stable
+source=${CHROME_REPOSITORY}
+suite=stable
+noauth=true
+components=main
+
+[Spotify]
+arch=amd64
+packages=spotify-client
+source=${SPOTIFY_REPOSITORY}
+suite=stable
+components=non-free
+noauth=true" > ${CACHE_FOLDER}/multistrap.conf
+
+echo "---Running multistrap"
+	mkdir ${ROOTFS}/proc  2>/dev/null || true
+	umount ${ROOTFS}/proc 2>/dev/null || true
+        mount --bind /proc ${ROOTFS}/proc || true
+        SILENCE="Warning: unrecognised value 'no' for Multi-Arch field in|multistrap-googlechrome.list"
+        set +e ####################################################
+	multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
+	if [ "$?" != "0" ] ; then
+		echo "------It failed but don\'t worry"
+		echo "---Removing older versions AGAIN so multistrap wont fail"
+                ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
+                do rm -v ${CACHE_FOLDER}/${line}*
+                done
+		echo "---Running multistrap AGAIN"
+		rm -rf ${ROOTFS}/var/lib/dpkg
+		#set -e ############################################
+		multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
+	fi
+	set -e ####################################################
+
+        #FIXES
+        if [ -f ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list ] ; then
+                rm ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
+        fi
+BYEBYEMULTISTRAP
+<<'BYEBYEKEYRINGS'
+echo "Downloading keyrings ----------------------------------------"
+        echo ---Creating Directories in ${ROOTFS}
+        mkdir -p ${ROOTFS}/etc/apt/sources.list.d/
+        mkdir -p ${ROOTFS}${APT_TRUSTEDDIR}  
+	
+	echo "---Google Chrome"
+        wget -qO - ${CHROME_KEY} \
+        | awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 1 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 1 {exit}' \
+        | gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
+        echo deb [arch=amd64] ${CHROME_REPOSITORY} stable main    > ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
+
+	echo "---Spotify"
+	curl -sS ${SPOTIFY_KEYS} | gpg --dearmor --yes -o ${ROOTFS}/etc/apt/trusted.gpg.d/spotify.gpg
+	echo "deb ${SPOTIFY_REPOSITORY} stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
+BYEBYEKEYRINGS
