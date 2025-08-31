@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1728
+SCRIPT_DATE=20250831-1747
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -426,16 +426,25 @@ echo "Running mmdebstrap ------------------------------------------"
 #  "deb [trusted=yes] ${SPOTIFY_REPOSITORY}			stable			    non-free"  > >(tee -a $LOG) 2> >(tee -a $ERR >&2)
 ##      		--customize-hook='chroot "$1" bash -c "mkdir -p /usr/share/keyrings && curl -fsSL '${CHROME_KEY}' | gpg --dearmor > /usr/share/keyrings/google.gpg"' \
 ## "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}-backports main" \
+#mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
+#    --include="${INCLUDES_DEB} spotify-client google-chrome-stable" "${DEBIAN_VERSION}" "${ROOTFS}" \
+#    --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '"${CACHE_FOLDER}"' "$1/var/cache/apt/archives"' \
+#	"deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}                            main contrib non-free" \
+#	"deb [trusted=yes]   ${SECURITY_DEB}     ${DEBIAN_VERSION}-security                   main contrib non-free" \
+#	"deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates                    main contrib non-free" \
+#	"deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] ${CHROME_REPOSITORY}     stable main" \
+#	"deb [trusted=yes]   ${SPOTIFY_REPOSITORY}                                                  stable non-free" \
+#    > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} spotify-client google-chrome-stable" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '"${CACHE_FOLDER}"' "$1/var/cache/apt/archives"' \
-	"deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}                            main contrib non-free" \
-	"deb [trusted=yes]   ${SECURITY_DEB}     ${DEBIAN_VERSION}-security                   main contrib non-free" \
-	"deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates                    main contrib non-free" \
-	"deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] ${CHROME_REPOSITORY}     stable main" \
-	"deb [trusted=yes]   ${SPOTIFY_REPOSITORY}                                                  stable non-free" \
-    > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
+	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free" \
+	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free" \
+	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free" \
+	"deb [trusted=yes] ${CHROME_REPOSITORY}                           stable main"           \
+	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable non-free"       \
+        > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
 echo "Setting build date in hostname and filesystem ---------------"
         echo "127.0.0.1       localhost"                     > ${ROOTFS}/etc/hosts
