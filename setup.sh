@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250824-2230
+SCRIPT_DATE=20250830-2139
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 3
 reset # Re-Set terminal for multiple runs
@@ -514,7 +514,7 @@ BYEBYEMULTISTRAP
   "deb [trusted=yes] http://security.debian.org/debian-security ${DEBIAN_VERSION}-security  main contrib non-free" \
   "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}-updates   main contrib non-free" \
   "deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] ${CHROME_REPOSITORY}                       stable                      main" \
-  "deb [trusted=yes] ${SPOTIFY_REPOSITORY}			stable			    non-free"
+  "deb [trusted=yes] ${SPOTIFY_REPOSITORY}			stable			    non-free"  > >(tee -a $LOG) 2> >(tee -a $ERR >&2)
 # "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}-backports main" \
 
 echo "Setting build date in hostname and filesystem ---------------"
