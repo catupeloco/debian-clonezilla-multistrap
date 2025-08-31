@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-1747
+SCRIPT_DATE=20250831-1808
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -438,7 +438,7 @@ echo "Running mmdebstrap ------------------------------------------"
 
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} spotify-client google-chrome-stable" "${DEBIAN_VERSION}" "${ROOTFS}" \
-    --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '"${CACHE_FOLDER}"' "$1/var/cache/apt/archives"' \
+    --setup-hook="mkdir -p $1/var/cache/apt/archives"  --setup-hook="mount --bind ${CACHE_FOLDER} $1/var/cache/apt/archives" \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free" \
 	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free" \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free" \
@@ -783,6 +783,7 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}"
+	echo $SCRIPT_DATE
 
 
 <<'BYPASS'
@@ -817,6 +818,7 @@ set +e
 	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
 set -e
 BYPASS
+
 <<'BYEBYEMULTISTRAP'
 echo "Multistrap --------------------------------------------------"
 echo "---Creating configuration file"
@@ -886,6 +888,7 @@ echo "---Running multistrap"
                 rm ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
         fi
 BYEBYEMULTISTRAP
+
 <<'BYEBYEKEYRINGS'
 echo "Downloading keyrings ----------------------------------------"
         echo ---Creating Directories in ${ROOTFS}
