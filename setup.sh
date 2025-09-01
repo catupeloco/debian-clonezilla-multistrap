@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-2051
+SCRIPT_DATE=20250831-2157
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -144,7 +144,7 @@ ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubunt
 DEBIAN_VERSION=trixie
 REPOSITORY_DEB="http://deb.debian.org/debian/"
   SECURITY_DEB="http://security.debian.org/debian-security"
-  SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250701T022643Z/"
+  SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250827T210843Z/"
 
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
 CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
@@ -643,23 +643,23 @@ sleep 10' > ${ROOTFS}/usr/local/bin/actualizar
 	echo '#!/bin/bash
 echo Asi empezamos ----------------------
 dpkg -l | grep -E "firefox-esr|chrome"
-rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
+rm /etc/apt/sources.list.d/debian.list                  
 cp -p /root/old.list /etc/apt/sources.list.d/debian.list
 echo Borramos ---------------------------
-apt remove --purge firefox-esr google-chrome-stable -y   &>/dev/null
-apt update                                               &>/dev/null
+apt remove --purge firefox-esr google-chrome-stable -y
+apt update                                               
 CHROME_VERSION=131.0.6778.264-1
 wget --show-progress -qcN -O /tmp/google-chrome-stable.deb \
 https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb
 
 echo Instalamos -------------------------
-apt install firefox-esr /tmp/google-chrome-stable.deb -y &>/dev/null
+apt install firefox-esr /tmp/google-chrome-stable.deb -y
 echo Asi quedamos -----------------------
 dpkg -l | grep -E "firefox-esr|chrome"
 sleep 5
 rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
 cp -p /root/new.list /etc/apt/sources.list.d/debian.list
-apt update                                               &>/dev/null 
+apt update                                             
 apt list --upgradable
 sleep 10' > ${ROOTFS}/usr/local/bin/desactualizar
 
