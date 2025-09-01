@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250831-2157
+SCRIPT_DATE=20250831-2213
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -787,7 +787,7 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${CACHE_FOLDER}                  2>/dev/null || true
 
 echo "END of the road!! keep up the good work ---------------------"
-	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}"
+	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}" || true
 	echo $SCRIPT_DATE
 
 
