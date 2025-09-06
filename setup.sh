@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-1515
+SCRIPT_DATE=20250906-1910
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -101,6 +101,10 @@ LIBREOFFICE_MAIN=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSIO
 LIBREOFFICE_LAPA=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz
 LIBREOFFICE_HELP=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz
 
+DRAWIO_URL=$(wget -qO- https://github.com/jgraph/drawio-desktop/releases/latest | cut -d \" -f2 | grep deb | grep amd64)
+DRAWIO_FOLDER=${CACHE_FOLDER}/Draw.io
+DRAWIO_DEB=${DRAWIO_URL##*/}
+
 APT_CONFIG="`command -v apt-config 2> /dev/null`"
 eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 
@@ -108,18 +112,18 @@ eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
 apt initramfs-tools zstd gnupg systemd linux-image-amd64 \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
-xfce4 xorg dbus-x11 gvfs cups system-config-printer thunar-volman synaptic xarchiver vlc flameshot mousepad lm-sensors \
+xfce4 xorg dbus-x11 gvfs cups system-config-printer thunar-volman 	     xarchiver vlc flameshot mousepad lm-sensors \
 xfce4-battery-plugin       xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfce4-cpugraph-plugin    xfce4-datetime-plugin    xfce4-diskperf-plugin \
 xfce4-fsguard-plugin       xfce4-genmon-plugin      xfce4-mailwatch-plugin   xfce4-netload-plugin     xfce4-places-plugin      xfce4-sensors-plugin  \
 xfce4-smartbookmark-plugin xfce4-systemload-plugin  xfce4-timer-plugin       xfce4-verve-plugin       xfce4-wavelan-plugin     xfce4-weather-plugin  \
 xfce4-xkb-plugin           xfce4-whiskermenu-plugin xfce4-dict xfce4-notifyd xfce4-taskmanager        xfce4-indicator-plugin   xfce4-mpc-plugin      \
-thunar-archive-plugin      thunar-media-tags-plugin light-locker 	     gnome-keyring	      ntfs-3g                  \
+thunar-archive-plugin      thunar-media-tags-plugin light-locker 	     gnome-keyring	      ntfs-3g                  keepassxc-full \
 ${FONTS_PACKAGES_AND_THEMES}  \
 fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand \
 fonts-symbola fonts-urw-base35 gsfonts arc-theme \
 task-xfce-desktop task-ssh-server task-laptop qterminal \
 ${COMMANDLINE_TOOLS} \
-sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils fdisk file git zenity build-essential \
+sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils fdisk file git zenity build-essential htop btop \
 ${CRON_TOOLS} \
 anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
@@ -141,8 +145,8 @@ ${ENCRYPTION_PACKAGES}  \
 ecryptfs-utils rsync lsof cryptsetup \
 ${LIBREOFFICE_DEPENDENCIES}  \
 libxslt1.1 git \
-${PLASMA_DISCOVER} \
-plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd \
+${PLASMA_DISCOVER_AND_SOFTWARE_SOURCES} \
+plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd synaptic \
 ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges \
 ${VIRTUALIZATION_PACKAGES}  \
@@ -347,6 +351,10 @@ echo "Downloading Libreoffice -------------------------------------"
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 	tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 
+echo "Downloading Draw.io -----------------------------------------"
+	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
+        wget --show-progress -qcN ${DRAWIO_URL} -P ${DRAWIO_FOLDER}
+
 echo "Downloading lastest clonezilla ------------------------------"
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
 	echo "---Downloading from ${MIRROR_CLONEZILLA}"
@@ -430,7 +438,7 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
 echo "Running mmdebstrap ------------------------------------------"
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
-    --include="${INCLUDES_DEB} spotify-client google-chrome-stable ${FIREFOX_PACKAGE}" "${DEBIAN_VERSION}" "${ROOTFS}" \
+    --include="${INCLUDES_DEB} spotify-client google-chrome-stable ${FIREFOX_PACKAGE} ${DRAWIO_DEB}" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware" \
 	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" \
@@ -540,9 +548,7 @@ echo "Entering chroot ---------------------------------------------"
 	
 	echo ---Enabling virtual-networks
 	/usr/sbin/libvirtd & 		>/dev/null 2>&1
-	#virsh net-list
 	virsh net-autostart default	>/dev/null 2>&1
-	#virsh net-list
 	pkill libvirtd			>/dev/null 2>&1
 
 	echo ---Adding virtual-networks to kernel modules
@@ -550,7 +556,9 @@ echo "Entering chroot ---------------------------------------------"
 
         echo ---Running tasksel for fixes
 	tasksel install ssh-server laptop xfce --new-install                                    >>\$LOG 2>>\$ERR
-        #apt remove --purge xfce4-terminal                                                      >>\$LOG 2>>\$ERR
+
+	echo ---Installing Draw.io
+	dpkg -i /var/cache/apt/archives/Draw.io/${DRAWIO_DEB}					>>\$LOG 2>>\$ERR
 
         #Installing Libreoffice in backgroupd
         dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				>>\$LOG 2>>\$ERR &
