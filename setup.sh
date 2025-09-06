@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-0955
+SCRIPT_DATE=20250906-1217
 echo ---------------------------------------------------------------------------
 echo ahora   $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo script  $SCRIPT_DATE
@@ -136,7 +136,7 @@ fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 \
 ${LANGUAGE_PACKAGES}  \
 console-data console-setup locales \
 ${SPANISH} \
-task-spanish task-spanish-desktop qterminal-l10n firefox-esr-l10n-es-ar \
+task-spanish task-spanish-desktop qterminal-l10n \
 ${ENCRYPTION_PACKAGES}  \
 ecryptfs-utils rsync lsof cryptsetup \
 ${LIBREOFFICE_DEPENDENCIES}  \
@@ -442,14 +442,20 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
 
 
 echo "Splitting sources.list's in sources.list.d ------------------"
- 	wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}  > /dev/null
+ 	echo -----Downloading keyrings
+	wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}  > /dev/null
 	wget -qO- ${FIREFOX_KEY}       | tee                    ${ROOTFS}${FIREFOX_TRUSTED} > /dev/null
 	wget -qO- ${SPOTIFY_KEYS}      | gpg --dearmor --yes -o ${ROOTFS}${SPOTIFY_TRUSTED} > /dev/null
-	# curl -sS ${SPOTIFY_KEYS} | sudo gpg --dearmor --yes -o ${SPOTIFY_TRUSTED}
-	grep debian  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/debian.list
-	grep chrome  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
-	grep mozilla ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
-	grep spotify ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
+
+	echo ----Generating each dot list file with signed-by
+	 grep debian  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/debian.list
+	 #grep chrome  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
+	 #grep mozilla ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
+	 #grep spotify ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
+	echo "deb [signed-by=${CHROME_TRUSTED}]  ${CHROME_REPOSITORY}   stable main"    > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
+	echo "deb [signed-by=${FIREFOX_TRUSTED}] ${FIREFOX_REPOSITORY} mozilla main"    > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
+	echo "deb [signed-by=${SPOTIFY_TRUSTED}] ${SPOTIFY_REPOSITORY} stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
+	
 	rm ${ROOTFS}/etc/apt/sources.list 
 
 echo "Setting build date in hostname and filesystem ---------------"
