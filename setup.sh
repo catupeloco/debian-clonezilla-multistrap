@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-1910
+SCRIPT_DATE=20250906-1920
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -438,7 +438,7 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
 echo "Running mmdebstrap ------------------------------------------"
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
-    --include="${INCLUDES_DEB} spotify-client google-chrome-stable ${FIREFOX_PACKAGE} ${DRAWIO_DEB}" "${DEBIAN_VERSION}" "${ROOTFS}" \
+    --include="${INCLUDES_DEB} spotify-client google-chrome-stable ${FIREFOX_PACKAGE}" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware" \
 	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" \
