@@ -1,6 +1,9 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-0904
-echo ahora $(date) script  $SCRIPT_DATE
+SCRIPT_DATE=20250906-0952
+echo ---------------------------------------------------------------------------
+echo ahora   $(env TZ=America/Argentina/Buenos_Aires date) 
+echo script  $SCRIPT_DATE
+echo ---------------------------------------------------------------------------
 sleep 8
 reset # Re-Set terminal for multiple runs
 set -e # Exit on error
@@ -27,6 +30,11 @@ DEVICE=$(whiptail --title "Disk selection" --menu "Choose a disk from below and 
 MIRROR_CLONEZILLA=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
        "Official_Fast" "NCHC - Taiwan" \
        "Official_Slow" "SourceForge" \
+       3>&1 1>&2 2>&3)
+#####################################################################################################
+FIREFOX_PACKAGE=$(whiptail --title "Select Firefox Package" --menu "Choose one option:" 20 60 10 \
+       "firefox     firefox-l10n-es-ar    " "Firefox Rapid Release" \
+       "firefox-esr firefox-esr-l10n-es-ar" "Firefox ESR          " \
        3>&1 1>&2 2>&3)
 #####################################################################################################
 username=$(whiptail --title "Local admin creation" --inputbox "Type a username:" 20 60  3>&1 1>&2 2>&3)
@@ -421,31 +429,8 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/boot/grub/grub.cf
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
 echo "Running mmdebstrap ------------------------------------------"
-
-#mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
-#                --include="${INCLUDES_DEB} spotify-client google-chrome-stable" \
-#		--setup-hook='mkdir -p "$1/var/cache/apt/archives"' \
-#		--setup-hook='mount --bind '${CACHE_FOLDER}' "$1/var/cache/apt/archives"' \
-#			   "${DEBIAN_VERSION}" "${ROOTFS}" \
-#  "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}           main contrib non-free" \
-#  "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security  main contrib non-free" \
-#  "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates   main contrib non-free" \
-#  "deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] ${CHROME_REPOSITORY}                       stable                      main" \
-#  "deb [trusted=yes] ${SPOTIFY_REPOSITORY}			stable			    non-free"  > >(tee -a $LOG) 2> >(tee -a $ERR >&2)
-##      		--customize-hook='chroot "$1" bash -c "mkdir -p /usr/share/keyrings && curl -fsSL '${CHROME_KEY}' | gpg --dearmor > /usr/share/keyrings/google.gpg"' \
-## "deb [trusted=yes] ${REPOSITORY_DEB}                          ${DEBIAN_VERSION}-backports main" \
-#mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
-#    --include="${INCLUDES_DEB} spotify-client google-chrome-stable" "${DEBIAN_VERSION}" "${ROOTFS}" \
-#    --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '"${CACHE_FOLDER}"' "$1/var/cache/apt/archives"' \
-#	"deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}                            main contrib non-free" \
-#	"deb [trusted=yes]   ${SECURITY_DEB}     ${DEBIAN_VERSION}-security                   main contrib non-free" \
-#	"deb [trusted=yes]   ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates                    main contrib non-free" \
-#	"deb [trusted=yes arch=amd64 signed-by=/usr/share/keyrings/google.gpg] ${CHROME_REPOSITORY}     stable main" \
-#	"deb [trusted=yes]   ${SPOTIFY_REPOSITORY}                                                  stable non-free" \
-#    > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
-
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
-    --include="${INCLUDES_DEB} spotify-client google-chrome-stable firefox-esr firefox-l10n-es-ar" "${DEBIAN_VERSION}" "${ROOTFS}" \
+    --include="${INCLUDES_DEB} spotify-client google-chrome-stable ${FIREFOX_PACKAGE}" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware" \
 	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" \
@@ -813,124 +798,3 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}" || true
 	echo $SCRIPT_DATE
-
-
-<<'BYPASS'
-
-echo "Downloading Wifi Drivers ------------------------------------"
-	mkdir ${CACHE_FOLDER}/firmware 2>/dev/null || true
-	cd ${CACHE_FOLDER}/firmware
-set +e
-	echo ---Building list
-	mapfile -t files < <(curl -s $WIFI_URL | grep iwlwifi | grep href | cut -d \' -f 2 | grep -v LICENCE)
-
-	total=${#files[@]}
-	done_count=0
-
-	show_progress() {
-	  percent=$(( done_count * 100 / total ))
-	  echo -ne "---Downloading: ${percent}%      (${done_count}/${total})\r"
-	}
-	
-	for line in "${files[@]}"; do
-	  wget -qc "${WIFI_DOMAIN}/${line}" &
-	  while [[ $(jobs -rp | wc -l) -ge $WIFI_MAX_PARALLEL ]]; do
-		sleep 0.1
-		show_progress
-	  done
-	  done_count=$((done_count + 1))
-	  show_progress
-	done
-	
-	echo -e "\n---Download complete"
-	mkdir -p ${ROOTFS}/lib/firmware/ 2>/dev/null || true
-	cp ${CACHE_FOLDER}/firmware/* ${ROOTFS}/lib/firmware/ 
-set -e
-BYPASS
-
-<<'BYEBYEMULTISTRAP'
-echo "Multistrap --------------------------------------------------"
-echo "---Creating configuration file"
-echo "[General]
-arch=amd64
-directory=${ROOTFS}
-cleanup=false
-unpack=true
-omitdebsrc=true
-#bootstrap=Debian GoogleChrome Backports Spotify
-#aptsources=Debian Spotify Backports
-bootstrap=Debian GoogleChrome Spotify
-aptsources=Debian Spotify
-
-[Debian]
-packages=${INCLUDES_DEB}
-source=${REPOSITORY_DEB}
-keyring=debian-archive-keyring
-suite=${DEBIAN_VERSION}
-components=main contrib non-free non-free-firmware
-
-#[Backports]
-#packages=${INCLUDES_BACKPORTS}
-#source=${REPOSITORY_DEB}
-#suite=${DEBIAN_VERSION}-backports
-#components=main non-free-firmware
-#noauth=true
-
-[GoogleChrome]
-arch=amd64
-packages=google-chrome-stable
-source=${CHROME_REPOSITORY}
-suite=stable
-noauth=true
-components=main
-
-[Spotify]
-arch=amd64
-packages=spotify-client
-source=${SPOTIFY_REPOSITORY}
-suite=stable
-components=non-free
-noauth=true" > ${CACHE_FOLDER}/multistrap.conf
-
-echo "---Running multistrap"
-	mkdir ${ROOTFS}/proc  2>/dev/null || true
-	umount ${ROOTFS}/proc 2>/dev/null || true
-        mount --bind /proc ${ROOTFS}/proc || true
-        SILENCE="Warning: unrecognised value 'no' for Multi-Arch field in|multistrap-googlechrome.list"
-        set +e ####################################################
-	multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
-	if [ "$?" != "0" ] ; then
-		echo "------It failed but don\'t worry"
-		echo "---Removing older versions AGAIN so multistrap wont fail"
-                ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
-                do rm -v ${CACHE_FOLDER}/${line}*
-                done
-		echo "---Running multistrap AGAIN"
-		rm -rf ${ROOTFS}/var/lib/dpkg
-		#set -e ############################################
-		multistrap -f ${CACHE_FOLDER}/multistrap.conf >$LOG 2> >(grep -vE "$SILENCE" > $ERR)
-	fi
-	set -e ####################################################
-
-        #FIXES
-        if [ -f ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list ] ; then
-                rm ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
-        fi
-BYEBYEMULTISTRAP
-
-<<'BYEBYEKEYRINGS'
-echo "Downloading keyrings ----------------------------------------"
-        echo ---Creating Directories in ${ROOTFS}
-        mkdir -p ${ROOTFS}/etc/apt/sources.list.d/
-        mkdir -p ${ROOTFS}${APT_TRUSTEDDIR}  
-	
-	echo "---Google Chrome"
-        wget -qO - ${CHROME_KEY} \
-        | awk '/-----BEGIN PGP PUBLIC KEY BLOCK-----/ {inBlock++} inBlock == 1 {print} /-----END PGP PUBLIC KEY BLOCK-----/ && inBlock == 1 {exit}' \
-        | gpg --dearmor > ${ROOTFS}${APT_TRUSTEDDIR}google-chrome.gpg
-        echo deb [arch=amd64] ${CHROME_REPOSITORY} stable main    > ${ROOTFS}/etc/apt/sources.list.d/multistrap-googlechrome.list
-
-	echo "---Spotify"
-	curl -sS ${SPOTIFY_KEYS} | gpg --dearmor --yes -o ${ROOTFS}/etc/apt/trusted.gpg.d/spotify.gpg
-	echo "deb ${SPOTIFY_REPOSITORY} stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/multistrap-spotify.list
-BYEBYEKEYRINGS
