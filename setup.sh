@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-0952
+SCRIPT_DATE=20250906-0954
 echo ---------------------------------------------------------------------------
-echo ahora   $(env TZ=America/Argentina/Buenos_Aires date) 
+echo ahora   $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo script  $SCRIPT_DATE
 echo ---------------------------------------------------------------------------
 sleep 8
