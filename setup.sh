@@ -1,8 +1,8 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-1217
+SCRIPT_DATE=20250906-1218
 echo ---------------------------------------------------------------------------
-echo ahora   $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
-echo script  $SCRIPT_DATE
+echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
+echo "script  "$SCRIPT_DATE
 echo ---------------------------------------------------------------------------
 sleep 7
 reset # Re-Set terminal for multiple runs
