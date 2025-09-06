@@ -1,10 +1,10 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-0954
+SCRIPT_DATE=20250906-0955
 echo ---------------------------------------------------------------------------
 echo ahora   $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo script  $SCRIPT_DATE
 echo ---------------------------------------------------------------------------
-sleep 8
+sleep 7
 reset # Re-Set terminal for multiple runs
 set -e # Exit on error
 
