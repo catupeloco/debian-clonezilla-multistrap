@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250901-0702
+SCRIPT_DATE=20250905-2242
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -116,11 +116,11 @@ ${CRON_TOOLS} \
 anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
 blueman bluetooth bluez bluez-firmware bluez-alsa-utils \
-bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 <iputils-ping isc-dhcp-client \
+bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping isc-dhcp-client \
 network-manager network-manager-gnome powermgmt-base util-linux wpasupplicant xfce4-power-manager xfce4-power-manager-plugins \
 firmware-iwlwifi firmware-ath9k-htc firmware-linux-free firmware-ath9k-htc firmware-realtek \
 ${AUDIO_PACKAGES} \
-pavucontrol pulseaudio audacity pulseaudio-module-bluetooth xfce-pulseaudio-plugin \
+pavucontrol pulseaudio audacity pulseaudio-module-bluetooth xfce4-pulseaudio-plugin \
 ${BOOT_PACKAGES}  \
 grub2-common grub-efi grub-efi-amd64 \
 ${FIREFOX_AND_CHROME_DEPENDENCIES}  \
