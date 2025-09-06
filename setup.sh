@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250905-2306
+SCRIPT_DATE=20250906-0903
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
@@ -124,7 +124,7 @@ pavucontrol pulseaudio audacity pulseaudio-module-bluetooth xfce4-pulseaudio-plu
 ${BOOT_PACKAGES}  \
 grub2-common grub-efi grub-efi-amd64 \
 ${FIREFOX_AND_CHROME_DEPENDENCIES}  \
-fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 firefox-esr \
+fonts-liberation libasound2 libnspr4 libnss3 libvulkan1 \
 ${LANGUAGE_PACKAGES}  \
 console-data console-setup locales \
 ${SPANISH} \
@@ -148,12 +148,28 @@ REPOSITORY_DEB="http://deb.debian.org/debian/"
   SECURITY_DEB="http://security.debian.org/debian-security"
   SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250827T210843Z/"
 
-CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/"
+# https://www.google.com/linuxrepositories/
+#wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo tee /etc/apt/trusted.gpg.d/google.asc >/dev/null
+ # NOTE: On systems with older versions of apt (i.e. versions prior to 1.4), the ASCII-armored
+ # format public key must be converted to binary format before it can be used by apt.d
+#wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/google.gpg >/dev/null
+CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/" 
 CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
+CHROME_TRUSTED="/etc/apt/trusted.gpg.d/google.asc"
+
+# https://support.mozilla.org/es/kb/Instalar-firefox-linux#w_instalar-el-paquete-deb-de-firefox-para-distribuciones-basadas-en-debian
+# wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
+FIREFOX_REPOSITORY="https://packages.mozilla.org/apt"
+FIREFOX_KEY="https://packages.mozilla.org/apt/repo-signing-key.gpg"
+FIREFOX_TRUSTED="/etc/apt/keyrings/packages.mozilla.org.asc"
 
 # https://www.spotify.com/es/download/linux/
+# curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
+# echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
 SPOTIFY_REPOSITORY="https://repository.spotify.com"
 SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
+SPOTIFY_TRUSTED="/etc/apt/trusted.gpg.d/spotify.gpg"
+
 
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
@@ -429,19 +445,25 @@ echo "Running mmdebstrap ------------------------------------------"
 #    > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
-    --include="${INCLUDES_DEB} spotify-client google-chrome-stable" "${DEBIAN_VERSION}" "${ROOTFS}" \
+    --include="${INCLUDES_DEB} spotify-client google-chrome-stable firefox-esr firefox-l10n-es-ar" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware" \
 	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" \
-	"deb [trusted=yes] ${CHROME_REPOSITORY}                           stable main"                             \
-	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable non-free"                         \
+	"deb [trusted=yes] ${CHROME_REPOSITORY}                           stable  main"                            \
+	"deb [trusted=yes] ${FIREFOX_REPOSITORY}                          mozilla main"                            \
+	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable  non-free"                        \
         > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
 
 echo "Splitting sources.list's in sources.list.d ------------------"
+ 	wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}  > /dev/null
+	wget -qO- ${FIREFOX_KEY}       | tee                    ${ROOTFS}${FIREFOX_TRUSTED} > /dev/null
+	wget -qO- ${SPOTIFY_KEYS}      | gpg --dearmor --yes -o ${ROOTFS}${SPOTIFY_TRUSTED} > /dev/null
+	# curl -sS ${SPOTIFY_KEYS} | sudo gpg --dearmor --yes -o ${SPOTIFY_TRUSTED}
 	grep debian  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/debian.list
 	grep chrome  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
+	grep mozilla ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
 	grep spotify ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
 	rm ${ROOTFS}/etc/apt/sources.list 
 
