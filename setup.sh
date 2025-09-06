@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250905-2242
+SCRIPT_DATE=20250905-2243
 echo ahora $(date) script  $SCRIPT_DATE
 sleep 8
 reset # Re-Set terminal for multiple runs
