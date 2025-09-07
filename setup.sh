@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-2106
+SCRIPT_DATE=20250906-2207
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -112,12 +112,13 @@ eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
 apt initramfs-tools zstd gnupg systemd linux-image-amd64 \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
-xfce4 xorg dbus-x11 gvfs cups system-config-printer thunar-volman 	     xarchiver vlc flameshot mousepad lm-sensors qbittorrent \
+xfce4 xorg dbus-x11 	   gvfs cups thunar-volman  system-config-printer    xarchiver vlc flameshot  mousepad                                       \
+lm-sensors 		   qbittorrent  	    qpdfview		     keepassxc-full 	      light-locker             gnome-keyring         \
 xfce4-battery-plugin       xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfce4-cpugraph-plugin    xfce4-datetime-plugin    xfce4-diskperf-plugin \
 xfce4-fsguard-plugin       xfce4-genmon-plugin      xfce4-mailwatch-plugin   xfce4-netload-plugin     xfce4-places-plugin      xfce4-sensors-plugin  \
 xfce4-smartbookmark-plugin xfce4-systemload-plugin  xfce4-timer-plugin       xfce4-verve-plugin       xfce4-wavelan-plugin     xfce4-weather-plugin  \
 xfce4-xkb-plugin           xfce4-whiskermenu-plugin xfce4-dict xfce4-notifyd xfce4-taskmanager        xfce4-indicator-plugin   xfce4-mpc-plugin      \
-thunar-archive-plugin      thunar-media-tags-plugin light-locker 	     gnome-keyring	      ntfs-3g                  keepassxc-full \
+thunar-archive-plugin      thunar-media-tags-plugin ntfs-3g \
 ${FONTS_PACKAGES_AND_THEMES}  \
 fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand \
 fonts-symbola fonts-urw-base35 gsfonts arc-theme \
