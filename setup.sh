@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-2207
+SCRIPT_DATE=20250906-2218
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -183,6 +183,14 @@ SPOTIFY_REPOSITORY="https://repository.spotify.com"
 SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
 SPOTIFY_TRUSTED="/etc/apt/trusted.gpg.d/spotify.gpg"
 
+# https://apt.syncthing.net/
+# sudo mkdir -p /etc/apt/keyrings
+# sudo curl -L -o /etc/apt/keyrings/syncthing-archive-keyring.gpg https://syncthing.net/release-key.gpg
+# echo "deb [signed-by=/etc/apt/keyrings/syncthing-archive-keyring.gpg] https://apt.syncthing.net/ syncthing stable-v2" | sudo tee /etc/apt/sources.list.d/syncthing.list
+# 
+SYNCTHING_REPOSITORY="https://apt.syncthing.net"
+SYNCTHING_KEYS="https://syncthing.net/release-key.gpg"
+SYNCTHING_TRUSTED="/etc/apt/keyrings/syncthing-archive-keyring.gpg"
 
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
@@ -439,7 +447,7 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
 echo "Running mmdebstrap ------------------------------------------"
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
-    --include="${INCLUDES_DEB} spotify-client google-chrome-stable ${FIREFOX_PACKAGE}" "${DEBIAN_VERSION}" "${ROOTFS}" \
+    --include="${INCLUDES_DEB} google-chrome-stable ${FIREFOX_PACKAGE} spotify-client syncthing" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware" \
 	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" \
@@ -447,23 +455,36 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
 	"deb [trusted=yes] ${CHROME_REPOSITORY}                           stable  main"                            \
 	"deb [trusted=yes] ${FIREFOX_REPOSITORY}                          mozilla main"                            \
 	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable  non-free"                        \
+	"deb [trusted=yes] ${SYNCTHING_REPOSITORY}                        syncthing stable-v2"                     \
         > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
+
+# https://apt.syncthing.net/
+# sudo mkdir -p /etc/apt/keyrings
+# sudo curl -L -o /etc/apt/keyrings/syncthing-archive-keyring.gpg https://syncthing.net/release-key.gpg
+# echo "deb [signed-by=/etc/apt/keyrings/syncthing-archive-keyring.gpg] https://apt.syncthing.net/ syncthing stable-v2" | sudo tee /etc/apt/sources.list.d/syncthing.list
+# 
+SYNCTHING_REPOSITORY="https://apt.syncthing.net"
+SYNCTHING_KEYS="https://syncthing.net/release-key.gpg"
+SYNCTHING_TRUSTED="/etc/apt/keyrings/syncthing-archive-keyring.gpg"
+
 
 
 echo "Splitting sources.list's in sources.list.d ------------------"
  	echo -----Downloading keyrings
-	wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}  > /dev/null
-	wget -qO- ${FIREFOX_KEY}       | tee                    ${ROOTFS}${FIREFOX_TRUSTED} > /dev/null
-	wget -qO- ${SPOTIFY_KEYS}      | gpg --dearmor --yes -o ${ROOTFS}${SPOTIFY_TRUSTED} > /dev/null
+	wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}    > /dev/null
+	wget -qO- ${FIREFOX_KEY}       | tee                    ${ROOTFS}${FIREFOX_TRUSTED}   > /dev/null
+	wget -qO- ${SPOTIFY_KEYS}      | gpg --dearmor --yes -o ${ROOTFS}${SPOTIFY_TRUSTED}   > /dev/null
+	wget -qO- ${SYNCTHING_KEYS}    | tee                    ${ROOTFS}${SYNCTHING_TRUSTED} > /dev/null
 
 	echo ----Generating each dot list file with signed-by
 	 grep debian  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/debian.list
 	 #grep chrome  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
 	 #grep mozilla ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
 	 #grep spotify ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
-	echo "deb [signed-by=${CHROME_TRUSTED}]  ${CHROME_REPOSITORY}   stable main"    > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
-	echo "deb [signed-by=${FIREFOX_TRUSTED}] ${FIREFOX_REPOSITORY} mozilla main"    > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
-	echo "deb [signed-by=${SPOTIFY_TRUSTED}] ${SPOTIFY_REPOSITORY} stable non-free" > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
+	echo "deb [signed-by=${CHROME_TRUSTED}]    ${CHROME_REPOSITORY}     stable main"        > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
+	echo "deb [signed-by=${FIREFOX_TRUSTED}]   ${FIREFOX_REPOSITORY}   mozilla main"        > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
+	echo "deb [signed-by=${SPOTIFY_TRUSTED}]   ${SPOTIFY_REPOSITORY}   stable non-free"     > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
+	echo "deb [signed-by=${SYNCTHING_TRUSTED}] ${SYNCTHING_REPOSITORY} syncthing stable-v2" > ${ROOTFS}/etc/apt/sources.list.d/syncthing.list
 	
 	rm ${ROOTFS}/etc/apt/sources.list 
 
