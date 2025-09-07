@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250907-0147
+SCRIPT_DATE=20250907-1105
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -110,7 +110,7 @@ eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 
 # NOTE: Fictional variables below are only for title proposes ########################################
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
-apt initramfs-tools zstd gnupg systemd linux-image-amd64 \
+apt initramfs-tools zstd gnupg systemd linux-image-amd64 login \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
 xfce4 xorg dbus-x11 	   gvfs cups thunar-volman  system-config-printer    xarchiver vlc flameshot  mousepad                                       \
 lm-sensors 		   qbittorrent  	    qpdfview		     keepassxc-full 	      light-locker             gnome-keyring         \
