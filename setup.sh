@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-2323
+SCRIPT_DATE=20250907-0146
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -836,3 +836,7 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}" || true
 	echo $SCRIPT_DATE
+# time sudo netselect -t40 $(wget -qO- http://www.debian.org/mirror/list | grep '/debian/' | grep -v download | cut -d \" -f6 | sort -u)
+# sudo nala fetch --debian trixie --auto --fetches 10 --non-free -c AR -c UR -c CL -c BR
+# sudo nala fetch --debian trixie --auto              --non-free -c AR
+# sudo nala fetch --debian trixie --auto --fetches 10 --non-free
