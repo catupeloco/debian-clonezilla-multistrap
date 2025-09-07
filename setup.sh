@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250906-2218
+SCRIPT_DATE=20250906-2323
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -142,6 +142,8 @@ ${LANGUAGE_PACKAGES}  \
 console-data console-setup locales \
 ${SPANISH} \
 task-spanish task-spanish-desktop qterminal-l10n \
+${REMOTE_ACCESS} \
+x11vnc ssvnc remmina remmina-plugin-rdp remmina-plugin-vnc remmina-plugin-x2go remmina-plugin-secret x2goclient \
 ${ENCRYPTION_PACKAGES}  \
 ecryptfs-utils rsync lsof cryptsetup \
 ${LIBREOFFICE_DEPENDENCIES}  \
