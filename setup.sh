@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250907-1220
+SCRIPT_DATE=20250907-2255
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -840,3 +840,14 @@ echo "END of the road!! keep up the good work ---------------------"
 # sudo nala fetch --debian trixie --auto --fetches 10 --non-free -c AR -c UR -c CL -c BR
 # sudo nala fetch --debian trixie --auto              --non-free -c AR
 # sudo nala fetch --debian trixie --auto --fetches 10 --non-free
+
+
+exit
+# TODO
+# Discover no abre la primera vez hasta que haces sudo apt update
+# Volumen siempre vuelve a cero
+# Screenshot no anda por teclado xfce4-settings-editor
+# /etc/xdg/xfce4/panel/default.xml
+# lupa xfce4-appfinder
+# xfconf-query  -l
+# xfconf-query -c xfce4-panel -l
