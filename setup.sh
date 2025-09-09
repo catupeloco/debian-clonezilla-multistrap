@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250907-2300
+SCRIPT_DATE=20250908-2235
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -193,6 +193,10 @@ SPOTIFY_TRUSTED="/etc/apt/trusted.gpg.d/spotify.gpg"
 SYNCTHING_REPOSITORY="https://apt.syncthing.net"
 SYNCTHING_KEYS="https://syncthing.net/release-key.gpg"
 SYNCTHING_TRUSTED="/etc/apt/keyrings/syncthing-archive-keyring.gpg"
+SYNCTHING_SERV_RESUME_TARGET="/etc/systemd/system/syncthing-resume.service" 
+SYNCTHING_SERV_RESUME_URL="https://raw.githubusercontent.com/syncthing/syncthing/main/etc/linux-systemd/system/syncthing-resume.service"
+SYNCTHING_SERV_ARROBA_TARGET="/etc/systemd/system/syncthing@.service"
+SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/syncthing/main/etc/linux-systemd/system/syncthing%40.service"
 
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
