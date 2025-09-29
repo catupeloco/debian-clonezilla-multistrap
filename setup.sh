@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250928-2256
+SCRIPT_DATE=20250928-2307
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -612,8 +612,8 @@ echo "Entering chroot ---------------------------------------------"
         echo ------LibreOffice \$VERSION_LO installation done.
 
 	echo ---Flatpak and Mission Center
-	flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo -y >>\$LOG 2>>\$ERR
-	flatpak install flathub io.missioncenter.MissionCenter -y				      >>\$LOG 2>>\$ERR
+	flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo 
+	flatpak install flathub io.missioncenter.MissionCenter
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
