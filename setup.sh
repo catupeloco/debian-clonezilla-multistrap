@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250928-2325
+SCRIPT_DATE=20250928-2338
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -612,7 +612,7 @@ echo "Entering chroot ---------------------------------------------"
 
 	echo ---Flatpak and Mission Center
 	flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo 
-	flatpak install flathub io.missioncenter.MissionCenter
+	flatpak install flathub io.missioncenter.MissionCenter -y
 	rm /etc/resolv.conf
 
         echo ---Setting languaje and unattended-upgrades packages
