@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250928-2219
+SCRIPT_DATE=20250928-2256
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -110,7 +110,7 @@ eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
 
 # NOTE: Fictional variables below are only for title proposes ########################################
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
-apt initramfs-tools zstd gnupg systemd linux-image-amd64 login \
+apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
 xfce4 xorg dbus-x11 	   gvfs cups thunar-volman  system-config-printer    xarchiver vlc flameshot  mousepad                                       \
 lm-sensors 		   qbittorrent  	    qpdfview		     keepassxc-full 	      light-locker             gnome-keyring         \
@@ -124,7 +124,7 @@ fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liber
 fonts-symbola fonts-urw-base35 gsfonts arc-theme \
 task-xfce-desktop task-ssh-server task-laptop qterminal \
 ${COMMANDLINE_TOOLS} \
-sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils fdisk file git zenity build-essential htop btop \
+sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils fdisk file git zenity build-essential ncdu \
 ${CRON_TOOLS} \
 anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
@@ -611,6 +611,10 @@ echo "Entering chroot ---------------------------------------------"
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
         echo ------LibreOffice \$VERSION_LO installation done.
 
+	echo ---Flatpak and Mission Center
+	flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo -y >>\$LOG 2>>\$ERR
+	flatpak install flathub io.missioncenter.MissionCenter -y				      >>\$LOG 2>>\$ERR
+
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
         debconf-set-selections <<< \"tzdata                  tzdata/Zones/America                                      select Argentina/Buenos_Aires\"
@@ -747,7 +751,7 @@ Icon=utilities-terminal
 Exec=qterminal -e sudo /usr/local/bin/desactualizar
 Terminal=false
 Categories=Qt;System;TerminalEmulator;
-Name=_Desactualizar '                              > ${ROOTFS}/usr/share/applications/desactualizar.desktop
+Name=_Desactualizar '                              > ${ROOTFS}/usr/share/applications/_desactualizar.desktop
 
 	echo '[Desktop Entry]
 Type=Application
@@ -755,7 +759,7 @@ Icon=utilities-terminal
 Exec=qterminal -e sudo /usr/local/bin/actualizar
 Terminal=false
 Categories=Qt;System;TerminalEmulator;
-Name=_Actualizar '                                 > ${ROOTFS}/usr/share/applications/actualizar.desktop
+Name=_Actualizar '                                 > ${ROOTFS}/usr/share/applications/_actualizar.desktop
 
 echo '[Desktop Entry]
 Type=Application
@@ -763,7 +767,7 @@ Icon=utilities-terminal
 Exec=qterminal -e /usr/local/bin/status
 Terminal=false
 Categories=Qt;System;TerminalEmulator;
-Name=_Status '                                     > ${ROOTFS}/usr/share/applications/status.desktop 
+Name=_Status '                                     > ${ROOTFS}/usr/share/applications/_status.desktop 
 
 echo "
 %updates ALL = NOPASSWD : /usr/local/bin/actualizar 
@@ -773,15 +777,15 @@ echo "
 	chmod +x  ${ROOTFS}/usr/local/bin/actualizar ${ROOTFS}/usr/local/bin/desactualizar ${ROOTFS}/usr/local/bin/status
 
 	chmod 644 ${ROOTFS}/root/new.list            ${ROOTFS}/root/old.list \
-	${ROOTFS}/usr/share/applications/desactualizar.desktop \
-	${ROOTFS}/usr/share/applications/actualizar.desktop \
-	${ROOTFS}/usr/share/applications/status.desktop
+	${ROOTFS}/usr/share/applications/_desactualizar.desktop \
+	${ROOTFS}/usr/share/applications/_actualizar.desktop \
+	${ROOTFS}/usr/share/applications/_status.desktop
 
 	chmod 440 ${ROOTFS}/etc/sudoers.d/updates
 
 echo "Setting up local admin account ------------------------------"
         echo 'export LC_ALL=C LANGUAGE=C LANG=C
-	useradd -d /home/'$username' -c local_admin_user -G sudo -m -s /bin/bash '$username'
+	useradd -d /home/'$username' -G sudo -m -s /bin/bash '$username'
 	groupadd updates
         adduser '$username' updates		>/dev/null
         adduser '$username' kvm			>/dev/null
