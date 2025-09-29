@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250928-2143
+SCRIPT_DATE=20250928-2219
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -148,8 +148,6 @@ ${ENCRYPTION_PACKAGES}  \
 ecryptfs-utils rsync lsof cryptsetup \
 ${LIBREOFFICE_DEPENDENCIES}  \
 libxslt1.1 git \
-${GNOME_SOFTWARE_AND_SOFTWARE_SOURCES} \
-gnome-software gnome-software-plugin-deb gnome-software-plugin-flatpak gnome-software-plugin-fwupd gnome-software-plugin-snap synaptic \
 ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges \
 ${VIRTUALIZATION_PACKAGES}  \
@@ -157,6 +155,8 @@ qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils vi
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
+#${GNOME_SOFTWARE_AND_SOFTWARE_SOURCES} \
+#gnome-software gnome-software-plugin-deb gnome-software-plugin-flatpak gnome-software-plugin-fwupd gnome-software-plugin-snap synaptic \
 #plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd synaptic \
 
 DEBIAN_VERSION=trixie
