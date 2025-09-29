@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250928-2307
+SCRIPT_DATE=20250928-2325
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -606,7 +606,6 @@ echo "Entering chroot ---------------------------------------------"
 	echo nameserver 8.8.8.8 > /etc/resolv.conf
 	git clone https://github.com/catupeloco/install-libreoffice-from-web 			>>\$LOG 2>>\$ERR
 	chmod +x /opt/install-libreoffice-from-web/setup.sh
-	rm /etc/resolv.conf
         wait $pid_LO
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
         echo ------LibreOffice \$VERSION_LO installation done.
@@ -614,6 +613,7 @@ echo "Entering chroot ---------------------------------------------"
 	echo ---Flatpak and Mission Center
 	flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo 
 	flatpak install flathub io.missioncenter.MissionCenter
+	rm /etc/resolv.conf
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
