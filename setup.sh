@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250928-2141
+SCRIPT_DATE=20250928-2143
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -341,9 +341,9 @@ echo "---Resources/Cache partition"
 	mount ${DEVICE}4 ${CACHE_FOLDER}
         #mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1 
         #mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
-
 echo "---Cleaning cache packages if necesary"
-while [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
+	set +e
+	while [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
 		echo ---This packages have more than one version.
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
         	do ls ${CACHE_FOLDER}/${line}* 
@@ -353,6 +353,7 @@ while [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" 
         	do rm -v ${CACHE_FOLDER}/${line}* 
 		done
 	done
+	set -e
 
 echo "Downloading keyboard mappings -------------------------------"
 	wget --show-progress -qcN -O ${CACHE_FOLDER}/${KEYBOARD_MAPS} ${KEYBOARD_FIX_URL}${KEYBOARD_MAPS}
