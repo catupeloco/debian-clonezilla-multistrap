@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251004-1041
+SCRIPT_DATE=20251004-1607
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -828,6 +828,22 @@ echo "Encrypted user script creation ------------------------------"
 		sudo reboot
 	" > ${ROOTFS}/usr/local/bin/useradd-encrypt
 	chmod +x ${ROOTFS}/usr/local/bin/useradd-encrypt
+
+echo "Replacing keybindings ----------------------------------------"
+	FILE="${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml"
+	cp "$FILE" "$FILE.bak" && \
+	sed -i \
+	  -e 's|xfce4-screenshooter -w|flameshot gui|' \
+	  -e 's|<property name="&lt;Super&gt;KP_Left" type="string" value="tile_left_key"/>|<property name="&lt;Super&gt;a" type="string" value="tile_left_key"/>|' \
+	  -e 's|<property name="&lt;Super&gt;KP_Right" type="string" value="tile_right_key"/>|<property name="&lt;Super&gt;d" type="string" value="tile_right_key"/>|' \
+	  -e 's|<property name="&lt;Super&gt;KP_Down" type="string" value="tile_down_key"/>|<property name="&lt;Super&gt;x" type="string" value="tile_down_key"/>|' \
+	  -e 's|<property name="&lt;Super&gt;KP_Up" type="string" value="tile_up_key"/>|<property name="&lt;Super&gt;w" type="string" value="tile_up_key"/>|' \
+	  -e 's|<property name="&lt;Super&gt;KP_Page_Up" type="string" value="tile_up_right_key"/>|<property name="&lt;Super&gt;e" type="string" value="tile_up_right_key"/>|' \
+	  -e 's|<property name="&lt;Super&gt;KP_Home" type="string" value="tile_up_left_key"/>|<property name="&lt;Super&gt;q" type="string" value="tile_up_left_key"/>|' \
+	  -e 's|<property name="&lt;Super&gt;KP_End" type="string" value="tile_down_left_key"/>|<property name="&lt;Super&gt;z" type="string" value="tile_down_left_key"/>|' \
+	  -e 's|<property name="&lt;Super&gt;KP_Next" type="string" value="tile_down_right_key"/>|<property name="&lt;Super&gt;c" type="string" value="tile_down_right_key"/>|' \
+	  "$FILE"
+
 
 echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
