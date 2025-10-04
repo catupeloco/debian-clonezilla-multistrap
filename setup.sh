@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20250928-2351
+SCRIPT_DATE=20251004-1041
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -694,6 +694,8 @@ apt upgrade -y
 sleep 3
 echo --Libreoffice
 /opt/install-libreoffice-from-web/setup.sh
+echo --Flatpak
+flatpak update -y
 echo Listo -------------------------------
 sleep 10' > ${ROOTFS}/usr/local/bin/actualizar
 
