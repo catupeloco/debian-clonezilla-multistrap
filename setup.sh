@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251004-1734
+SCRIPT_DATE=20251004-2206
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -831,19 +831,20 @@ echo "Encrypted user script creation ------------------------------"
 
 echo "Replacing keybindings ----------------------------------------"
 	FILE="${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml"
-	cp "$FILE" "$FILE.bak" && \
+	cp "$FILE" "$FILE.bak"
 	sed -i \
-	  -e 's|xfce4-screenshooter -w|flameshot gui|' \
-	  -e 's|<property name="&lt;Super&gt;KP_Left" type="string" value="tile_left_key"/>|<property name="&lt;Super&gt;a" type="string" value="tile_left_key"/>|' \
-	  -e 's|<property name="&lt;Super&gt;KP_Right" type="string" value="tile_right_key"/>|<property name="&lt;Super&gt;d" type="string" value="tile_right_key"/>|' \
-	  -e 's|<property name="&lt;Super&gt;KP_Down" type="string" value="tile_down_key"/>|<property name="&lt;Super&gt;x" type="string" value="tile_down_key"/>|' \
-	  -e 's|<property name="&lt;Super&gt;KP_Up" type="string" value="tile_up_key"/>|<property name="&lt;Super&gt;w" type="string" value="tile_up_key"/>|' \
-	  -e 's|<property name="&lt;Super&gt;KP_Page_Up" type="string" value="tile_up_right_key"/>|<property name="&lt;Super&gt;e" type="string" value="tile_up_right_key"/>|' \
-	  -e 's|<property name="&lt;Super&gt;KP_Home" type="string" value="tile_up_left_key"/>|<property name="&lt;Super&gt;q" type="string" value="tile_up_left_key"/>|' \
-	  -e 's|<property name="&lt;Super&gt;KP_End" type="string" value="tile_down_left_key"/>|<property name="&lt;Super&gt;z" type="string" value="tile_down_left_key"/>|' \
-	  -e 's|<property name="&lt;Super&gt;KP_Next" type="string" value="tile_down_right_key"/>|<property name="&lt;Super&gt;c" type="string" value="tile_down_right_key"/>|' \
+	  -e 's|\(&lt;Alt&gt;Print" type="string" value="\)xfce4-screenshooter -w|\1flameshot gui|' \
+	  -e 's|\(&lt;Shift&gt;Print" type="string" value="\)xfce4-screenshooter -r|\1flameshot gui|' \
+	  -e 's|\(Print" type="string" value="\)xfce4-screenshooter|\1flameshot gui|' \
+	  -e 's|\(&lt;Super&gt;\)KP_Left|\1a|' \
+	  -e 's|\(&lt;Super&gt;\)KP_Right|\1d|' \
+	  -e 's|\(&lt;Super&gt;\)KP_Down|\1x|' \
+	  -e 's|\(&lt;Super&gt;\)KP_Up|\1w|' \
+	  -e 's|\(&lt;Super&gt;\)KP_Page_Up|\1e|' \
+	  -e 's|\(&lt;Super&gt;\)KP_Home|\1q|' \
+	  -e 's|\(&lt;Super&gt;\)KP_End|\1z|' \
+	  -e 's|\(&lt;Super&gt;\)KP_Next|\1c|' \
 	  "$FILE"
-
 
 echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
@@ -864,18 +865,24 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}" || true
 	echo $SCRIPT_DATE
+	exit
+
 # time sudo netselect -t40 $(wget -qO- http://www.debian.org/mirror/list | grep '/debian/' | grep -v download | cut -d \" -f6 | sort -u)
 # sudo nala fetch --debian trixie --auto --fetches 10 --non-free -c AR -c UR -c CL -c BR
 # sudo nala fetch --debian trixie --auto              --non-free -c AR
 # sudo nala fetch --debian trixie --auto --fetches 10 --non-free
 
 
-exit
 # TODO
 # Discover no abre la primera vez hasta que haces sudo apt update
+	# Descartado
 # Volumen siempre vuelve a cero
+	# Pendiente
 # Screenshot no anda por teclado xfce4-settings-editor
+	# En proceso
+	# Teclas de control de ventanas
+	# xfconf-query  -l
+	# xfconf-query -c xfce4-panel -l
 # /etc/xdg/xfce4/panel/default.xml
+
 # lupa xfce4-appfinder
-# xfconf-query  -l
-# xfconf-query -c xfce4-panel -l
