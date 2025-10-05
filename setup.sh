@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251004-2211
+SCRIPT_DATE=20251004-2306
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -845,6 +845,8 @@ echo "Replacing keybindings ----------------------------------------"
 	  -e 's|\(&lt;Super&gt;\)KP_End|\1z|' \
 	  -e 's|\(&lt;Super&gt;\)KP_Next|\1c|' \
 	  "$FILE"
+	mkdir ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml
+	cp /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
 
 echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
