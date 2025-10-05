@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251005-1258
+SCRIPT_DATE=20251005-1348
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
