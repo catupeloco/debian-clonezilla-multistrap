@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251004-2345
+SCRIPT_DATE=20251005-0036
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -836,14 +836,6 @@ echo "Replacing keybindings ----------------------------------------"
 	  -e 's/xfce4-screenshooter -w/flameshot gui/' \
 	  -e 's/xfce4-screenshooter -r/flameshot gui/' \
 	  -e 's/xfce4-screenshooter/flameshot gui/' \
-	  -e 's/KP_Left/a/' \
-	  -e 's/KP_Right/d/' \
-	  -e 's/KP_Down/x/' \
-	  -e 's/KP_Up/w/' \
-	  -e 's/KP_Page_Up/e/' \
-	  -e 's/KP_Home/q/' \
-	  -e 's/KP_End/z/' \
-	  -e 's/KP_Next/c/' \
 	  "$FILE"
 	mkdir -p ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml
 	cp ${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
