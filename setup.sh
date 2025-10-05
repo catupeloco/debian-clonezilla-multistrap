@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251005-0036
+SCRIPT_DATE=20251005-0157
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -13,8 +13,7 @@ echo "Installing dependencies for this script ---------------------"
         apt update							 >/dev/null 2>&1
 	apt install --fix-broken -y					 >/dev/null 2>&1
         apt install dosfstools parted gnupg2 unzip \
-		             wget curl openssh-server -y		 >/dev/null 2>&1
-	apt install mmdebstrap	-y					 #>/dev/null 2>&1
+        wget curl openssh-server mmdebstrap xmlstarlet -y		 >/dev/null 2>&1
 	systemctl start sshd						 >/dev/null 2>&1
 
 #####################################################################################################
@@ -828,7 +827,7 @@ echo "Encrypted user script creation ------------------------------"
 		sudo reboot
 	" > ${ROOTFS}/usr/local/bin/useradd-encrypt
 	chmod +x ${ROOTFS}/usr/local/bin/useradd-encrypt
-
+<<'SKIP'
 echo "Replacing keybindings ----------------------------------------"
 	FILE="${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml"
 	cp "$FILE" "$FILE.bak"
@@ -839,6 +838,47 @@ echo "Replacing keybindings ----------------------------------------"
 	  "$FILE"
 	mkdir -p ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml
 	cp ${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
+SKIP
+
+echo "Replacing keybindings ----------------------------------------"
+	FILE="${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml"
+	cp -a "$FILE" "$FILE.bak"
+
+	echo "--Changing screenshooter for flameshot"
+	if [ -f "$FILE" ]; then
+	  sed -i \
+	    -e 's/xfce4-screenshooter -w/flameshot gui/g' \
+	    -e 's/xfce4-screenshooter -r/flameshot gui/g' \
+	    -e 's/xfce4-screenshooter/flameshot gui/g' \
+	    "$FILE"
+	fi
+
+	echo "--Windows manager twicks"
+	xmlstarlet ed -L -d "/channel/property[@name='xfwm4']/property[@name='custom']" "$FILE" 2>/dev/null || true
+	xmlstarlet ed -L -s "/channel/property[@name='xfwm4']" -t elem -n "custom" -v "" "$FILE"
+
+	declare -A MAP=(
+	    ["&lt;Super&gt;a"]="tile_left_key"
+	    ["&lt;Super&gt;d"]="tile_right_key"
+	    ["&lt;Super&gt;w"]="tile_up_key"
+	    ["&lt;Super&gt;x"]="tile_down_key"
+	    ["&lt;Super&gt;q"]="tile_up_left_key"
+	    ["&lt;Super&gt;e"]="tile_up_right_key"
+	    ["&lt;Super&gt;z"]="tile_down_left_key"
+	    ["&lt;Super&gt;c"]="tile_down_right_key"
+	    ["&lt;Super&gt;s"]="maximize_window_key"
+	)
+	for k in "${!MAP[@]}"; do
+	    v=${MAP[$k]}
+	    xmlstarlet ed -L \
+	      -s "/channel/property[@name='xfwm4']/custom" -t elem -n "property" -v "" \
+	      -i "/channel/property[@name='xfwm4']/custom/property[last()]" -t attr -n "name" -v "$k" \
+	      -i "/channel/property[@name='xfwm4']/custom/property[last()]" -t attr -n "type" -v "string" \
+	      -i "/channel/property[@name='xfwm4']/custom/property[last()]" -t attr -n "value" -v "$v" \
+	      "$FILE"
+	done
+	mkdir -p ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml
+	cp -a "$FILE" ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
 
 echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
