@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251004-2307
+SCRIPT_DATE=20251004-2323
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -833,17 +833,17 @@ echo "Replacing keybindings ----------------------------------------"
 	FILE="${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml"
 	cp "$FILE" "$FILE.bak"
 	sed -i \
-	  -e 's|\(&lt;Alt&gt;Print" type="string" value="\)xfce4-screenshooter -w|\1flameshot gui|' \
-	  -e 's|\(&lt;Shift&gt;Print" type="string" value="\)xfce4-screenshooter -r|\1flameshot gui|' \
-	  -e 's|\(Print" type="string" value="\)xfce4-screenshooter|\1flameshot gui|' \
-	  -e 's|\(&lt;Super&gt;\)KP_Left|\1a|' \
-	  -e 's|\(&lt;Super&gt;\)KP_Right|\1d|' \
-	  -e 's|\(&lt;Super&gt;\)KP_Down|\1x|' \
-	  -e 's|\(&lt;Super&gt;\)KP_Up|\1w|' \
-	  -e 's|\(&lt;Super&gt;\)KP_Page_Up|\1e|' \
-	  -e 's|\(&lt;Super&gt;\)KP_Home|\1q|' \
-	  -e 's|\(&lt;Super&gt;\)KP_End|\1z|' \
-	  -e 's|\(&lt;Super&gt;\)KP_Next|\1c|' \
+	  -e 's/xfce4-screenshooter -w/flameshot gui/' \
+	  -e 's/xfce4-screenshooter -r/flameshot gui/' \
+	  -e 's/xfce4-screenshooter/flameshot gui/' \
+	  -e 's/KP_Left/a/' \
+	  -e 's/KP_Right/d/' \
+	  -e 's/KP_Down/x/' \
+	  -e 's/KP_Up/w/' \
+	  -e 's/KP_Page_Up/e/' \
+	  -e 's/KP_Home/q/' \
+	  -e 's/KP_End/z/' \
+	  -e 's/KP_Next/c/' \
 	  "$FILE"
 	mkdir ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml
 	cp /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml /etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
