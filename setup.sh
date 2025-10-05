@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251005-0217
+SCRIPT_DATE=20251005-1133
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -827,58 +827,24 @@ echo "Encrypted user script creation ------------------------------"
 		sudo reboot
 	" > ${ROOTFS}/usr/local/bin/useradd-encrypt
 	chmod +x ${ROOTFS}/usr/local/bin/useradd-encrypt
-<<'SKIP'
-echo "Replacing keybindings ----------------------------------------"
-	FILE="${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml"
-	cp "$FILE" "$FILE.bak"
-	sed -i \
-	  -e 's/xfce4-screenshooter -w/flameshot gui/' \
-	  -e 's/xfce4-screenshooter -r/flameshot gui/' \
-	  -e 's/xfce4-screenshooter/flameshot gui/' \
-	  "$FILE"
-	mkdir -p ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml
-	cp ${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
-SKIP
 
 echo "Replacing keybindings ----------------------------------------"
-	FILE="${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml"
-	cp -a "$FILE" "$FILE.bak"
-
-	echo "--Changing screenshooter for flameshot"
-	if [ -f "$FILE" ]; then
-	  sed -i \
-	    -e 's/xfce4-screenshooter -w/flameshot gui/g' \
-	    -e 's/xfce4-screenshooter -r/flameshot gui/g' \
-	    -e 's/xfce4-screenshooter/flameshot gui/g' \
-	    "$FILE"
-	fi
-
-	echo "--Windows manager twicks"
-	xmlstarlet ed -L -d "/channel/property[@name='xfwm4']/property[@name='custom']" "$FILE" 2>/dev/null || true
-	xmlstarlet ed -L -s "/channel/property[@name='xfwm4']" -t elem -n "custom" -v "" "$FILE"
-
-	declare -A MAP=(
-	    ["&lt;Super&gt;a"]="tile_left_key"
-	    ["&lt;Super&gt;d"]="tile_right_key"
-	    ["&lt;Super&gt;w"]="tile_up_key"
-	    ["&lt;Super&gt;x"]="tile_down_key"
-	    ["&lt;Super&gt;q"]="tile_up_left_key"
-	    ["&lt;Super&gt;e"]="tile_up_right_key"
-	    ["&lt;Super&gt;z"]="tile_down_left_key"
-	    ["&lt;Super&gt;c"]="tile_down_right_key"
-	    ["&lt;Super&gt;s"]="maximize_window_key"
-	)
-	for k in "${!MAP[@]}"; do
-	    v=${MAP[$k]}
-	    xmlstarlet ed -L \
-	      -s "/channel/property[@name='xfwm4']/custom" -t elem -n "property" -v "" \
-	      -i "/channel/property[@name='xfwm4']/custom/property[last()]" -t attr -n "name" -v "$k" \
-	      -i "/channel/property[@name='xfwm4']/custom/property[last()]" -t attr -n "type" -v "string" \
-	      -i "/channel/property[@name='xfwm4']/custom/property[last()]" -t attr -n "value" -v "$v" \
-	      "$FILE"
-	done
-	mkdir -p ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml
-	cp -a "$FILE" ${ROOTFS}/etc/skel/.config/xfce4/xfconf/xfce-perchannel-xml/
+	echo '
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>a"          -n -t string -s "tile_left_key"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>d"          -n -t string -s "tile_right_key"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>w"          -n -t string -s "tile_up_key"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>x"          -n -t string -s "tile_down_key"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>q"          -n -t string -s "tile_up_left_key"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>e"          -n -t string -s "tile_up_right_key"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>z"          -n -t string -s "tile_down_left_key"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>c"          -n -t string -s "tile_down_right_key"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>s"          -n -t string -s "maximize_window_key"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/commands/custom/Print"        -n -t string -s "flameshot gui"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/commands/custom/<Shift>Print" -n -t string -s "flameshot gui"
+	xfconf-query -c xfce4-keyboard-shortcuts -p "/commands/custom/<Alt>Print"   -n -t string -s "flameshot gui"
+	xfwm4 --replace &
+	' > ${ROOTFS}/usr/local/bin/keybinds
+	chmod +x ${ROOTFS}/usr/local/bin/keybinds
 
 echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
