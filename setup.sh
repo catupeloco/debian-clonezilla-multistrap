@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-1836
+SCRIPT_DATE=20251012-1924
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -832,6 +832,57 @@ echo "Replacing keybindings ----------------------------------------"
 	FILE=${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
 	echo --Making Backup file
 	cp ${FILE} ${FILE}.bak
+	echo --Ensuring custom keybinding section exists and applying new shortcuts
+	if command -v xmlstarlet >/dev/null 2>&1; then
+	    echo Crear el bloque <property name="custom" type="empty"> si no existe
+	    if ! xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
+		xmlstarlet ed -L \
+		    -s "/channel/property[@name='xfwm4']" -t elem -n "propertyTMP" -v "" \
+		    -i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "name" -v "custom" \
+		    -i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "type" -v "empty" \
+		    -r "/channel/property[@name='xfwm4']/propertyTMP" -v "property" \
+		    "$FILE"
+	    fi
+
+	    echo --"Mapear teclas \(usando \<Alt\> directamente\)"
+	    declare -A MAP=(
+		["<Alt>a"]="tile_left_key"
+		["<Alt>d"]="tile_right_key"
+		["<Alt>w"]="tile_up_key"
+		["<Alt>x"]="tile_down_key"
+		["<Alt>q"]="tile_up_left_key"
+		["<Alt>e"]="tile_up_right_key"
+		["<Alt>z"]="tile_down_left_key"
+		["<Alt>c"]="tile_down_right_key"
+		["<Alt>s"]="maximize_window_key"
+	    )
+
+	    for key in "${!MAP[@]}"; do
+		action=${MAP[$key]}
+		echo --"Si ya existe la entrada, actualizarla\; si no, crearla"
+		if xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}'])" "$FILE" | grep -q '^1$'; then
+		    xmlstarlet ed -L \
+			-u "/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}']/@value" \
+			-v "$action" "$FILE"
+		else
+		    xmlstarlet ed -L \
+			-s "/channel/property[@name='xfwm4']/property[@name='custom']" -t elem -n "propertyTMP" -v "" \
+			-i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "name" -v "$key" \
+			-i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "type" -v "string" \
+			-i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "value" -v "$action" \
+			-r "/channel/property[@name='xfwm4']/propertyTMP" -v "property" \
+			"$FILE"
+		fi
+	    done
+
+	    echo --Corregir posibles entidades dobles '(&amp;lt;Alt&amp;gt;)'
+	    sed -i 's/&amp;\(lt;\|gt;\)/\1/g' "$FILE"
+	fi
+
+<<'BYPASS'
+	FILE=${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
+	echo --Making Backup file
+	cp ${FILE} ${FILE}.bak
 	echo --Deleting lines that may conflict
 	sed -i '/tile_left_key/d'          $FILE
         sed -i '/tile_right_key/d'         $FILE
@@ -843,6 +894,54 @@ echo "Replacing keybindings ----------------------------------------"
         sed -i '/tile_down_right_key/d'    $FILE
         sed -i '/maximize_window_key/d'    $FILE
         sed -i '/xfce4-screenshooter/d'    $FILE
+
+	if command -v xmlstarlet >/dev/null 2>&1; then
+		# Verificar si ya existe el bloque <property name="custom">
+		if ! xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
+			# Crear el bloque si no existe
+			xmlstarlet ed -L \
+			-s "/channel/property[@name='xfwm4']" -t elem -n "propertyTMP" -v "" \
+			-i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "name" -v "custom" \
+			-i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "type" -v "empty" \
+			-r "/channel/property[@name='xfwm4']/propertyTMP" -v "property" \
+			"$FILE"
+		fi
+		xmlstarlet ed -L -d "/channel/property[@name='xfwm4']/property[@name='custom']" "$FILE" 2>/dev/null || true
+		xmlstarlet ed -L -s "/channel/property[@name='xfwm4']" -t elem -n "custom" -v "" "$FILE"
+
+		# Mapa de teclas y acciones
+		declare -A MAP=(
+		["<Alt>a"]="tile_left_key"
+		["<Alt>d"]="tile_right_key"
+		["<Alt>w"]="tile_up_key"
+		["<Alt>x"]="tile_down_key"
+		["<Alt>q"]="tile_up_left_key"
+		["<Alt>e"]="tile_up_right_key"
+		["<Alt>z"]="tile_down_left_key"
+		["<Alt>c"]="tile_down_right_key"
+		["<Alt>s"]="maximize_window_key"
+		)
+
+		# Agregar o reemplazar propiedades dentro del bloque "custom"
+		for key in "${!MAP[@]}"; do
+			action=${MAP[$key]}
+			# Si ya existe la entrada, actualizarla; si no, crearla
+			if xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}'])" "$FILE" | grep -q '^1$'; then
+				xmlstarlet ed -L \
+				-u "/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}']/@value" \
+				-v "$action" "$FILE"
+			else
+				xmlstarlet ed -L \
+				-s "/channel/property[@name='xfwm4']/property[@name='custom']" -t elem -n "propertyTMP" -v "" \
+				-i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "name" -v "$key" \
+				-i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "type" -v "string" \
+				-i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "value" -v "$action" \
+				-r "/channel/property[@name='xfwm4']/propertyTMP" -v "property" \
+				"$FILE"
+			fi
+		done
+	fi
+
 
 	echo --Clearing previos custom sections
 	xmlstarlet ed -L -d "/channel/property[@name='xfwm4']/property[@name='custom']" "$FILE" 2>/dev/null || true
@@ -873,8 +972,6 @@ echo "Replacing keybindings ----------------------------------------"
 	sed -i 's/amp\;//g' $FILE
 	echo --Done
 
-
-<<'BYPASS'
 	echo '
 	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>a"          -n -t string -s "tile_left_key"
 	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>d"          -n -t string -s "tile_right_key"
