@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-1717
+SCRIPT_DATE=20251012-1810
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -830,6 +830,9 @@ echo "Encrypted user script creation ------------------------------"
 
 echo "Replacing keybindings ----------------------------------------"
 	FILE=${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
+	echo --Making Backup file
+	cp ${FILE} ${FILE}.bak
+	echo --Deleting lines that may conflict
 	sed -i '/tile_left_key/d'          $FILE
         sed -i '/tile_right_key/d'         $FILE
         sed -i '/tile_up_key/d'            $FILE
@@ -839,7 +842,38 @@ echo "Replacing keybindings ----------------------------------------"
         sed -i '/tile_down_left_key/d'     $FILE
         sed -i '/tile_down_right_key/d'    $FILE
         sed -i '/maximize_window_key/d'    $FILE
+        sed -i '/xfce4-screenshooter/d'    $FILE
 
+	echo --Clearing previos custom sections
+	xmlstarlet ed -L -d "/channel/property[@name='xfwm4']/property[@name='custom']" "$FILE" 2>/dev/null || true
+	xmlstarlet ed -L -s "/channel/property[@name='xfwm4']" -t elem -n "custom" -v "" "$FILE"
+
+	echo --Setting new custom keybinds
+	declare -A MAP=(
+	["&lt;Alt&gt;a"]="tile_left_key"
+	["&lt;Alt&gt;d"]="tile_right_key"
+	["&lt;Alt&gt;w"]="tile_up_key"
+	["&lt;Alt&gt;x"]="tile_down_key"
+	["&lt;Alt&gt;q"]="tile_up_left_key"
+	["&lt;Alt&gt;e"]="tile_up_right_key"
+	["&lt;Alt&gt;z"]="tile_down_left_key"
+	["&lt;Alt&gt;c"]="tile_down_right_key"
+	["&lt;Alt&gt;s"]="maximize_window_key"
+	)
+	echo --Looping
+	for k in "${!MAP[@]}"; do
+		v=${MAP[$k]}
+		xmlstarlet ed -L \
+		-s "/channel/property[@name='xfwm4']/custom" -t elem -n "property" -v "" \
+		-i "/channel/property[@name='xfwm4']/custom/property[last()]" -t attr -n "name" -v "$k" \
+		-i "/channel/property[@name='xfwm4']/custom/property[last()]" -t attr -n "type" -v "string" \
+		-i "/channel/property[@name='xfwm4']/custom/property[last()]" -t attr -n "value" -v "$v" \
+		"$FILE"
+	done
+	echo --Done
+
+
+<<'BYPASS'
 	echo '
 	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>a"          -n -t string -s "tile_left_key"
 	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>d"          -n -t string -s "tile_right_key"
@@ -856,6 +890,8 @@ echo "Replacing keybindings ----------------------------------------"
 	xfwm4 --replace &
 	' > ${ROOTFS}/usr/local/bin/keybinds
 	chmod +x ${ROOTFS}/usr/local/bin/keybinds
+BYPASS
+
 
 echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
