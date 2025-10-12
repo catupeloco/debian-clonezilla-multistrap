@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-1924
+SCRIPT_DATE=20251012-1936
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -834,7 +834,7 @@ echo "Replacing keybindings ----------------------------------------"
 	cp ${FILE} ${FILE}.bak
 	echo --Ensuring custom keybinding section exists and applying new shortcuts
 	if command -v xmlstarlet >/dev/null 2>&1; then
-	    echo Crear el bloque <property name="custom" type="empty"> si no existe
+	    echo --'Crear el bloque <property name="custom" type="empty"> si no existe'
 	    if ! xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
 		xmlstarlet ed -L \
 		    -s "/channel/property[@name='xfwm4']" -t elem -n "propertyTMP" -v "" \
