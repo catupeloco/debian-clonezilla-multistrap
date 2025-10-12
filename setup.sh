@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-1936
+SCRIPT_DATE=20251012-2036
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -859,12 +859,14 @@ echo "Replacing keybindings ----------------------------------------"
 
 	    for key in "${!MAP[@]}"; do
 		action=${MAP[$key]}
-		echo --"Si ya existe la entrada, actualizarla\; si no, crearla"
+		echo --"Si ya existe la entrada de $key, actualizarla\; si no, crearla"
 		if xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}'])" "$FILE" | grep -q '^1$'; then
+		    echo "---Si, existe"
 		    xmlstarlet ed -L \
 			-u "/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}']/@value" \
 			-v "$action" "$FILE"
 		else
+		    echo "---No, existe"
 		    xmlstarlet ed -L \
 			-s "/channel/property[@name='xfwm4']/property[@name='custom']" -t elem -n "propertyTMP" -v "" \
 			-i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "name" -v "$key" \
