@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-1832
+SCRIPT_DATE=20251012-1836
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -870,6 +870,7 @@ echo "Replacing keybindings ----------------------------------------"
 		-i "/channel/property[@name='xfwm4']/custom/property[last()]" -t attr -n "value" -v "$v" \
 		"$FILE"
 	done
+	sed -i 's/amp\;//g' $FILE
 	echo --Done
 
 
