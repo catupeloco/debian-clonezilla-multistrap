@@ -6,5 +6,6 @@ while true; do
 	git commit -m "$(date +'%Y%m%d-%H%M')" 
 	git push
 	echo dormir....
+	wget -qO- vicentech.com.ar/laptop | head -n 2 
 	sleep 10
 done
