@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-1520
+SCRIPT_DATE=20251012-1712
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -829,6 +829,17 @@ echo "Encrypted user script creation ------------------------------"
 	chmod +x ${ROOTFS}/usr/local/bin/useradd-encrypt
 
 echo "Replacing keybindings ----------------------------------------"
+	FILE=${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
+	sed -i '/tile_left_key/d'          $FILE
+        sed -i '/tile_right_key/d'         $FILE
+        sed -i '/tile_up_key/d'            $FILE
+        sed -i '/tile_down_key/d'          $FILE
+        sed -i '/tile_up_left_key/d'       $FILE
+        sed -i '/tile_up_right_key/d'      $FILE
+        sed -i '/tile_down_left_key/d'     $FILE
+        sed -i '/tile_down_right_key/d'    $FILE
+        sed -i '/maximize_window_key/d'    $FILE
+
 	echo '
 	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>a"          -n -t string -s "tile_left_key"
 	xfconf-query -c xfce4-keyboard-shortcuts -p "/xfwm4/custom/<Alt>d"          -n -t string -s "tile_right_key"
