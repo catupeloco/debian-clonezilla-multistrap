@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-2158
+SCRIPT_DATE=20251012-2202
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -865,7 +865,7 @@ echo "Replacing keybindings ----------------------------------------"
 	    	    echo "--Custom block already exists"
 	    	fi
 
-		echo "--Mapear teclas \(usando \<Alt\> directamente\)"
+		echo "--Mapping keys to Alt \+ ... "
 		# MAP y comprobación previa quedan igual
 		declare -A MAP=(
 		    ["<Alt>a"]="tile_left_key"
@@ -935,10 +935,11 @@ echo "END of the road!! keep up the good work ---------------------"
 # Volumen siempre vuelve a cero
 	# Pendiente
 # Screenshot no anda por teclado xfce4-settings-editor
-	# En proceso
+	# Listo
 	# Teclas de control de ventanas
 	# xfconf-query  -l
 	# xfconf-query -c xfce4-panel -l
+
 # /etc/xdg/xfce4/panel/default.xml
 
 # lupa xfce4-appfinder
