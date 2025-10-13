@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-2126
+SCRIPT_DATE=20251012-2146
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -833,6 +833,13 @@ echo "Replacing keybindings ----------------------------------------"
 	echo --Making Backup file
 	cp ${FILE} ${FILE}.bak
 
+	echo --Replacing screenshooter by flameshot
+	sed -i \
+	-e 's/xfce4-screenshooter -w/flameshot gui/g' \
+	-e 's/xfce4-screenshooter -r/flameshot gui/g' \
+	-e 's/xfce4-screenshooter/flameshot gui/g'    \
+    	"$FILE"
+
 	echo --Deleting lines that may conflict 
 	sed -i '/tile_left_key/d'       $FILE 
 	sed -i '/tile_right_key/d'      $FILE 
@@ -843,22 +850,21 @@ echo "Replacing keybindings ----------------------------------------"
 	sed -i '/tile_down_left_key/d'  $FILE 
 	sed -i '/tile_down_right_key/d' $FILE 
 	sed -i '/maximize_window_key/d' $FILE 
-	sed -i '/xfce4-screenshooter/d' $FILE
 
 	echo --Ensuring custom keybinding section exists and applying new shortcuts
 	if command -v xmlstarlet >/dev/null 2>&1; then
-	    echo --'Crear el bloque <property name="custom" type="empty"> si no existe'
-	    if ! xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
+		if ! xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
+	    	echo --'Crear el bloque <property name="custom" type="empty">'
 		xmlstarlet ed -L \
 		    -s "/channel/property[@name='xfwm4']" -t elem -n "propertyTMP" -v "" \
 		    -i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "name" -v "custom" \
 		    -i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "type" -v "empty" \
 		    -r "/channel/property[@name='xfwm4']/propertyTMP" -v "property" \
 		    "$FILE"
-	    fi
+	    	fi
 
-	    echo --"Mapear teclas \(usando \<Alt\> directamente\)"
-	    # MAP y comprobación previa quedan igual
+		echo --"Mapear teclas \(usando \<Alt\> directamente\)"
+		# MAP y comprobación previa quedan igual
 		declare -A MAP=(
 		    ["<Alt>a"]="tile_left_key"
 		    ["<Alt>d"]="tile_right_key"
@@ -869,20 +875,17 @@ echo "Replacing keybindings ----------------------------------------"
 		    ["<Alt>z"]="tile_down_left_key"
 		    ["<Alt>c"]="tile_down_right_key"
 		    ["<Alt>s"]="maximize_window_key"
-		)
+	    	)
 
 		for key in "${!MAP[@]}"; do
 		    action=${MAP[$key]}
-		    echo --"Si ya existe la entrada de $key, actualizarla; si no, crearla"
-		    # xmlstarlet devuelve el valor ya decodificado, así que comparar con "<Alt>a" funciona
 		    if xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
-			echo "---Existe: actualizando value a $action"
+			echo "--Already Exists  : updateing value of    $key -> $action"
 			xmlstarlet ed -L \
 			    -u "/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}']/@value" \
 			    -v "$action" "$FILE"
 		    else
-			echo "---No existe: creando propiedad para $key -> $action"
-			# Crear un nodo temporal propertyTMP dentro de custom, y apuntar siempre al último [last()]
+			echo "--It doesnt exists: creating property for $key -> $action"
 			xmlstarlet ed -L \
 			    -s "/channel/property[@name='xfwm4']/property[@name='custom']"                     -t elem -n "propertyTMP" -v ""        \
 			    -i "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -t attr -n "name"        -v "$key"    \
@@ -892,8 +895,7 @@ echo "Replacing keybindings ----------------------------------------"
 			    "$FILE"
 		    fi
 		done
-
-		# Limpieza si xmlstarlet duplicó entidades
+		echo "--Just in case replacing wrong characters"
 		sed -i 's/&amp;\(lt;\|gt;\)/\1/g' "$FILE"
 
 	fi
