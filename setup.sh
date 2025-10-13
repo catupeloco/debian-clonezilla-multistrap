@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-2112
+SCRIPT_DATE=20251012-2126
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -832,6 +832,19 @@ echo "Replacing keybindings ----------------------------------------"
 	FILE=${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
 	echo --Making Backup file
 	cp ${FILE} ${FILE}.bak
+
+	echo --Deleting lines that may conflict 
+	sed -i '/tile_left_key/d'       $FILE 
+	sed -i '/tile_right_key/d'      $FILE 
+	sed -i '/tile_up_key/d'         $FILE 
+	sed -i '/tile_down_key/d'       $FILE 
+	sed -i '/tile_up_left_key/d'    $FILE 
+	sed -i '/tile_up_right_key/d'   $FILE 
+	sed -i '/tile_down_left_key/d'  $FILE 
+	sed -i '/tile_down_right_key/d' $FILE 
+	sed -i '/maximize_window_key/d' $FILE 
+	sed -i '/xfce4-screenshooter/d' $FILE
+
 	echo --Ensuring custom keybinding section exists and applying new shortcuts
 	if command -v xmlstarlet >/dev/null 2>&1; then
 	    echo --'Crear el bloque <property name="custom" type="empty"> si no existe'
@@ -871,11 +884,11 @@ echo "Replacing keybindings ----------------------------------------"
 			echo "---No existe: creando propiedad para $key -> $action"
 			# Crear un nodo temporal propertyTMP dentro de custom, y apuntar siempre al último [last()]
 			xmlstarlet ed -L \
-			    -s "/channel/property[@name='xfwm4']/property[@name='custom']" -t elem -n "propertyTMP" -v "" \
-			    -i  "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -t attr -n "name"  -v "$key" \
-			    -i  "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -t attr -n "type"  -v "string" \
-			    -i  "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -t attr -n "value" -v "$action" \
-			    -r  "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -v "property" \
+			    -s "/channel/property[@name='xfwm4']/property[@name='custom']"                     -t elem -n "propertyTMP" -v ""        \
+			    -i "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -t attr -n "name"        -v "$key"    \
+			    -i "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -t attr -n "type"        -v "string"  \
+			    -i "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -t attr -n "value"       -v "$action" \
+			    -r "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -v "property"                         \
 			    "$FILE"
 		    fi
 		done
