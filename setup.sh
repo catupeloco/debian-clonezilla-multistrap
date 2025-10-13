@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-2146
+SCRIPT_DATE=20251012-2158
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -854,16 +854,18 @@ echo "Replacing keybindings ----------------------------------------"
 	echo --Ensuring custom keybinding section exists and applying new shortcuts
 	if command -v xmlstarlet >/dev/null 2>&1; then
 		if ! xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
-	    	echo --'Crear el bloque <property name="custom" type="empty">'
-		xmlstarlet ed -L \
+		    echo "--Creating block customi"
+		    xmlstarlet ed -L \
 		    -s "/channel/property[@name='xfwm4']" -t elem -n "propertyTMP" -v "" \
 		    -i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "name" -v "custom" \
 		    -i "/channel/property[@name='xfwm4']/propertyTMP" -t attr -n "type" -v "empty" \
 		    -r "/channel/property[@name='xfwm4']/propertyTMP" -v "property" \
 		    "$FILE"
+		else
+	    	    echo "--Custom block already exists"
 	    	fi
 
-		echo --"Mapear teclas \(usando \<Alt\> directamente\)"
+		echo "--Mapear teclas \(usando \<Alt\> directamente\)"
 		# MAP y comprobación previa quedan igual
 		declare -A MAP=(
 		    ["<Alt>a"]="tile_left_key"
