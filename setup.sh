@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251025-1617
+SCRIPT_DATE=20251025-1618
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -622,7 +622,8 @@ echo "Entering chroot ---------------------------------------------"
 	echo ---Skel
 	cd /opt	
 	git clone ${THIS_SCRIPT}								>>\$LOG 2>>\$ERR
-	
+	cd debian-clonezilla-multistrap
+	rsync -av --delete /opt/debian-clonezilla-multistrap/skel /etc/skel			>>\$LOG 2>>\$ERR
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
