@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251025-1819
+SCRIPT_DATE=20251025-1827
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -591,20 +591,20 @@ echo "Entering chroot ---------------------------------------------"
 	echo vhost_net >> /etc/modules
 
         echo ---Running tasksel for fixes
-	tasksel install ssh-server laptop xfce --new-install                                    >>\$LOG 2>>\$ERR
+	tasksel install ssh-server laptop xfce --new-install                                    #>>\$LOG 2>>\$ERR
 
 	echo ---Installing Draw.io
-	dpkg -i /var/cache/apt/archives/Draw.io/${DRAWIO_DEB}					>>\$LOG 2>>\$ERR
+	dpkg -i /var/cache/apt/archives/Draw.io/${DRAWIO_DEB}					#>>\$LOG 2>>\$ERR
 
         #Installing Libreoffice in backgroupd
-        dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				>>\$LOG 2>>\$ERR &
+        dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				#>>\$LOG 2>>\$ERR &
         pid_LO=$!
 
         echo ---Installing grub
-        update-initramfs -c -k all                                                              >>\$LOG 2>>\$ERR
+        update-initramfs -c -k all                                                              #>>\$LOG 2>>\$ERR
         grub-install --target=x86_64-efi --efi-directory=/boot/efi \
-	      --bootloader-id=debian --recheck --no-nvram --removable  				>>\$LOG 2>>\$ERR 
-        update-grub                                                                             >>\$LOG 2>>\$ERR
+	      --bootloader-id=debian --recheck --no-nvram --removable  				#>>\$LOG 2>>\$ERR 
+        update-grub                                                                             #>>\$LOG 2>>\$ERR
 
         echo ---Installing LibreOffice and its language pack
 	echo -----Cloning script for future updates
@@ -613,7 +613,7 @@ echo "Entering chroot ---------------------------------------------"
 	git clone ${LIBREOFFICE_UPDS}
 	chmod +x /opt/install-libreoffice-from-web/setup.sh
         wait $pid_LO
-        apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
+        apt install --fix-broken -y                                                             #>>\$LOG 2>>\$ERR
         echo ------LibreOffice \$VERSION_LO installation done.
 
 	echo ---Flatpak and Mission Center
@@ -649,25 +649,25 @@ echo "Entering chroot ---------------------------------------------"
         debconf-set-selections <<< \"unattended-upgrades unattended-upgrades/enable_auto_updates boolean true\"
         
 	rm -f /etc/localtime /etc/timezone
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive tzdata			>>\$LOG 2>>\$ERR
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-data		>>\$LOG 2>>\$ERR
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-setup		>>\$LOG 2>>\$ERR
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive keyboard-configuration 	>>\$LOG 2>>\$ERR
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive unattended-upgrades         >>\$LOG 2>>\$ERR
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive tzdata			#>>\$LOG 2>>\$ERR
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-data		#>>\$LOG 2>>\$ERR
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-setup		#>>\$LOG 2>>\$ERR
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive keyboard-configuration 	#>>\$LOG 2>>\$ERR
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive unattended-upgrades         #>>\$LOG 2>>\$ERR
         sed -i '/# es_AR.UTF-8 UTF-8/s/^# //g' /etc/locale.gen
-        locale-gen 											>>\$LOG 2>>\$ERR
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive locales 			>>\$LOG 2>>\$ERR
+        locale-gen 											#>>\$LOG 2>>\$ERR
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive locales 			#>>\$LOG 2>>\$ERR
 	export LANG=es_AR.UTF-8
-        update-locale LANG=es_AR.UTF-8									>>\$LOG 2>>\$ERR
-	localectl set-locale LANG=es_AR.UTF-8								>>\$LOG 2>>\$ERR
-        locale												>>\$LOG 2>>\$ERR
+        update-locale LANG=es_AR.UTF-8									#>>\$LOG 2>>\$ERR
+	localectl set-locale LANG=es_AR.UTF-8								#>>\$LOG 2>>\$ERR
+        locale												#>>\$LOG 2>>\$ERR
 	echo LANG=es_AR.UTF-8 >> /etc/environment
         if [ \$PROC_NEEDS_UMOUNT -eq 1 ]; then
                 umount /proc
         fi
         exit" > ${ROOTFS}/root/chroot.sh
         chmod +x ${ROOTFS}/root/chroot.sh
-        chroot ${ROOTFS} /bin/bash /root/chroot.sh
+        chroot ${ROOTFS} /bin/bash /root/chroot.sh 2>>$ERR | tee -a $LOG
 
 echo "Unattended upgrades -----------------------------------------"
 #https://github.com/mvo5/unattended-upgrades/blob/master/README.md
