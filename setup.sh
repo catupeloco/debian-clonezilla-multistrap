@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251025-1827
+SCRIPT_DATE=20251025-1844
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -913,6 +913,9 @@ echo "Replacing keybindings ----------------------------------------"
 		echo "--Just in case replacing wrong characters"
 		sed -i 's/&amp;\(lt;\|gt;\)/\1/g' "$FILE"
 	fi
+
+echo "Backing up logs ----------------------------------------------"
+	cp ${LOG} ${ERR} ${ROOTFS}/
 
 echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
