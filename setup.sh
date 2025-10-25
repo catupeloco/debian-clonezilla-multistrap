@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251025-1844
+SCRIPT_DATE=20251025-1910
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -619,7 +619,6 @@ echo "Entering chroot ---------------------------------------------"
 	echo ---Flatpak and Mission Center
 	flatpak remote-add --if-not-exists flathub ${FLATPAK_REPO}
 	flatpak install flathub io.missioncenter.MissionCenter -y
-	rm /etc/resolv.conf
 
 	echo ---Skel
 	cd /opt	
@@ -665,6 +664,7 @@ echo "Entering chroot ---------------------------------------------"
         if [ \$PROC_NEEDS_UMOUNT -eq 1 ]; then
                 umount /proc
         fi
+	rm /etc/resolv.conf
         exit" > ${ROOTFS}/root/chroot.sh
         chmod +x ${ROOTFS}/root/chroot.sh
         chroot ${ROOTFS} /bin/bash /root/chroot.sh 2>>$ERR | tee -a $LOG
