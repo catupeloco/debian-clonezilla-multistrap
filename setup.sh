@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251012-2203
+SCRIPT_DATE=20251025-1617
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -83,7 +83,7 @@ WIFI_DOMAIN="https://git.kernel.org"
 WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
 WIFI_MAX_PARALLEL=10
 
-KEYBOARD_FIX_URL=https://mirrors.edge.kernel.org/pub/linux/utils/kbd/
+KEYBOARD_FIX_URL="https://mirrors.edge.kernel.org/pub/linux/utils/kbd/"
 KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL} | grep tar.gz | cut -d'"' -f2 | tail -n1)
 
 RECOVERYFS=/tmp/recovery-rootfs
@@ -99,10 +99,15 @@ VERSION_LO=$(wget -qO- $LIBREOFFICE_URL | grep -oP '[0-9]+(\.[0-9]+)+' | sort -V
 LIBREOFFICE_MAIN=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz
 LIBREOFFICE_LAPA=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz
 LIBREOFFICE_HELP=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz
+LIBREOFFICE_UPDS="https://github.com/catupeloco/install-libreoffice-from-web"
 
 DRAWIO_URL=$(wget -qO- https://github.com/jgraph/drawio-desktop/releases/latest | cut -d \" -f2 | grep deb | grep amd64)
 DRAWIO_FOLDER=${CACHE_FOLDER}/Draw.io
 DRAWIO_DEB=${DRAWIO_URL##*/}
+
+FLATPAK_REPO="https://dl.flathub.org/repo/flathub.flatpakrepo"
+
+THIS_SCRIPT="https://github.com/catupeloco/debian-clonezilla-multistrap.git"
 
 APT_CONFIG="`command -v apt-config 2> /dev/null`"
 eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
@@ -146,7 +151,7 @@ x11vnc ssvnc remmina remmina-plugin-rdp remmina-plugin-vnc remmina-plugin-x2go r
 ${ENCRYPTION_PACKAGES}  \
 ecryptfs-utils rsync lsof cryptsetup \
 ${LIBREOFFICE_DEPENDENCIES}  \
-libxslt1.1 git \
+libxslt1.1 \
 ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges \
 ${VIRTUALIZATION_PACKAGES}  \
@@ -603,16 +608,21 @@ echo "Entering chroot ---------------------------------------------"
 	echo -----Cloning script for future updates
 	cd /opt
 	echo nameserver 8.8.8.8 > /etc/resolv.conf
-	git clone https://github.com/catupeloco/install-libreoffice-from-web 			>>\$LOG 2>>\$ERR
+	git clone ${LIBREOFFICE_UPDS}
 	chmod +x /opt/install-libreoffice-from-web/setup.sh
         wait $pid_LO
         apt install --fix-broken -y                                                             >>\$LOG 2>>\$ERR
         echo ------LibreOffice \$VERSION_LO installation done.
 
 	echo ---Flatpak and Mission Center
-	flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo 
+	flatpak remote-add --if-not-exists flathub ${FLATPAK_REPO}
 	flatpak install flathub io.missioncenter.MissionCenter -y
 	rm /etc/resolv.conf
+
+	echo ---Skel
+	cd /opt	
+	git clone ${THIS_SCRIPT}								>>\$LOG 2>>\$ERR
+	
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
@@ -866,7 +876,6 @@ echo "Replacing keybindings ----------------------------------------"
 	    	fi
 
 		echo "--Mapping keys to Alt \+ ... "
-		# MAP y comprobación previa quedan igual
 		declare -A MAP=(
 		    ["<Alt>a"]="tile_left_key"
 		    ["<Alt>d"]="tile_right_key"
@@ -881,6 +890,7 @@ echo "Replacing keybindings ----------------------------------------"
 
 		for key in "${!MAP[@]}"; do
 		    action=${MAP[$key]}
+		    echo "--- $key"
 		    if xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
 			echo "--Already Exists  : updateing value of    $key -> $action"
 			xmlstarlet ed -L \
