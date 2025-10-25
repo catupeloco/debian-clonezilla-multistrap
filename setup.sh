@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251025-1632
+SCRIPT_DATE=20251025-1717
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -101,7 +101,9 @@ LIBREOFFICE_LAPA=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSIO
 LIBREOFFICE_HELP=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz
 LIBREOFFICE_UPDS="https://github.com/catupeloco/install-libreoffice-from-web"
 
-DRAWIO_URL=$(wget -qO- https://github.com/jgraph/drawio-desktop/releases/latest | cut -d \" -f2 | grep deb | grep amd64)
+#DRAWIO_URL=$(wget -qO- https://github.com/jgraph/drawio-desktop/releases/latest | cut -d \" -f2 | grep deb | grep amd64)
+# TODAY : 10/25/2025 latest release (28.2.8) has not linux version yet, so I fix previous release url)
+DRAWIO_URL="https://github.com/jgraph/drawio-desktop/releases/download/v28.2.5/drawio-amd64-28.2.5.deb"
 DRAWIO_FOLDER=${CACHE_FOLDER}/Draw.io
 DRAWIO_DEB=${DRAWIO_URL##*/}
 
