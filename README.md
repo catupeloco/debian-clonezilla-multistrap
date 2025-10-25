@@ -79,9 +79,6 @@ In this instance, the goal is to build a laptop/desktop image with the following
 
 ## Step 5 : Run the installation Script
   ```
-  sudo bash -c "$(curl -fsSL vicentech.com.ar/notebook)"
-  ```
-  ```
   wget -qO- vicentech.com.ar/laptop | bash
   ```
   ***Note :*** The default ISO keyboard layout is English. Refer to the layout map to find special charactes :
