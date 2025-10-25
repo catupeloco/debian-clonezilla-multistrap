@@ -2,6 +2,6 @@
 echo --Instalando git
 sudo apt install git -y >/dev/null 2>&1
 echo --Clonando repositorio
-git clone https://github.com/catupeloco/debian-clonezilla-multistrap
+git clone https://github.com/catupeloco/debian-clonezilla-multistrap >/dev/null 2>&1
 echo --Ejecutando script principal
 sudo bash debian-clonezilla-multistrap/setup.sh
