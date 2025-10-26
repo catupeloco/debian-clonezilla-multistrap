@@ -1,12 +1,17 @@
 #!/bin/bash
-SCRIPT_DATE=20251025-2152
+SCRIPT_DATE=20251025-2319
 echo ---------------------------------------------------------------------------
-echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
+echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
 echo ---------------------------------------------------------------------------
 sleep 7
 reset # Re-Set terminal for multiple runs
+
 set -e # Exit on error
+
+LOG=/tmp/notebook.log
+ERR=/tmp/notebook.err
+exec &> >(tee -a "$LOG")
 
 echo "Installing dependencies for this script ---------------------"
 	cd /tmp
@@ -73,8 +78,6 @@ fi
 
 CACHE_FOLDER=/tmp/resources-fs
 ROOTFS=/tmp/os-rootfs
-LOG=/tmp/notebook.log
-ERR=/tmp/notebook.err
 
 PART_EFI_END=901
 PART_CZ_END=12901
@@ -102,7 +105,7 @@ LIBREOFFICE_HELP=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSIO
 LIBREOFFICE_UPDS="https://github.com/catupeloco/install-libreoffice-from-web"
 
 #DRAWIO_URL=$(wget -qO- https://github.com/jgraph/drawio-desktop/releases/latest | cut -d \" -f2 | grep deb | grep amd64)
-# TODAY : 10/25/2025 latest release (28.2.8) has not linux version yet, so I fix previous release url)
+# TODAY : 10/25/2025 latest release (28.2.8) has not linux version yet, so I fix previous release url
 DRAWIO_URL="https://github.com/jgraph/drawio-desktop/releases/download/v28.2.5/drawio-amd64-28.2.5.deb"
 DRAWIO_FOLDER=${CACHE_FOLDER}/Draw.io
 DRAWIO_DEB=${DRAWIO_URL##*/}
@@ -164,10 +167,6 @@ qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils vi
 qemu-guest-agent \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
-
-#${GNOME_SOFTWARE_AND_SOFTWARE_SOURCES} \
-#gnome-software gnome-software-plugin-deb gnome-software-plugin-flatpak gnome-software-plugin-fwupd gnome-software-plugin-snap synaptic \
-#plasma-discover plasma-discover-backend-flatpak plasma-discover-common plasma-discover-backend-fwupd synaptic \
 
 DEBIAN_VERSION=trixie
 REPOSITORY_DEB="http://deb.debian.org/debian/"
