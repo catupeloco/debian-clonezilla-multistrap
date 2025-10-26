@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-0017
+SCRIPT_DATE=20251026-1101
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -386,7 +386,10 @@ echo "Downloading lastest clonezilla ------------------------------"
 	echo "---Downloading from ${MIRROR_CLONEZILLA}"
         case ${MIRROR_CLONEZILLA} in
 		Official_Fast )
+			while [ -z $FILE_CLONEZILLA ] ; do
 			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+			sleep 0.5
+			done
 			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
 		Official_Slow )
 			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
@@ -475,17 +478,6 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
 	"deb [trusted=yes] ${SYNCTHING_REPOSITORY}                        syncthing stable-v2"                     \
         > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
-# https://apt.syncthing.net/
-# sudo mkdir -p /etc/apt/keyrings
-# sudo curl -L -o /etc/apt/keyrings/syncthing-archive-keyring.gpg https://syncthing.net/release-key.gpg
-# echo "deb [signed-by=/etc/apt/keyrings/syncthing-archive-keyring.gpg] https://apt.syncthing.net/ syncthing stable-v2" | sudo tee /etc/apt/sources.list.d/syncthing.list
-# 
-SYNCTHING_REPOSITORY="https://apt.syncthing.net"
-SYNCTHING_KEYS="https://syncthing.net/release-key.gpg"
-SYNCTHING_TRUSTED="/etc/apt/keyrings/syncthing-archive-keyring.gpg"
-
-
-
 echo "Splitting sources.list's in sources.list.d ------------------"
  	echo -----Downloading keyrings
 	wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}    > /dev/null
@@ -494,16 +486,16 @@ echo "Splitting sources.list's in sources.list.d ------------------"
 	wget -qO- ${SYNCTHING_KEYS}    | tee                    ${ROOTFS}${SYNCTHING_TRUSTED} > /dev/null
 
 	echo ----Generating each dot list file with signed-by
-	 grep debian  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/debian.list
-	 #grep chrome  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
-	 #grep mozilla ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
-	 #grep spotify ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
+	grep debian  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/debian.list
+	rm ${ROOTFS}/etc/apt/sources.list 
 	echo "deb [signed-by=${CHROME_TRUSTED}]    ${CHROME_REPOSITORY}     stable main"        > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
 	echo "deb [signed-by=${FIREFOX_TRUSTED}]   ${FIREFOX_REPOSITORY}   mozilla main"        > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
 	echo "deb [signed-by=${SPOTIFY_TRUSTED}]   ${SPOTIFY_REPOSITORY}   stable non-free"     > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
 	echo "deb [signed-by=${SYNCTHING_TRUSTED}] ${SYNCTHING_REPOSITORY} syncthing stable-v2" > ${ROOTFS}/etc/apt/sources.list.d/syncthing.list
+	 #grep chrome  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
+	 #grep mozilla ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
+	 #grep spotify ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
 	
-	rm ${ROOTFS}/etc/apt/sources.list 
 
 echo "Setting build date in hostname and filesystem ---------------"
         echo "127.0.0.1       localhost"                     > ${ROOTFS}/etc/hosts
