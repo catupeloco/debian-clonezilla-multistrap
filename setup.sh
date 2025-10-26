@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1345
+SCRIPT_DATE=20251026-1353
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -268,7 +268,7 @@ echo "Inicializing logs tails -------------------------------------"
 	touch $ERR
 set +e
 	#if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
-	if [ ! "$(pgrep tail | grep -q $LOG)" ] ; then
+	if ! pgrep tail | grep -q $LOG ; then
 		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
 		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
 	fi
@@ -276,11 +276,11 @@ set -e
 
 
 echo "Unmounting ${DEVICE}  ----------------------------------------"
-	ps -fea | grep gpg | awk '{print $2}' | while read line
-	do kill -9 $line 			2>/dev/null || true
+	pgrep gpg | while read -r line
+	do kill -9 "$line" 			2>/dev/null || true
 	done
-        umount ${DEVICE}*                       2>/dev/null || true
-        umount ${DEVICE}*                       2>/dev/null || true
+        umount "${DEVICE}"*                     2>/dev/null || true
+        umount "${DEVICE}"*                     2>/dev/null || true
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
         umount ${ROOTFS}/dev                    2>/dev/null || true
@@ -302,8 +302,8 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
-        umount ${CACHEFOLDER}                   2>/dev/null || true
-        umount ${CACHEFOLDER}                   2>/dev/null || true
+        umount ${CACHE_FOLDER}                   2>/dev/null || true
+        umount ${CACHE_FOLDER}                   2>/dev/null || true
 
 echo "Comparing partitions target scheme vs actual schema ---------"
 
@@ -391,11 +391,11 @@ echo "---Cleaning cache packages if necesary"
 	set +e
 	while [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
 		echo ---This packages have more than one version.
-		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
+		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
         	do ls ${CACHE_FOLDER}/${line}* 
 		done
 		echo ---Removing older versions so mmdebstrap wont fail
-		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
+		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
         	do rm -v ${CACHE_FOLDER}/${line}* 
 		done
 	done
@@ -949,7 +949,7 @@ echo "Backing up logs ----------------------------------------------"
 	cp ${LOG} ${ERR} ${ROOTFS}/
 
 echo "Unmounting ${DEVICE} -----------------------------------------"
-	ps -fea | grep gpg | awk '{print $2}' | while read line
+	pgrep gpg | while read -r line
 	do kill -9 $line			2>/dev/null || true
 	done
         umount ${DEVICE}*                       2>/dev/null || true
