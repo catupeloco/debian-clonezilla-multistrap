@@ -1,8 +1,8 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1335
+SCRIPT_DATE=20251026-1345
 echo ---------------------------------------------------------------------------
-echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
-echo "script  "$SCRIPT_DATE
+echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
+echo "script $SCRIPT_DATE"
 echo ---------------------------------------------------------------------------
 sleep 7
 reset # Re-Set terminal for multiple runs
@@ -82,8 +82,8 @@ PART_EFI_END=901
 PART_CZ_END=12901
 
 WIFI_DOMAIN="https://git.kernel.org"
-WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
-WIFI_MAX_PARALLEL=10
+export WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
+export WIFI_MAX_PARALLEL=10
 
 KEYBOARD_FIX_URL="https://mirrors.edge.kernel.org/pub/linux/utils/kbd/"
 KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL} | grep tar.gz | cut -d'"' -f2 | tail -n1)
@@ -113,8 +113,8 @@ FLATPAK_REPO="https://dl.flathub.org/repo/flathub.flatpakrepo"
 
 THIS_SCRIPT="https://github.com/catupeloco/debian-clonezilla-multistrap.git"
 
-APT_CONFIG="`command -v apt-config 2> /dev/null`"
-eval $("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')
+APT_CONFIG="$(command -v apt-config 2> /dev/null)"
+eval "$("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')"
 
 # NOTE: Fictional variables below are only for title proposes ########################################
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
@@ -178,7 +178,7 @@ REPOSITORY_DEB="http://deb.debian.org/debian/"
  # format public key must be converted to binary format before it can be used by apt.d
 #wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/google.gpg >/dev/null
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/" 
-CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
+export CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
 CHROME_TRUSTED="/etc/apt/trusted.gpg.d/google.asc"
 
 # https://support.mozilla.org/es/kb/Instalar-firefox-linux#w_instalar-el-paquete-deb-de-firefox-para-distribuciones-basadas-en-debian
@@ -202,10 +202,10 @@ SPOTIFY_TRUSTED="/etc/apt/trusted.gpg.d/spotify.gpg"
 SYNCTHING_REPOSITORY="https://apt.syncthing.net"
 SYNCTHING_KEYS="https://syncthing.net/release-key.gpg"
 SYNCTHING_TRUSTED="/etc/apt/keyrings/syncthing-archive-keyring.gpg"
-SYNCTHING_SERV_RESUME_TARGET="/etc/systemd/system/syncthing-resume.service" 
-SYNCTHING_SERV_RESUME_URL="https://raw.githubusercontent.com/syncthing/syncthing/main/etc/linux-systemd/system/syncthing-resume.service"
-SYNCTHING_SERV_ARROBA_TARGET="/etc/systemd/system/syncthing@.service"
-SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/syncthing/main/etc/linux-systemd/system/syncthing%40.service"
+export SYNCTHING_SERV_RESUME_TARGET="/etc/systemd/system/syncthing-resume.service" 
+export SYNCTHING_SERV_RESUME_URL="https://raw.githubusercontent.com/syncthing/syncthing/main/etc/linux-systemd/system/syncthing-resume.service"
+export SYNCTHING_SERV_ARROBA_TARGET="/etc/systemd/system/syncthing@.service"
+export SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/syncthing/main/etc/linux-systemd/system/syncthing%40.service"
 
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
@@ -267,7 +267,8 @@ echo "Inicializing logs tails -------------------------------------"
 	touch $LOG
 	touch $ERR
 set +e
-	if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
+	#if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
+	if [ ! "$(pgrep tail | grep -q $LOG)" ] ; then
 		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
 		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
 	fi
