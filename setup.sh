@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1157
+SCRIPT_DATE=20251026-1159
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -607,20 +607,20 @@ echo "Entering chroot ---------------------------------------------"
 	echo vhost_net >> /etc/modules
 
         echo ---Running tasksel for fixes
-	tasksel install ssh-server laptop xfce --new-install                                    1>&2
+	tasksel install ssh-server laptop xfce --new-install                                    1>&3
 
 	echo ---Installing Draw.io
-	dpkg -i /var/cache/apt/archives/Draw.io/${DRAWIO_DEB}					1>&2
+	dpkg -i /var/cache/apt/archives/Draw.io/${DRAWIO_DEB}					1>&3
 
         #Installing Libreoffice in backgroupd
-        dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				1>&2
+        dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				1>&3
         pid_LO=$!
 
         echo ---Installing grub
-        update-initramfs -c -k all                                                              1>&2
+        update-initramfs -c -k all                                                              1>&3
         grub-install --target=x86_64-efi --efi-directory=/boot/efi \
-	      --bootloader-id=debian --recheck --no-nvram --removable  				1>&2
-        update-grub                                                                             1>&2
+	      --bootloader-id=debian --recheck --no-nvram --removable  				1>&3
+        update-grub                                                                             1>&3
 
         echo ---Installing LibreOffice and its language pack
 	echo -----Cloning script for future updates
@@ -628,18 +628,18 @@ echo "Entering chroot ---------------------------------------------"
 	git clone ${LIBREOFFICE_UPDS}
 	chmod +x /opt/install-libreoffice-from-web/setup.sh
         wait $pid_LO
-        apt install --fix-broken -y                                                             1>&2
+        apt install --fix-broken -y                                                             1>&3
         echo ------LibreOffice \$VERSION_LO installation done.
 
 	echo ---Flatpak and Mission Center
 	flatpak remote-add --if-not-exists flathub ${FLATPAK_REPO}				1>&2
-	flatpak install flathub io.missioncenter.MissionCenter -y				1>&2
+	flatpak install flathub io.missioncenter.MissionCenter -y				1>&3
 
 	echo ---Skel
 	cd /opt	
-	git clone ${THIS_SCRIPT}								1>&2
+	git clone ${THIS_SCRIPT}								1>&3
 	cd debian-clonezilla-multistrap
-	rsync -av --delete /opt/debian-clonezilla-multistrap/skel/ /etc/skel			1>&2
+	rsync -av --delete /opt/debian-clonezilla-multistrap/skel/ /etc/skel			1>&3
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
@@ -663,18 +663,18 @@ echo "Entering chroot ---------------------------------------------"
         debconf-set-selections <<< \"unattended-upgrades unattended-upgrades/enable_auto_updates boolean true\"
         
 	rm -f /etc/localtime /etc/timezone
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive tzdata			1>&2
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-data		1>&2
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-setup		1>&2
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive keyboard-configuration 	1>&2
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive unattended-upgrades         1>&2
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive tzdata			1>&3
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-data		1>&3
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-setup		1>&3
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive keyboard-configuration 	1>&3
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive unattended-upgrades         1>&3
         sed -i '/# es_AR.UTF-8 UTF-8/s/^# //g' /etc/locale.gen
-        locale-gen 											1>&2
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive locales 			1>&2
+        locale-gen 											1>&3
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive locales 			1>&3
 	export LANG=es_AR.UTF-8
-        update-locale LANG=es_AR.UTF-8									1>&2
-	localectl set-locale LANG=es_AR.UTF-8								1>&2
-        locale												1>&2
+        update-locale LANG=es_AR.UTF-8									1>&3
+	localectl set-locale LANG=es_AR.UTF-8								1>&3
+        locale												1>&3
 	echo LANG=es_AR.UTF-8 >> /etc/environment
         if [ \$PROC_NEEDS_UMOUNT -eq 1 ]; then
                 umount /proc
@@ -682,7 +682,7 @@ echo "Entering chroot ---------------------------------------------"
 	rm /etc/resolv.conf
         exit" > ${ROOTFS}/root/chroot.sh
         chmod +x ${ROOTFS}/root/chroot.sh
-        chroot ${ROOTFS} /bin/bash /root/chroot.sh 2>>$ERR 
+        chroot ${ROOTFS} /bin/bash /root/chroot.sh 2>>$ERR 3>>$LOG
 
 echo "Unattended upgrades -----------------------------------------"
 #https://github.com/mvo5/unattended-upgrades/blob/master/README.md
