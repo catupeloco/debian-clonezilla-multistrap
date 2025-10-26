@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251025-1935
+SCRIPT_DATE=20251025-2152
 echo ---------------------------------------------------------------------------
 echo "ahora   "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -131,6 +131,7 @@ fonts-symbola fonts-urw-base35 gsfonts arc-theme \
 task-xfce-desktop task-ssh-server task-laptop qterminal \
 ${COMMANDLINE_TOOLS} \
 sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils fdisk file git zenity build-essential ncdu \
+whiptail \
 ${CRON_TOOLS} \
 anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
@@ -138,8 +139,10 @@ blueman bluetooth bluez bluez-firmware bluez-alsa-utils \
 bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping isc-dhcp-client \
 network-manager network-manager-gnome powermgmt-base util-linux wpasupplicant xfce4-power-manager xfce4-power-manager-plugins \
 firmware-iwlwifi firmware-ath9k-htc firmware-linux-free firmware-ath9k-htc firmware-realtek \
+network-manager-l10n \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio audacity pulseaudio-module-bluetooth xfce4-pulseaudio-plugin \
+alsa-topology-conf alsa-ucm-conf alsa-utils sound-icons \
 ${BOOT_PACKAGES}  \
 grub2-common grub-efi grub-efi-amd64 \
 ${FIREFOX_AND_CHROME_DEPENDENCIES}  \
@@ -158,6 +161,7 @@ ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges \
 ${VIRTUALIZATION_PACKAGES}  \
 qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virtinst libvirt-daemon virt-manager spice-vdagent \
+qemu-guest-agent \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
