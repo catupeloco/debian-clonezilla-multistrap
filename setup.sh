@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1118
+SCRIPT_DATE=20251026-1138
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -219,17 +219,29 @@ echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin
 	- Debian ${DEBIAN_VERSION} with :
 		- XFCE.
-		- Firefox ESR.
+		  --With custom skel for task bar.
+		  --With custom keybindings for windows manager.
+		- Flameshot (replace for screenshots).
+		- Qterminal (replace for xfce terminal).
 		- OBS Studio.
+		- Remmina.
 		- Unattended upgrades.
-		- Optional : encrypted home.
         	- Virtual Machine Manager (KVM/QEMU).
         	- Wifi drivers.
+		- Optional : 
+		  --Firefox ESR.
+		  --encrypted home.
 	- External latest :
 		- Libreoffice.
 		- Google Chrome. 
 		- Clonezilla recovery.
 		- Spotify.
+		- Mission Center (task manager).
+		- SyncThing.
+		- X2Go Client.
+		- Draw.io.
+		- Keymaps for tty.
+		- Optional : Firefox Rapid Release (from Mozilla repository).
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
 	Script Version=${SCRIPT_DATE}"
 
@@ -357,7 +369,7 @@ echo "---Cleaning cache packages if necesary"
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
         	do ls ${CACHE_FOLDER}/${line}* 
 		done
-		echo ---Removing older versions so multistrap wont fail
+		echo ---Removing older versions so mmdebstrap wont fail
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read line
         	do rm -v ${CACHE_FOLDER}/${line}* 
 		done
