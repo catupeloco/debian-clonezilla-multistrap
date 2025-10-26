@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1855
+SCRIPT_DATE=20251026-1900
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -391,11 +391,11 @@ echo "---Cleaning cache packages if necesary"
 	set +e
 	while [ -n "$(find ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
 		echo ---This packages have more than one version.
-		find ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
+		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
         	do find ${CACHE_FOLDER}/"${line}"* 
 		done
 		echo ---Removing older versions so mmdebstrap wont fail
-		find ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
+		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
         	do rm -v ${CACHE_FOLDER}/"${line}"* 
 		done
 	done
