@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1207
+SCRIPT_DATE=20251026-1225
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -670,9 +670,10 @@ echo "Entering chroot ---------------------------------------------"
         locale-gen 											1>&3
         DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive locales 			1>&3
 	export LANG=es_AR.UTF-8
-        update-locale LANG=es_AR.UTF-8									1>&3
-	localectl set-locale LANG=es_AR.UTF-8								1>&3
-        locale												1>&3
+        update-locale LANG=es_AR.UTF-8									1>&3 || true
+	localectl set-locale LANG=es_AR.UTF-8								1>&3 || true
+        locale												1>&3 || true
+
 	echo LANG=es_AR.UTF-8 >> /etc/environment
         if [ \$PROC_NEEDS_UMOUNT -eq 1 ]; then
                 umount /proc
