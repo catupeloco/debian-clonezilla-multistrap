@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1505
+SCRIPT_DATE=20251026-1746
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -392,27 +392,27 @@ echo "---Cleaning cache packages if necesary"
 	while [ -n "$(find ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
 		echo ---This packages have more than one version.
 		find ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
-        	do find ${CACHE_FOLDER}/${line}* 
+        	do find ${CACHE_FOLDER}/"${line}"* 
 		done
 		echo ---Removing older versions so mmdebstrap wont fail
 		find ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
-        	do rm -v ${CACHE_FOLDER}/${line}* 
+        	do rm -v ${CACHE_FOLDER}/"${line}"* 
 		done
 	done
 	set -e
 
 echo "Downloading keyboard mappings -------------------------------"
-	wget --show-progress -qcN -O ${CACHE_FOLDER}/${KEYBOARD_MAPS} ${KEYBOARD_FIX_URL}${KEYBOARD_MAPS}
+	wget --show-progress -qcN -O ${CACHE_FOLDER}/"${KEYBOARD_MAPS}" ${KEYBOARD_FIX_URL}"${KEYBOARD_MAPS}"
 
 echo "Downloading Libreoffice -------------------------------------"
 	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
-        wget --show-progress -qcN ${LIBREOFFICE_MAIN} -P $DOWNLOAD_DIR_LO
-        wget --show-progress -qcN ${LIBREOFFICE_LAPA} -P $DOWNLOAD_DIR_LO
-        wget --show-progress -qcN ${LIBREOFFICE_HELP} -P $DOWNLOAD_DIR_LO
+        wget --show-progress -qcN "${LIBREOFFICE_MAIN}" -P $DOWNLOAD_DIR_LO
+        wget --show-progress -qcN "${LIBREOFFICE_LAPA}" -P $DOWNLOAD_DIR_LO
+        wget --show-progress -qcN "${LIBREOFFICE_HELP}" -P $DOWNLOAD_DIR_LO
 	find $DOWNLOAD_DIR_LO/ -type f -name '*.deb' -exec rm {} \; || true
-        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
-        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
-	tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
+        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
+        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
+	tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 
 echo "Downloading Draw.io -----------------------------------------"
 	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
@@ -424,15 +424,15 @@ echo "Downloading lastest clonezilla ------------------------------"
         case ${MIRROR_CLONEZILLA} in
 		Official_Fast )
 			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
-			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
+			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" ${BASEURL_CLONEZILLA_FAST}"${FILE_CLONEZILLA}" ;;
 		Official_Slow )
 			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
-			FILE_CLONEZILLA=$(echo $URL_CLONEZILLA | cut -f8 -d\/ | cut -f1 -d \?)
-			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${URL_CLONEZILLA} ;;
+			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
+			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" "${URL_CLONEZILLA}" ;;
         esac
 
 	echo "---Extracting clonezilla"
-	unzip -u ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} -d ${RECOVERYFS} >>$LOG 2>>$ERR
+	unzip -u ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" -d ${RECOVERYFS} >>$LOG 2>>$ERR
 	cp -p ${RECOVERYFS}/boot/grub/grub.cfg ${RECOVERYFS}/boot/grub/grub.cfg.old
 	sed -i '/menuentry[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
 	sed -i '/submenu[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
@@ -440,24 +440,10 @@ echo "Downloading lastest clonezilla ------------------------------"
 
 	echo "---Creating grub.cfg for clonezilla"
 	set +e ###################################
-	fdisk -l | grep nvme0n1 | wc -l | grep 5                         >/dev/null
-	if [ "$?" == "0" ] ; then 
-		BASE=nvme0n1p
-	else
-		fdisk -l | grep sda | wc -l | grep 5                     >/dev/null
-		if [ "$?" == "0" ]; then
-			BASE=sda
-		else
-			fdisk -l | grep xvda | wc -l | grep 5            >/dev/null
-			if [ "$?" == "0" ]; then
-				BASE=xvda
-			else	
-				fdisk -l | grep vda | wc -l | grep 5     >/dev/null
-				if [ "$?" == "0" ]; then
-					BASE=vda
-				fi
-			fi
-		fi
+	if   fdisk -l | grep -c nvme0n1 | grep 5 >/dev/null ; then BASE=nvme0n1p
+	elif fdisk -l | grep -c sda     | grep 5 >/dev/null ; then BASE=sda
+	elif fdisk -l | grep -c xvda    | grep 5 >/dev/null ; then BASE=xvda
+	elif fdisk -l | grep -c vda     | grep 5 >/dev/null ; then BASE=vda
 	fi
 	set -e ##################################
 echo '
