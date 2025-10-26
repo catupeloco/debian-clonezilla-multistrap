@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1106
+SCRIPT_DATE=20251026-1118
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -574,6 +574,7 @@ echo "Entering chroot ---------------------------------------------"
 	export ERR=/var/log/notebook.err
 	echo nameserver 8.8.8.8 > /etc/resolv.conf
 	set -e
+	set -x
         PROC_NEEDS_UMOUNT=0
         if [ ! -e /proc/uptime ]; then
                 mount proc -t proc /proc 2>/dev/null
