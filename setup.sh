@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1900
+SCRIPT_DATE=20251026-1902
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -389,7 +389,7 @@ echo "---Resources/Cache partition"
         #mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
 echo "---Cleaning cache packages if necesary"
 	set +e
-	while [ -n "$(find ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
+	while [ -n "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
 		echo ---This packages have more than one version.
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
         	do find ${CACHE_FOLDER}/"${line}"* 
