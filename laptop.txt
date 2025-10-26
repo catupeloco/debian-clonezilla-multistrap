@@ -3,6 +3,10 @@
 echo --Installing git
 sudo apt install git -y >/dev/null 2>&1
 
+if [ -d $HOME/debian-clonezilla-multistrap ] ; then 
+	rm -rf $HOME/debian-clonezilla-multistrap
+fi
+
 echo --Cloning repository
 while [ ! -f debian-clonezilla-multistrap/setup.sh ] ; do
 	git clone https://github.com/catupeloco/debian-clonezilla-multistrap >/dev/null 2>&1
