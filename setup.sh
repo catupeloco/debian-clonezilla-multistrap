@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1353
+SCRIPT_DATE=20251026-1505
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -308,22 +308,22 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
 echo "Comparing partitions target scheme vs actual schema ---------"
 
 	echo "---Calculating OS partition size"
-		DISK_SIZE=$(parted ${DEVICE} --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
-		PART_OP_SIZE=$((DISK_SIZE / 100 * PART_OP_PERCENTAGE))
+		DISK_SIZE=$(parted "${DEVICE}" --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
+		PART_OP_SIZE=$((DISK_SIZE * PART_OP_PERCENTAGE / 100))
 		PART_OS_START=$((PART_CZ_END + 1))
 		PART_OS_END=$((DISK_SIZE - PART_OP_SIZE)) 
 	
 	echo "---Labels test"
 		LABELS_MATCH=no
-		blkid | grep ${DEVICE}2 | grep CLONEZILLA >/dev/null && \
-		blkid | grep ${DEVICE}3 | grep LINUX      >/dev/null && \
-		blkid | grep ${DEVICE}4 | grep RESOURCES  >/dev/null && \
+		blkid | grep "${DEVICE}"2 | grep CLONEZILLA >/dev/null && \
+		blkid | grep "${DEVICE}"3 | grep LINUX      >/dev/null && \
+		blkid | grep "${DEVICE}"4 | grep RESOURCES  >/dev/null && \
 		LABELS_MATCH=yes && echo ------They DO match || echo ------They DON\'T match
 
 	echo "---Sizes test"
-		PART_OP_SIZE_REAL=$( parted ${DEVICE} --script unit MiB print | awk '$1 == "4" {print $4}' | tr -d 'MiB')
-		PART_OS_START_REAL=$(parted ${DEVICE} --script unit MiB print | awk '$1 == "3" {print $2}' | tr -d 'MiB')
-		PART_OS_END_REAL=$(  parted ${DEVICE} --script unit MiB print | awk '$1 == "3" {print $3}' | tr -d 'MiB')
+		PART_OP_SIZE_REAL=$( parted "${DEVICE}" --script unit MiB print | awk '$1 == "4" {print $4}' | tr -d 'MiB')
+		PART_OS_START_REAL=$(parted "${DEVICE}" --script unit MiB print | awk '$1 == "3" {print $2}' | tr -d 'MiB')
+		PART_OS_END_REAL=$(  parted "${DEVICE}" --script unit MiB print | awk '$1 == "3" {print $3}' | tr -d 'MiB')
 
 		if [ "$((PART_OP_SIZE - 1))" == "$PART_OP_SIZE_REAL" ] && [ "$PART_OS_START" == "$PART_OS_START_REAL" ] && [ "$PART_OS_END" == "$PART_OS_END_REAL" ] ; then
 			echo ------They DO match
@@ -343,59 +343,59 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 
 if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
-		parted ${DEVICE} --script mktable gpt                         > /dev/null 2>&1
+		parted "${DEVICE}" --script mktable gpt                         > /dev/null 2>&1
 
 	echo "Creating EFI partition --------------------------------------"
-		parted ${DEVICE} --script mkpart ESP fat32 1MiB ${PART_EFI_END}MiB > /dev/null 2>&1
-		parted ${DEVICE} --script set 1 esp on                          > /dev/null 2>&1
+		parted "${DEVICE}" --script mkpart ESP fat32 1MiB ${PART_EFI_END}MiB > /dev/null 2>&1
+		parted "${DEVICE}" --script set 1 esp on                          > /dev/null 2>&1
 
 	echo "Creating Clonezilla partition -------------------------------"
-		parted ${DEVICE} --script mkpart CLONEZILLA ext4 ${PART_EFI_END}MiB ${PART_CZ_END}MiB > /dev/null 2>&1
+		parted "${DEVICE}" --script mkpart CLONEZILLA ext4 ${PART_EFI_END}MiB ${PART_CZ_END}MiB > /dev/null 2>&1
 
 	echo "Creating OS partition ---------------------------------------"
-		parted ${DEVICE} --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
+		parted "${DEVICE}" --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
 
 	echo "Creating Resources/Cache partition --------------------------"
-		parted ${DEVICE} --script mkpart RESOURCES ext4 ${PART_OS_END}MiB 100% >/dev/null 2>&1
+		parted "${DEVICE}" --script mkpart RESOURCES ext4 ${PART_OS_END}MiB 100% >/dev/null 2>&1
 		sleep 2
 fi
 
 echo "Formating partitions ----------------------------------------"
-			  fsck -y ${DEVICE}1			>/dev/null 2>&1 || true
-			  fsck -y ${DEVICE}2			>/dev/null 2>&1 || true
-			  fsck -y ${DEVICE}3			>/dev/null 2>&1 || true
-			  fsck -y ${DEVICE}4			>/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.vfat -n EFI        ${DEVICE}1	>/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES  ${DEVICE}4	>/dev/null 2>&1 || true
-		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2	>/dev/null 2>&1 || true
-			  mkfs.ext4 -L LINUX      ${DEVICE}3	>/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"1			>/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"2			>/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"3			>/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"4			>/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.vfat -n EFI        "${DEVICE}"1	>/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES  "${DEVICE}"4	>/dev/null 2>&1 || true
+		 	  mkfs.ext4 -L CLONEZILLA "${DEVICE}"2	>/dev/null 2>&1 || true
+			  mkfs.ext4 -L LINUX      "${DEVICE}"3	>/dev/null 2>&1 || true
 
 
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
-        mount ${DEVICE}3 ${ROOTFS}                              > /dev/null 2>&1
+        mount "${DEVICE}"3 ${ROOTFS}                              > /dev/null 2>&1
 	
 echo "---Recovery partition"
         mkdir -p ${RECOVERYFS}                                  > /dev/null 2>&1
-        mount ${DEVICE}2 ${RECOVERYFS}                          > /dev/null 2>&1
+        mount "${DEVICE}"2 ${RECOVERYFS}                          > /dev/null 2>&1
 
 echo "---Resources/Cache partition"
 	echo -n "-----"
         mkdir -vp ${CACHE_FOLDER}
-        chown $SUDO_USER: -R ${CACHE_FOLDER}
-	mount ${DEVICE}4 ${CACHE_FOLDER}
+        chown "${SUDO_USER}": -R ${CACHE_FOLDER}
+	mount "${DEVICE}"4 ${CACHE_FOLDER}
         #mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1 
         #mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
 echo "---Cleaning cache packages if necesary"
 	set +e
-	while [ ! -z "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
+	while [ -n "$(find ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
 		echo ---This packages have more than one version.
-		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
-        	do ls ${CACHE_FOLDER}/${line}* 
+		find ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
+        	do find ${CACHE_FOLDER}/${line}* 
 		done
 		echo ---Removing older versions so mmdebstrap wont fail
-		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
+		find ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
         	do rm -v ${CACHE_FOLDER}/${line}* 
 		done
 	done
