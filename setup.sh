@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251025-2354
+SCRIPT_DATE=20251025-2358
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -651,18 +651,18 @@ echo "Entering chroot ---------------------------------------------"
         debconf-set-selections <<< \"unattended-upgrades unattended-upgrades/enable_auto_updates boolean true\"
         
 	rm -f /etc/localtime /etc/timezone
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive tzdata			1>&1
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-data		#>>\$LOG 2>>\$ERR
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-setup		#>>\$LOG 2>>\$ERR
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive keyboard-configuration 	#>>\$LOG 2>>\$ERR
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive unattended-upgrades         #>>\$LOG 2>>\$ERR
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive tzdata			1>&2
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-data		1>&2
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive console-setup		1>&2
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive keyboard-configuration 	1>&2
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive unattended-upgrades         1>&2
         sed -i '/# es_AR.UTF-8 UTF-8/s/^# //g' /etc/locale.gen
-        locale-gen 											#>>\$LOG 2>>\$ERR
-        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive locales 			#>>\$LOG 2>>\$ERR
+        locale-gen 											1>&2
+        DEBCONF_NONINTERACTIVE_SEEN=true dpkg-reconfigure -f noninteractive locales 			1>&2
 	export LANG=es_AR.UTF-8
-        update-locale LANG=es_AR.UTF-8									#>>\$LOG 2>>\$ERR
-	localectl set-locale LANG=es_AR.UTF-8								#>>\$LOG 2>>\$ERR
-        locale												#>>\$LOG 2>>\$ERR
+        update-locale LANG=es_AR.UTF-8									1>&2
+	localectl set-locale LANG=es_AR.UTF-8								1>&2
+        locale												1>&2
 	echo LANG=es_AR.UTF-8 >> /etc/environment
         if [ \$PROC_NEEDS_UMOUNT -eq 1 ]; then
                 umount /proc
