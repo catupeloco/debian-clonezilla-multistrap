@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251025-2338
+SCRIPT_DATE=20251025-2354
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -670,7 +670,7 @@ echo "Entering chroot ---------------------------------------------"
 	rm /etc/resolv.conf
         exit" > ${ROOTFS}/root/chroot.sh
         chmod +x ${ROOTFS}/root/chroot.sh
-        chroot ${ROOTFS} /bin/bash /root/chroot.sh 2>>$ERR | tee -a $LOG
+        chroot ${ROOTFS} /bin/bash /root/chroot.sh 2>>$ERR 
 
 echo "Unattended upgrades -----------------------------------------"
 #https://github.com/mvo5/unattended-upgrades/blob/master/README.md
@@ -896,14 +896,14 @@ echo "Replacing keybindings ----------------------------------------"
 
 		for key in "${!MAP[@]}"; do
 		    action=${MAP[$key]}
-		    echo "--- $key"
+		    echo -n "$key, "
 		    if xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
-			echo "--Already Exists  : updateing value of    $key -> $action"
+			#echo "--Already Exists  : updateing value of    $key -> $action"
 			xmlstarlet ed -L \
 			    -u "/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}']/@value" \
 			    -v "$action" "$FILE"
 		    else
-			echo "--It doesnt exists: creating property for $key -> $action"
+			#echo "--It doesnt exists: creating property for $key -> $action"
 			xmlstarlet ed -L \
 			    -s "/channel/property[@name='xfwm4']/property[@name='custom']"                     -t elem -n "propertyTMP" -v ""        \
 			    -i "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -t attr -n "name"        -v "$key"    \
@@ -913,7 +913,7 @@ echo "Replacing keybindings ----------------------------------------"
 			    "$FILE"
 		    fi
 		done
-		echo "--Just in case replacing wrong characters"
+		echo -e "\n--Just in case replacing wrong characters"
 		sed -i 's/&amp;\(lt;\|gt;\)/\1/g' "$FILE"
 	fi
 

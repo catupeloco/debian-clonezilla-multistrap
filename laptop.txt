@@ -1,7 +1,12 @@
 #https://vicentech.com.ar/wp-content/uploads/2025/10/laptop.txt
-echo --Instalando git
+
+echo --Installing git
 sudo apt install git -y >/dev/null 2>&1
-echo --Clonando repositorio
-git clone https://github.com/catupeloco/debian-clonezilla-multistrap >/dev/null 2>&1
-echo --Ejecutando script principal
-sudo bash debian-clonezilla-multistrap/setup.sh
+
+echo --Cloning repository
+while [ ! -f debian-clonezilla-multistrap/setup.sh ] ; do
+	git clone https://github.com/catupeloco/debian-clonezilla-multistrap >/dev/null 2>&1
+done
+
+echo --Running main script
+sudo bash $HOME/debian-clonezilla-multistrap/setup.sh
