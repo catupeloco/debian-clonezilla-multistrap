@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-2007
+SCRIPT_DATE=20251026-2032
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -11,6 +11,7 @@ set -e # Exit on error
 
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
+SELECTIONS=/tmp/selections
 
 echo "Installing dependencies for this script ---------------------"
 	cd /tmp
@@ -23,54 +24,65 @@ echo "Installing dependencies for this script ---------------------"
 #####################################################################################################
 #Selections
 #####################################################################################################
-disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
-menu_options=()
-while read -r name size; do
-      menu_options+=("/dev/$name" "$size")
-done <<< "$disk_list"
-DEVICE=$(whiptail --title "Disk selection" --menu "Choose a disk from below and press enter to begin:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
-#####################################################################################################
-MIRROR_CLONEZILLA=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
-       "Official_Fast" "NCHC - Taiwan" \
-       "Official_Slow" "SourceForge" \
-       3>&1 1>&2 2>&3)
-#####################################################################################################
-FIREFOX_PACKAGE=$(whiptail --title "Select Firefox Package" --menu "Choose one option:" 20 60 10 \
-       "firefox     firefox-l10n-es-ar    " "Firefox Rapid Release" \
-       "firefox-esr firefox-esr-l10n-es-ar" "Firefox ESR          " \
-       3>&1 1>&2 2>&3)
-#####################################################################################################
-username=$(whiptail --title "Local admin creation" --inputbox "Type a username:" 20 60  3>&1 1>&2 2>&3)
-REPEAT=yes
-while [ "$REPEAT" == "yes" ] ; do
-	password=$( whiptail --title "Local admin creation" --passwordbox "Type a password:"                  20 60  3>&1 1>&2 2>&3)
-	password2=$(whiptail --title "Local admin creation" --passwordbox "Just in case type it again:"       20 60  3>&1 1>&2 2>&3)
-	if [ "$password" == "$password2" ] ; then
-		REPEAT=no
-	else
-		#echo "ERROR: Passwords entered dont match"
-		    whiptail --title "Local admin creation" \
-			     --msgbox "ERROR: Passwords dont match, try again" 20 60  3>&1 1>&2 2>&3
-	fi
-done
-#####################################################################################################
-PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" \
-	                      --menu "Choose a recomended percentage or Other to enter manually:" 20 60 10 \
-	                               7 "% More Read Intensive " \
-				       25 "% More Write Intensive "  \
-				       "x" "% Other Percentage" 3>&1 1>&2 2>&3)
-if [ "$PART_OP_PERCENTAGE" == "x" ] ; then
+if [ -f $SELECTIONS ] ; then
+	echo Skiping cuestions, you may delete $SELECTIONS if you change your mind
+	source $SELECTIONS
+else
+	disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
+	menu_options=()
+	while read -r name size; do
+	      menu_options+=("/dev/$name" "$size")
+	done <<< "$disk_list"
+	DEVICE=$(whiptail --title "Disk selection" --menu "Choose a disk from below and press enter to begin:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
+	#####################################################################################################
+	MIRROR_CLONEZILLA=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
+	       "Official_Fast" "NCHC - Taiwan" \
+	       "Official_Slow" "SourceForge" \
+	       3>&1 1>&2 2>&3)
+	#####################################################################################################
+	FIREFOX_PACKAGE=$(whiptail --title "Select Firefox Package" --menu "Choose one option:" 20 60 10 \
+	       "firefox     firefox-l10n-es-ar    " "Firefox Rapid Release" \
+	       "firefox-esr firefox-esr-l10n-es-ar" "Firefox ESR          " \
+	       3>&1 1>&2 2>&3)
+	#####################################################################################################
+	username=$(whiptail --title "Local admin creation" --inputbox "Type a username:" 20 60  3>&1 1>&2 2>&3)
 	REPEAT=yes
 	while [ "$REPEAT" == "yes" ] ; do
-		PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" --inputbox "Enter a positive integer, lower than 100:" 20 60  3>&1 1>&2 2>&3)
-		if [[ "$PART_OP_PERCENTAGE" =~ ^[0-9]+$ ]] && (( "$PART_OP_PERCENTAGE" < 100 )); then
+		password=$( whiptail --title "Local admin creation" --passwordbox "Type a password:"                  20 60  3>&1 1>&2 2>&3)
+		password2=$(whiptail --title "Local admin creation" --passwordbox "Just in case type it again:"       20 60  3>&1 1>&2 2>&3)
+		if [ "$password" == "$password2" ] ; then
 			REPEAT=no
 		else
-			whiptail --title "Overprovisioning partition size selection" --msgbox "ERROR: Wrong input, try again" 20 60  3>&1 1>&2 2>&3
+			#echo "ERROR: Passwords entered dont match"
+			    whiptail --title "Local admin creation" \
+				     --msgbox "ERROR: Passwords dont match, try again" 20 60  3>&1 1>&2 2>&3
 		fi
 	done
-fi
+	#####################################################################################################
+	PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" \
+				      --menu "Choose a recomended percentage or Other to enter manually:" 20 60 10 \
+					       7 "% More Read Intensive " \
+					       25 "% More Write Intensive "  \
+					       "x" "% Other Percentage" 3>&1 1>&2 2>&3)
+	if [ "$PART_OP_PERCENTAGE" == "x" ] ; then
+		REPEAT=yes
+		while [ "$REPEAT" == "yes" ] ; do
+			PART_OP_PERCENTAGE=$(whiptail --title "Overprovisioning partition size selecction" --inputbox "Enter a positive integer, lower than 100:" 20 60  3>&1 1>&2 2>&3)
+			if [[ "$PART_OP_PERCENTAGE" =~ ^[0-9]+$ ]] && (( "$PART_OP_PERCENTAGE" < 100 )); then
+				REPEAT=no
+			else
+				whiptail --title "Overprovisioning partition size selection" --msgbox "ERROR: Wrong input, try again" 20 60  3>&1 1>&2 2>&3
+			fi
+		done
+	fi
+	echo export DEVICE="$DEVICE"				>  $SELECTIONS
+	echo export MIRROR_CLONEZILLA="$MIRROR_CLONEZILLA"	>> $SELECTIONS
+	echo export FIREFOX_PACKAGE="$FIREFOX_PACKAGE"		>> $SELECTIONS
+	echo export username="$username"			>> $SELECTIONS
+	echo export password="$password"			>> $SELECTIONS
+	echo export PART_OP_PERCENTAGE="$PART_OP_PERCENTAGE"	>> $SELECTIONS
 
+fi
 #####################################################################################################
 #VARIABLES 
 #####################################################################################################
