@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1746
+SCRIPT_DATE=20251026-1855
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -518,17 +518,19 @@ echo "Splitting sources.list's in sources.list.d ------------------"
 	
 
 echo "Setting build date in hostname and filesystem ---------------"
-        echo "127.0.0.1       localhost"                     > ${ROOTFS}/etc/hosts
-        echo "127.0.1.1       debian-$(date +'%Y-%m-%d')"   >> ${ROOTFS}/etc/hosts
-        echo "::1     localhost ip6-localhost ip6-loopback" >> ${ROOTFS}/etc/hosts
-        echo "ff02::1 ip6-allnodes"                         >> ${ROOTFS}/etc/hosts
-        echo "ff02::2 ip6-allrouters"                       >> ${ROOTFS}/etc/hosts
+{
+127.0.0.1       localhost
+127.0.1.1       debian-"$(date +'%Y-%m-%d')"
+::1     localhost ip6-localhost ip6-loopback
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+}>> ${ROOTFS}/etc/hosts
         echo "debian-$(date +'%Y-%m-%d')"                    > ${ROOTFS}/etc/hostname
-        touch ${ROOTFS}/ImageDate.$(date +'%Y-%m-%d')
+        touch ${ROOTFS}/ImageDate."$(date +'%Y-%m-%d')"
 
 echo "Generating fstab --------------------------------------------"
-        root_uuid="$(blkid | grep ^$DEVICE | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
-        efi_uuid="$(blkid  | grep ^$DEVICE | grep ' LABEL="EFI" '   | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
+        root_uuid="$(blkid | grep ^"$DEVICE" | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
+        efi_uuid="$(blkid  | grep ^"$DEVICE" | grep ' LABEL="EFI" '   | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         FILE=${ROOTFS}/etc/fstab
         echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
         echo "$efi_uuid  /boot/efi vfat defaults 0 1" >> $FILE
@@ -537,10 +539,10 @@ echo "Setting Keyboard --------------------------------------------"
 	echo "---For non graphical console"
         # FIX DEBIAN BUG
         cd /tmp
-        tar xzvf ${CACHE_FOLDER}/${KEYBOARD_MAPS}   >>$LOG 2>>$ERR
+        tar xzvf ${CACHE_FOLDER}/"${KEYBOARD_MAPS}"   >>$LOG 2>>$ERR
         cd kbd-*/data/keymaps/
         mkdir -p ${ROOTFS}/usr/share/keymaps/
-        cp -r * ${ROOTFS}/usr/share/keymaps/  >>$LOG 2>>$ERR
+        cp -r ./* ${ROOTFS}/usr/share/keymaps/  >>$LOG 2>>$ERR
 
 	echo "---For everything else"
 	echo 'XKBLAYOUT="latam"' > ${ROOTFS}/etc/default/keyboard
@@ -557,7 +559,7 @@ echo '#!/bin/sh
 exec tail -n +3 $0
 # This file provides an easy way to add custom menu entries.  Simply type the
 # menu entries you want to add after this comment.  Be careful not to change
-# the 'exec tail' line above.
+# the exec tail line above.
 
 # Particion para restaurar
 menuentry "Restaurar" {
@@ -570,7 +572,7 @@ menuentry "Restaurar" {
 echo "Getting ready for chroot ------------------------------------"
 	echo "---Mounting EFI partition"
         mkdir -p ${ROOTFS}/boot/efi
-        mount ${DEVICE}1 ${ROOTFS}/boot/efi
+        mount "${DEVICE}"1 ${ROOTFS}/boot/efi
 
 	echo "---Mounting pseudo-filesystems"
         mount --bind /dev ${ROOTFS}/dev
@@ -615,7 +617,7 @@ echo "Entering chroot ---------------------------------------------"
 
         #Installing Libreoffice in backgroupd
         dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				1>&3
-        pid_LO=$!
+        pid_LO=\$!
 
         echo ---Installing grub
         update-initramfs -c -k all                                                              1>&3
@@ -628,7 +630,7 @@ echo "Entering chroot ---------------------------------------------"
 	cd /opt
 	git clone ${LIBREOFFICE_UPDS}
 	chmod +x /opt/install-libreoffice-from-web/setup.sh
-        wait $pid_LO
+        wait \$pid_LO
         apt install --fix-broken -y                                                             1>&3
         echo ------LibreOffice \$VERSION_LO installation done.
 
@@ -815,15 +817,15 @@ echo "
 	chmod 440 ${ROOTFS}/etc/sudoers.d/updates
 
 echo "Setting up local admin account ------------------------------"
-        echo 'export LC_ALL=C LANGUAGE=C LANG=C
-	useradd -d /home/'$username' -G sudo -m -s /bin/bash '$username'
+        echo "export LC_ALL=C LANGUAGE=C LANG=C
+	useradd -d /home/$username -G sudo -m -s /bin/bash $username
 	groupadd updates
-        adduser '$username' updates		>/dev/null
-        adduser '$username' kvm			>/dev/null
-	adduser '$username' libvirt		>/dev/null
-	adduser '$username' libvirt-qemu	>/dev/null
-	echo '${username}:${password}' | chpasswd
-	rm /tmp/local_admin.sh' > ${ROOTFS}/tmp/local_admin.sh
+        adduser $username updates		>/dev/null
+        adduser $username kvm			>/dev/null
+	adduser $username libvirt		>/dev/null
+	adduser $username libvirt-qemu	>/dev/null
+	echo ${username}:${password} | chpasswd
+	rm /tmp/local_admin.sh" > ${ROOTFS}/tmp/local_admin.sh
         chmod +x ${ROOTFS}/tmp/local_admin.sh
         chroot ${ROOTFS} /bin/bash /tmp/local_admin.sh
         
@@ -936,9 +938,9 @@ echo "Backing up logs ----------------------------------------------"
 
 echo "Unmounting ${DEVICE} -----------------------------------------"
 	pgrep gpg | while read -r line
-	do kill -9 $line			2>/dev/null || true
+	do kill -9 "$line"			2>/dev/null || true
 	done
-        umount ${DEVICE}*                       2>/dev/null || true
+        umount "${DEVICE}"*                     2>/dev/null || true
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
         umount ${ROOTFS}/dev                    2>/dev/null || true
         umount ${ROOTFS}/dev                    2>/dev/null || true
