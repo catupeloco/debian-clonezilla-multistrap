@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1327
+SCRIPT_DATE=20251026-1333
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -841,7 +841,7 @@ echo "Setting up local admin account ------------------------------"
         chroot ${ROOTFS} /bin/bash /tmp/local_admin.sh
         
 echo "Encrypted user script creation ------------------------------"
-	echo "
+cat <<EOF > ${ROOTFS}/usr/local/bin/useradd-encrypt
 	echo Adding local user -------------------------------------------
         read -p \"What username do you want for local_encrypted_user ?: \" username
         sudo useradd -d /home/\$username -c local_encrypted_user -m -s /bin/bash \$username
@@ -868,7 +868,7 @@ echo "Encrypted user script creation ------------------------------"
 	echo --bye!!
 		sleep 3
 		sudo reboot
-	" > ${ROOTFS}/usr/local/bin/useradd-encrypt
+EOF
 	chmod +x ${ROOTFS}/usr/local/bin/useradd-encrypt
 
 echo "Replacing keybindings ----------------------------------------"
@@ -949,7 +949,7 @@ echo "Backing up logs ----------------------------------------------"
 
 echo "Unmounting ${DEVICE} -----------------------------------------"
 	ps -fea | grep gpg | awk '{print $2}' | while read line
-	do kill -9 $line
+	do kill -9 $line			2>/dev/null || true
 	done
         umount ${DEVICE}*                       2>/dev/null || true
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
