@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1902
+SCRIPT_DATE=20251026-1949
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -518,13 +518,14 @@ echo "Splitting sources.list's in sources.list.d ------------------"
 	
 
 echo "Setting build date in hostname and filesystem ---------------"
-{
+
+cat <<EOF > ${ROOTFS}/etc/hosts
 127.0.0.1       localhost
-127.0.1.1       debian-"$(date +'%Y-%m-%d')"
+127.0.1.1       debian-$(date +'%Y-%m-%d')
 ::1     localhost ip6-localhost ip6-loopback
 ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
-}>> ${ROOTFS}/etc/hosts
+EOF
         echo "debian-$(date +'%Y-%m-%d')"                    > ${ROOTFS}/etc/hostname
         touch ${ROOTFS}/ImageDate."$(date +'%Y-%m-%d')"
 
