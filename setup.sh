@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1249
+SCRIPT_DATE=20251026-1302
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -361,6 +361,9 @@ echo "Formating partitions ----------------------------------------"
 [ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES  ${DEVICE}4 >/dev/null 2>&1 || true
 		 	  mkfs.ext4 -L CLONEZILLA ${DEVICE}2 #>/dev/null 2>&1 || true
 			  mkfs.ext4 -L LINUX      ${DEVICE}3 #>/dev/null 2>&1 || true
+			  mke2fs -t ext4 -O ^has_journal ${DEVICE}2
+			  mke2fs -t ext4 -O ^has_journal ${DEVICE}3
+
 
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
