@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1324
+SCRIPT_DATE=20251026-1325
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -275,6 +275,9 @@ set -e
 
 
 echo "Unmounting ${DEVICE}  ----------------------------------------"
+	ps -fea | grep gpg | awk '{print $2}' | while read line
+	do kill -9 $line
+	done
         umount ${DEVICE}*                       2>/dev/null || true
         umount ${DEVICE}*                       2>/dev/null || true
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
