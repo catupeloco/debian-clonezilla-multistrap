@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-2032
+SCRIPT_DATE=20251026-2035
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -77,7 +77,7 @@ else
 	fi
 	echo export DEVICE="$DEVICE"				>  $SELECTIONS
 	echo export MIRROR_CLONEZILLA="$MIRROR_CLONEZILLA"	>> $SELECTIONS
-	echo export FIREFOX_PACKAGE="$FIREFOX_PACKAGE"		>> $SELECTIONS
+	echo export FIREFOX_PACKAGE=\"$FIREFOX_PACKAGE\"	>> $SELECTIONS
 	echo export username="$username"			>> $SELECTIONS
 	echo export password="$password"			>> $SELECTIONS
 	echo export PART_OP_PERCENTAGE="$PART_OP_PERCENTAGE"	>> $SELECTIONS
