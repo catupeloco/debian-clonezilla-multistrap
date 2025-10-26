@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1142
+SCRIPT_DATE=20251026-1144
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -398,11 +398,10 @@ echo "Downloading lastest clonezilla ------------------------------"
 	echo "---Downloading from ${MIRROR_CLONEZILLA}"
         case ${MIRROR_CLONEZILLA} in
 		Official_Fast )
-			set -x
-			while [ -z $FILE_CLONEZILLA ] ; do
+			#while [ -z $FILE_CLONEZILLA ] ; do
 			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
-			sleep 0.5
-			done
+			#sleep 0.5
+			#done
 			echo wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA}
 			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
 		Official_Slow )
