@@ -7,6 +7,6 @@ while true; do
 	git push
 	echo dormir....
 	wget -qO- vicentech.com.ar/notebook | head -n 2 
-	shellcheck script.sh
+	shellcheck setup.sh
 	sleep 10
 done
