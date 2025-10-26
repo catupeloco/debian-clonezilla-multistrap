@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1949
+SCRIPT_DATE=20251026-2000
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -498,7 +498,7 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
 	"deb [trusted=yes] ${SYNCTHING_REPOSITORY}                        syncthing stable-v2"                     \
         > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
-echo "Splitting sources.list's in sources.list.d ------------------"
+echo "Splitting sources.list\'s in sources.list.d ------------------"
  	echo -----Downloading keyrings
 	wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}    > /dev/null
 	wget -qO- ${FIREFOX_KEY}       | tee                    ${ROOTFS}${FIREFOX_TRUSTED}   > /dev/null
@@ -581,8 +581,8 @@ echo "Getting ready for chroot ------------------------------------"
         mount --bind /run  ${ROOTFS}/run
         mount -t sysfs sysfs ${ROOTFS}/sys
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
-	ln -s ${LOG} ${ROOTFS}/var/log/notebook.log
-	ln -s ${ERR} ${ROOTFS}/var/log/notebook.err
+	#ln -s ${LOG} ${ROOTFS}/var/log/notebook.log
+	#ln -s ${ERR} ${ROOTFS}/var/log/notebook.err
 
 echo "Entering chroot ---------------------------------------------"
         echo "#!/bin/bash
