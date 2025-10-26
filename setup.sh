@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-2000
+SCRIPT_DATE=20251026-2007
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -374,11 +374,15 @@ echo "Formating partitions ----------------------------------------"
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
-        mount "${DEVICE}"3 ${ROOTFS}                              > /dev/null 2>&1
+        mount "${DEVICE}"3 ${ROOTFS}                            > /dev/null 2>&1
+	find ${ROOTFS} -type f -exec rm -rf {} \;
+	find ${ROOTFS} -type d -exec rm -rf {} \;
 	
 echo "---Recovery partition"
         mkdir -p ${RECOVERYFS}                                  > /dev/null 2>&1
-        mount "${DEVICE}"2 ${RECOVERYFS}                          > /dev/null 2>&1
+        mount "${DEVICE}"2 ${RECOVERYFS}                        > /dev/null 2>&1
+	find ${RECOVERYFS} -type f -exec rm -rf {} \;
+	find ${RECOVERYFS} -type d -exec rm -rf {} \;
 
 echo "---Resources/Cache partition"
 	echo -n "-----"
