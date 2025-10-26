@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1138
+SCRIPT_DATE=20251026-1141
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -11,7 +11,7 @@ set -e # Exit on error
 
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
-exec &> >(tee -a "$LOG")
+#exec &> >(tee -a "$LOG")
 
 echo "Installing dependencies for this script ---------------------"
 	cd /tmp
