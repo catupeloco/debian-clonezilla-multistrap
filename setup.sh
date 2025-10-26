@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1244
+SCRIPT_DATE=20251026-1249
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -278,13 +278,21 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${DEVICE}*                       2>/dev/null || true
         umount ${DEVICE}*                       2>/dev/null || true
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
+        umount ${ROOTFS}/dev/pts                2>/dev/null || true
+        umount ${ROOTFS}/dev                    2>/dev/null || true
         umount ${ROOTFS}/dev                    2>/dev/null || true
         umount ${ROOTFS}/proc                   2>/dev/null || true
+        umount ${ROOTFS}/proc                   2>/dev/null || true
+        umount ${ROOTFS}/run                    2>/dev/null || true
         umount ${ROOTFS}/run                    2>/dev/null || true
         umount ${ROOTFS}/sys                    2>/dev/null || true
+        umount ${ROOTFS}/sys                    2>/dev/null || true
+        umount ${ROOTFS}/tmp                    2>/dev/null || true
         umount ${ROOTFS}/tmp                    2>/dev/null || true
         umount ${ROOTFS}/boot/efi               2>/dev/null || true
+        umount ${ROOTFS}/boot/efi               2>/dev/null || true
         umount          /var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
@@ -292,7 +300,6 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${RECOVERYFS}                    2>/dev/null || true
         umount ${CACHEFOLDER}                   2>/dev/null || true
         umount ${CACHEFOLDER}                   2>/dev/null || true
-
 
 echo "Comparing partitions target scheme vs actual schema ---------"
 
