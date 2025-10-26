@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-1159
+SCRIPT_DATE=20251026-1204
 echo ---------------------------------------------------------------------------
 echo "now     "$(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M') 
 echo "script  "$SCRIPT_DATE
@@ -11,7 +11,6 @@ set -e # Exit on error
 
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
-#exec &> >(tee -a "$LOG")
 
 echo "Installing dependencies for this script ---------------------"
 	cd /tmp
@@ -214,6 +213,7 @@ LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
 # for clear screen on tty (clear doesnt work)
 printf "\033c"
+exec &> >(tee -a "$LOG")
 
 echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin
@@ -286,6 +286,8 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount          /var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
+        umount ${ROOTFS}                        2>/dev/null || true
+        umount ${RECOVERYFS}                    2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
         umount ${CACHEFOLDER}                   2>/dev/null || true
         umount ${CACHEFOLDER}                   2>/dev/null || true
