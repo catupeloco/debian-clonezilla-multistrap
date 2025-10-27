@@ -7,6 +7,6 @@ while true; do
 	git commit -m "$(date +'%Y%m%d-%H%M')" 
 	git push
 	echo sleeping 10 second...
-	head -n 2 setup.sh
+	grep ^SCRIPT_DATE setup.sh
 	sleep 10
 done
