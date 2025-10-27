@@ -1,4 +1,5 @@
 #!/bin/bash
+#This script is for making changes more quickly
 while true; do
 	vi setup.sh 
 	sed -i '/^SCRIPT_DATE=/c\SCRIPT_DATE='$(date +'%Y%m%d-%H%M') setup.sh 
@@ -6,6 +7,6 @@ while true; do
 	git commit -m "$(date +'%Y%m%d-%H%M')" 
 	git push
 	echo dormir....
-	wget -qO- vicentech.com.ar/notebook | head -n 2 
+	head -n 2 setup.sh
 	sleep 10
 done
