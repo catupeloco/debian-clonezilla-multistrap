@@ -6,7 +6,7 @@ while true; do
        	git add . 
 	git commit -m "$(date +'%Y%m%d-%H%M')" 
 	git push
-	echo dormir....
+	echo sleeping 10 second...
 	head -n 2 setup.sh
 	sleep 10
 done
