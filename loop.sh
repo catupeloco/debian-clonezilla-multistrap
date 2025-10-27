@@ -6,7 +6,7 @@ while true; do
        	git add . 
 	git commit -m "$(date +'%Y%m%d-%H%M')" 
 	git push
-	echo sleeping 10 second...
+	echo Sleeping 10 seconds ...
 	grep ^SCRIPT_DATE setup.sh
 	sleep 10
 done
