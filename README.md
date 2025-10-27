@@ -7,8 +7,8 @@ In this instance, the goal is to build a laptop/desktop image with the following
 
 - Debian Trixie with :
   - XFCE.
-    -- With custom skel for task bar.
-    -- With custom keybindings for windows manager.
+    - With custom skel for task bar.
+    - With custom keybindings for windows manager.
   - Flameshot (replace for screenshots).
   - Qterminal (replace for xfce terminal).
   - Mousepad.
@@ -22,15 +22,15 @@ In this instance, the goal is to build a laptop/desktop image with the following
   - Wifi and bluetooth drivers.
   - NTFS support (to read Windows Partitions).
   - Optional : 
-    -- Firefox ESR.
-    -- encrypted home.
+    - Firefox ESR.
+    - encrypted home.
 - External latest :
   - Libreoffice.
   - Google Chrome. 
   - Clonezilla recovery.
   - Spotify.
   - Flatpak
-    -- Mission Center (task manager).
+    - Mission Center (task manager).
   - SyncThing.
   - X2Go Client.
   - Draw.io.
