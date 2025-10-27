@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-2103
+SCRIPT_DATE=20251026-2104
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -27,6 +27,7 @@ echo "Installing dependencies for this script ---------------------"
 if [ -f $SELECTIONS ] ; then
 	echo Skiping cuestions, you may delete $SELECTIONS if you change your mind
 	source $SELECTIONS
+	sleep 3
 else
 	disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
 	menu_options=()
