@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251026-2211
+SCRIPT_DATE=20251027-2054
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -192,6 +192,7 @@ REPOSITORY_DEB="http://deb.debian.org/debian/"
 #wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/google.gpg >/dev/null
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/" 
 export CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
+#CHROME_TRUSTED="/etc/apt/trusted.gpg.d/google.asc"
 CHROME_TRUSTED="/etc/apt/trusted.gpg.d/google.asc"
 
 # https://support.mozilla.org/es/kb/Instalar-firefox-linux#w_instalar-el-paquete-deb-de-firefox-para-distribuciones-basadas-en-debian
@@ -517,7 +518,8 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
 
 echo "Splitting sources.list\'s in sources.list.d ------------------"
  	echo -----Downloading keyrings
-	wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}    > /dev/null
+       #wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}    > /dev/null
+	wget -qO- ${CHROME_KEY}        | tee                    ${ROOTFS}${CHROME_TRUSTED}    > /dev/null
 	wget -qO- ${FIREFOX_KEY}       | tee                    ${ROOTFS}${FIREFOX_TRUSTED}   > /dev/null
 	wget -qO- ${SPOTIFY_KEYS}      | gpg --dearmor --yes -o ${ROOTFS}${SPOTIFY_TRUSTED}   > /dev/null
 	wget -qO- ${SYNCTHING_KEYS}    | tee                    ${ROOTFS}${SYNCTHING_TRUSTED} > /dev/null
