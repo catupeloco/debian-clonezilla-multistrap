@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251027-2135
+SCRIPT_DATE=20251027-2143
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -486,11 +486,15 @@ mount /dev/%%BASE%%4 /mnt/%%BASE%%4 2>/dev/null
 
 cd /mnt/%%BASE%%3/
 rm -rf \$(ls /mnt/%%BASE%%3/ | grep -v boot)
+FILES=\$(find /mnt/%%BASE%%4/ -type f | wc -l) 
 answer=empty
 echo Do you wish to purge resources filesystem\? \(y\/n\)
 read answer
-if [[ \"\$answer\" != \"n\" ] && [ \"\$answer\" != \"N\" ]] ; then
+if [ \"\$answer\" != \"n\" ] && [ \"\$answer\" != \"N\" ] ; then
+	echo Cleaning \$FILES files
 	rm -rf /mnt/%%BASE%%4/*
+else
+	echo NOT\!\! Cleaning \$FILES files
 fi
 
 sed -i 's/timeout=30/timeout=0/g'									/mnt/%%BASE%%3/boot/grub/grub.cfg
