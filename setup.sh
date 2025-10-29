@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251027-2200
+SCRIPT_DATE=20251028-2251
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -969,7 +969,6 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 	pgrep gpg | while read -r line
 	do kill -9 "$line"			2>/dev/null || true
 	done
-        umount "${DEVICE}"*                     2>/dev/null || true
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
         umount ${ROOTFS}/dev                    2>/dev/null || true
         umount ${ROOTFS}/dev                    2>/dev/null || true
@@ -985,6 +984,7 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${RECOVERYFS}                    2>/dev/null || true
         umount ${CACHE_FOLDER}                  2>/dev/null || true
         umount ${CACHE_FOLDER}                  2>/dev/null || true
+        umount "${DEVICE}"*                     2>/dev/null || true
 
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}" || true
@@ -998,16 +998,25 @@ echo "END of the road!! keep up the good work ---------------------"
 
 
 # TODO
-# Discover no abre la primera vez hasta que haces sudo apt update
-	# Descartado
 # Volumen siempre vuelve a cero
 	# Pendiente
-# Screenshot no anda por teclado xfce4-settings-editor
-	# Listo
-	# Teclas de control de ventanas
-	# xfconf-query  -l
-	# xfconf-query -c xfce4-panel -l
+# Nala, seleccion de repositorio optimo
+	# Desde setup
+	# Desde XFCE4
+# Mover salida principal a F2
+	# Dejar en F1, lista de tareas y la tarea actual
+	# Crear funcion front end
 
-# /etc/xdg/xfce4/panel/default.xml
+# Verificar progress bar en descargas desde cero
 
 # lupa xfce4-appfinder
+
+# Discover no abre la primera vez hasta que haces sudo apt update
+	# Descartado
+# Screenshot no anda por teclado xfce4-settings-editor
+	# Listo
+# Teclas de control de ventanas
+	# Listo
+	# xfconf-query  -l
+	# xfconf-query -c xfce4-panel -l
+	# /etc/xdg/xfce4/panel/default.xml
