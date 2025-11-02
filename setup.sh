@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251101-2339
+SCRIPT_DATE=20251101-2344
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -447,11 +447,13 @@ echo "Downloading Libreoffice -------------------------------------"
 
 echo "Downloading Draw.io -----------------------------------------"
 	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
-        wget --show-progress -qcN ${DRAWIO_URL} -P ${DRAWIO_FOLDER}
+        #wget --show-progress -qcN ${DRAWIO_URL} -P ${DRAWIO_FOLDER}
+        wget --show-progress -qcN -O ${DRAWIO_FOLDER}/${DRAWIO_DEB} ${DRAWIO_URL}
 
 echo "Downloading MarkText-----------------------------------------"
 	mkdir -p $MARKTEXT_FOLDER >/dev/null 2>&1
-        wget --show-progress -qcN ${MARKTEXT_URL} -P ${MARKTEXT_FOLDER}
+        #wget --show-progress -qcN ${MARKTEXT_URL} -P ${MARKTEXT_FOLDER}
+        wget --show-progress -qcN -O ${MARKTEXT_FOLDER}/${MARKTEXT_DEB} ${MARKTEXT_URL}
 
 echo "Downloading lastest clonezilla ------------------------------"
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
