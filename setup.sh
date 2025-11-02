@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251101-2321
+SCRIPT_DATE=20251101-2329
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -434,9 +434,9 @@ echo "Downloading keyboard mappings -------------------------------"
 
 echo "Downloading Libreoffice -------------------------------------"
 	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
-        wget --show-progress -qcN "${LIBREOFFICE_MAIN}" -P $DOWNLOAD_DIR_LO
-        wget --show-progress -qcN "${LIBREOFFICE_LAPA}" -P $DOWNLOAD_DIR_LO
-        wget --show-progress -qcN "${LIBREOFFICE_HELP}" -P $DOWNLOAD_DIR_LO
+        wget --show-progress -cN "${LIBREOFFICE_MAIN}" -P $DOWNLOAD_DIR_LO
+        wget --show-progress -cN "${LIBREOFFICE_LAPA}" -P $DOWNLOAD_DIR_LO
+        wget --show-progress -cN "${LIBREOFFICE_HELP}" -P $DOWNLOAD_DIR_LO
         #wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}" "${LIBREOFFICE_MAIN}"
         #wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}" "${LIBREOFFICE_LAPA}"
         #wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}" "${LIBREOFFICE_HELP}"
