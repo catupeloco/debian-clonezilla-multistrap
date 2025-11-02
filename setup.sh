@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251101-2240
+SCRIPT_DATE=20251101-2319
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -111,9 +111,12 @@ DOWNLOAD_DIR_LO=${CACHE_FOLDER}/Libreoffice
 LIBREOFFICE_URL="https://download.documentfoundation.org/libreoffice/stable/"
 LO_LANG=es 
 VERSION_LO=$(wget -qO- $LIBREOFFICE_URL | grep -oP '[0-9]+(\.[0-9]+)+' | sort -V | tail -1)
-LIBREOFFICE_MAIN=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz
-LIBREOFFICE_LAPA=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz
-LIBREOFFICE_HELP=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz
+LIBREOFFICE_MAIN_FILE=LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz
+LIBREOFFICE_LAPA_FILE=LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz
+LIBREOFFICE_HELP_FILE=LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz
+LIBREOFFICE_MAIN=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_MAIN_FILE}
+LIBREOFFICE_LAPA=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_LAPA_FILE}
+LIBREOFFICE_HELP=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_HELP_FILE}
 LIBREOFFICE_UPDS="https://github.com/catupeloco/install-libreoffice-from-web"
 
 #DRAWIO_URL=$(wget -qO- https://github.com/jgraph/drawio-desktop/releases/latest | cut -d \" -f2 | grep deb | grep amd64)
@@ -431,9 +434,12 @@ echo "Downloading keyboard mappings -------------------------------"
 
 echo "Downloading Libreoffice -------------------------------------"
 	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
-        wget --show-progress -qcN "${LIBREOFFICE_MAIN}" -P $DOWNLOAD_DIR_LO
-        wget --show-progress -qcN "${LIBREOFFICE_LAPA}" -P $DOWNLOAD_DIR_LO
-        wget --show-progress -qcN "${LIBREOFFICE_HELP}" -P $DOWNLOAD_DIR_LO
+        #wget --show-progress -qcN "${LIBREOFFICE_MAIN}" -P $DOWNLOAD_DIR_LO
+        #wget --show-progress -qcN "${LIBREOFFICE_LAPA}" -P $DOWNLOAD_DIR_LO
+        #wget --show-progress -qcN "${LIBREOFFICE_HELP}" -P $DOWNLOAD_DIR_LO
+        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}" "${LIBREOFFICE_MAIN}"
+        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}" "${LIBREOFFICE_LAPA}"
+        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}" "${LIBREOFFICE_HELP}"
 	find $DOWNLOAD_DIR_LO/ -type f -name '*.deb' -exec rm {} \; || true
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
@@ -984,13 +990,13 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 	do kill -9 "$line"			2>/dev/null || true
 	done
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
-        umount ${ROOTFS}/dev                    2>/dev/null || true
-        umount ${ROOTFS}/dev                    2>/dev/null || true
         umount ${ROOTFS}/proc                   2>/dev/null || true
         umount ${ROOTFS}/run                    2>/dev/null || true
         umount ${ROOTFS}/sys                    2>/dev/null || true
         umount ${ROOTFS}/tmp                    2>/dev/null || true
         umount ${ROOTFS}/tmp                    2>/dev/null || true
+        umount ${ROOTFS}/dev                    2>/dev/null || true
+        umount ${ROOTFS}/dev                    2>/dev/null || true
         umount ${ROOTFS}/boot/efi               2>/dev/null || true
         umount          /var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
