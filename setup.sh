@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251101-2333
+SCRIPT_DATE=20251101-2334
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -437,9 +437,9 @@ echo "Downloading Libreoffice -------------------------------------"
         #wget --show-progress -qcN "${LIBREOFFICE_MAIN}" -P $DOWNLOAD_DIR_LO
         #wget --show-progress -qcN "${LIBREOFFICE_LAPA}" -P $DOWNLOAD_DIR_LO
         #wget --show-progress -qcN "${LIBREOFFICE_HELP}" -P $DOWNLOAD_DIR_LO
-        wget --show-progress -cN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}" "${LIBREOFFICE_MAIN}"
-        wget --show-progress -cN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}" "${LIBREOFFICE_LAPA}"
-        wget --show-progress -cN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}" "${LIBREOFFICE_HELP}"
+        wget --show-progress -qN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}" "${LIBREOFFICE_MAIN}"
+        wget --show-progress -qN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}" "${LIBREOFFICE_LAPA}"
+        wget --show-progress -qN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}" "${LIBREOFFICE_HELP}"
 	find $DOWNLOAD_DIR_LO/ -type f -name '*.deb' -exec rm {} \; || true
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
