@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251028-2253
+SCRIPT_DATE=20251101-2240
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -121,6 +121,12 @@ LIBREOFFICE_UPDS="https://github.com/catupeloco/install-libreoffice-from-web"
 DRAWIO_URL="https://github.com/jgraph/drawio-desktop/releases/download/v28.2.5/drawio-amd64-28.2.5.deb"
 DRAWIO_FOLDER=${CACHE_FOLDER}/Draw.io
 DRAWIO_DEB=${DRAWIO_URL##*/}
+
+MARKTEXT_FOLDER=${CACHE_FOLDER}/Marktext
+MARKTEXT_URL_PREFIX=https://github.com/marktext/marktext/releases/download
+MARKTEXT_RELEASE=$(curl --silent "https://api.github.com/repos/marktext/marktext/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")')
+MARKTEXT_DEB=marktext-amd64.deb
+MARKTEXT_URL="${MARKTEXT_URL_PREFIX}/${MARKTEXT_RELEASE}/${MARKTEXT_DEB}"
 
 FLATPAK_REPO="https://dl.flathub.org/repo/flathub.flatpakrepo"
 
@@ -260,6 +266,7 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 		- SyncThing.
 		- X2Go Client.
 		- Draw.io.
+		- MarkText.
 		- Keymaps for tty.
 		- Optional : Firefox Rapid Release (from Mozilla repository).
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
@@ -435,6 +442,10 @@ echo "Downloading Libreoffice -------------------------------------"
 echo "Downloading Draw.io -----------------------------------------"
 	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
         wget --show-progress -qcN ${DRAWIO_URL} -P ${DRAWIO_FOLDER}
+
+echo "Downloading MarkText-----------------------------------------"
+	mkdir -p $MARKTEXT_FOLDER >/dev/null 2>&1
+        wget --show-progress -qcN ${MARKTEXT_URL} -P ${MARKTEXT_FOLDER}
 
 echo "Downloading lastest clonezilla ------------------------------"
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
@@ -643,6 +654,9 @@ echo "Entering chroot ---------------------------------------------"
 
 	echo ---Installing Draw.io
 	dpkg -i /var/cache/apt/archives/Draw.io/${DRAWIO_DEB}					1>&3
+	
+	echo ---Installing MarkText
+	dpkg -i /var/cache/apt/archives/Marktext/${MARKTEXT_DEB} 				1>&3
 
         #Installing Libreoffice in backgroupd
         dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				1>&3
@@ -861,7 +875,7 @@ echo "Setting up local admin account ------------------------------"
 echo "Encrypted user script creation ------------------------------"
 cat <<EOF > ${ROOTFS}/usr/local/bin/useradd-encrypt
 	echo Adding local user -------------------------------------------
-        read -p \"What username do you want for local_encrypted_user ?: \" username
+        read -p "What username do you want for local_encrypted_user ?: " username
         sudo useradd -d /home/\$username -c local_encrypted_user -m -s /bin/bash \$username
         sudo adduser \$username updates
         sudo adduser \$username kvm
@@ -869,7 +883,7 @@ cat <<EOF > ${ROOTFS}/usr/local/bin/useradd-encrypt
         sudo adduser \$username libvirt-qemu
         
         sudo passwd \$username
-        if [ \"\$?\" != \"0\" ] ; then echo Please repeat the password....; sudo passwd \$username ; fi
+        if [ "\$?" != "0" ] ; then echo Please repeat the password....; sudo passwd \$username ; fi
 
         echo Encrypting home ---------------------------------------------
 	echo --Enabling encryption
