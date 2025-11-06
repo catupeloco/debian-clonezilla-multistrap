@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251105-1934
+SCRIPT_DATE=20251106-2035
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -233,6 +233,10 @@ export SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/sy
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
 ########################################################################################################################################################
+cleaning_x_lines (){
+	printf "\e[${1}A"
+	printf "\e[K"
+}
 
 # for clear screen on tty (clear doesnt work)
 printf "\033c"
@@ -298,7 +302,7 @@ set +e
 	fi
 set -e
 
-
+cleaning_X_lines 1
 echo "Unmounting ${DEVICE}  ----------------------------------------"
 	pgrep gpg | while read -r line
 	do kill -9 "$line" 			2>/dev/null || true
@@ -329,6 +333,7 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${CACHE_FOLDER}                   2>/dev/null || true
         umount ${CACHE_FOLDER}                   2>/dev/null || true
 
+cleaning_X_lines 1
 echo "Comparing partitions target scheme vs actual schema ---------"
 
 	echo "---Calculating OS partition size"
@@ -365,6 +370,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		fi
 		echo ------${REPARTED}
 
+cleaning_X_lines 7 
 if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
 		parted "${DEVICE}" --script mktable gpt                         > /dev/null 2>&1
