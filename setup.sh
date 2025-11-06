@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2035
+SCRIPT_DATE=20251106-2038
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -302,7 +302,7 @@ set +e
 	fi
 set -e
 
-cleaning_X_lines 1
+cleaning_x_lines 1
 echo "Unmounting ${DEVICE}  ----------------------------------------"
 	pgrep gpg | while read -r line
 	do kill -9 "$line" 			2>/dev/null || true
@@ -333,7 +333,7 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${CACHE_FOLDER}                   2>/dev/null || true
         umount ${CACHE_FOLDER}                   2>/dev/null || true
 
-cleaning_X_lines 1
+cleaning_x_lines 1
 echo "Comparing partitions target scheme vs actual schema ---------"
 
 	echo "---Calculating OS partition size"
