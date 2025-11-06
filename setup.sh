@@ -1,6 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2055
-reset # Re-Set terminal for multiple runs
+SCRIPT_DATE=20251106-2058
 set -e # Exit on error
 
 LOG=/tmp/notebook.log
