@@ -1,18 +1,16 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2050
-echo ---------------------------------------------------------------------------
-echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
-echo "script $SCRIPT_DATE"
-echo ---------------------------------------------------------------------------
-sleep 7
+SCRIPT_DATE=20251106-2055
 reset # Re-Set terminal for multiple runs
-
 set -e # Exit on error
 
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
 SELECTIONS=/tmp/selections
 
+echo ---------------------------------------------------------------------------
+echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
+echo "script $SCRIPT_DATE"
+echo ---------------------------------------------------------------------------
 echo "Installing dependencies for this script ---------------------"
 	cd /tmp
         apt update							 >/dev/null 2>&1
@@ -27,7 +25,6 @@ echo "Installing dependencies for this script ---------------------"
 if [ -f $SELECTIONS ] ; then
 	echo Skiping cuestions, you may delete $SELECTIONS if you change your mind
 	source $SELECTIONS
-	sleep 3
 else
 	disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
 	menu_options=()
@@ -236,16 +233,15 @@ LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 cleaning_x_lines (){
 	printf "\e[${1}A"
 	printf "\e[K"
+	sleep 3
 }
 
 # for clear screen on tty (clear doesnt work)
-# -- DISABLED --
-# printf "\033c"
+printf "\033c"
 
 # SEND ALL TO SCRIPT - DISABLED -
 # exec &> >(tee -a "$LOG")
 
-cleaning_x_lines 3
 echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin
 	- Debian ${DEBIAN_VERSION} with :
