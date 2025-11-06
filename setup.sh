@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2038
+SCRIPT_DATE=20251106-2050
 echo ---------------------------------------------------------------------------
 echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
@@ -239,9 +239,13 @@ cleaning_x_lines (){
 }
 
 # for clear screen on tty (clear doesnt work)
-printf "\033c"
-#exec &> >(tee -a "$LOG")
+# -- DISABLED --
+# printf "\033c"
 
+# SEND ALL TO SCRIPT - DISABLED -
+# exec &> >(tee -a "$LOG")
+
+cleaning_x_lines 3
 echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin
 	- Debian ${DEBIAN_VERSION} with :
@@ -370,7 +374,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		fi
 		echo ------${REPARTED}
 
-cleaning_X_lines 7 
+cleaning_x_lines 7 
 if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
 		parted "${DEVICE}" --script mktable gpt                         > /dev/null 2>&1
