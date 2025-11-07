@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2116
+SCRIPT_DATE=20251106-2126
 set -e # Exit on error
 
 LOG=/tmp/notebook.log
@@ -540,6 +540,7 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
         >> $LOG 2>>$ERR
         #> >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
+cleaning_screen	
 echo "Splitting sources.list\'s in sources.list.d ------------------"
  	echo -----Downloading keyrings
        #wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}    > /dev/null
@@ -560,6 +561,7 @@ echo "Splitting sources.list\'s in sources.list.d ------------------"
 	 #grep spotify ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
 	
 
+cleaning_screen	
 echo "Setting build date in hostname and filesystem ---------------"
 
 cat <<EOF > ${ROOTFS}/etc/hosts
@@ -572,6 +574,7 @@ EOF
         echo "debian-$(date +'%Y-%m-%d')"                    > ${ROOTFS}/etc/hostname
         touch ${ROOTFS}/ImageDate."$(date +'%Y-%m-%d')"
 
+cleaning_screen	
 echo "Generating fstab --------------------------------------------"
         root_uuid="$(blkid | grep ^"$DEVICE" | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         efi_uuid="$(blkid  | grep ^"$DEVICE" | grep ' LABEL="EFI" '   | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
@@ -579,6 +582,7 @@ echo "Generating fstab --------------------------------------------"
         echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
         echo "$efi_uuid  /boot/efi vfat defaults 0 1" >> $FILE
 
+cleaning_screen	
 echo "Setting Keyboard --------------------------------------------"
 	echo "---For non graphical console"
         # FIX DEBIAN BUG
@@ -591,6 +595,7 @@ echo "Setting Keyboard --------------------------------------------"
 	echo "---For everything else"
 	echo 'XKBLAYOUT="latam"' > ${ROOTFS}/etc/default/keyboard
 
+cleaning_screen	
 echo "Fixing nm-applet from empty icon bug ------------------------"
 	echo --Before
 	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
@@ -598,6 +603,7 @@ echo "Fixing nm-applet from empty icon bug ------------------------"
 	echo --After
 	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop
 
+cleaning_screen	
 echo "Creating recovery -------------------------------------------"
 echo '#!/bin/sh
 exec tail -n +3 $0
@@ -613,6 +619,7 @@ menuentry "Restaurar" {
 }'> ${ROOTFS}/etc/grub.d/40_custom
 
 
+cleaning_screen	
 echo "Getting ready for chroot ------------------------------------"
 	echo "---Mounting EFI partition"
         mkdir -p ${ROOTFS}/boot/efi
@@ -627,6 +634,7 @@ echo "Getting ready for chroot ------------------------------------"
 	#ln -s ${LOG} ${ROOTFS}/var/log/notebook.log
 	#ln -s ${ERR} ${ROOTFS}/var/log/notebook.err
 
+cleaning_screen	
 echo "Entering chroot ---------------------------------------------"
         echo "#!/bin/bash
         export DOWNLOAD_DIR_LO=/var/cache/apt/archives/Libreoffice
@@ -735,6 +743,7 @@ echo "Entering chroot ---------------------------------------------"
         chmod +x ${ROOTFS}/root/chroot.sh
         chroot ${ROOTFS} /bin/bash /root/chroot.sh 2>>$ERR 3>>$LOG
 
+cleaning_screen	
 echo "Unattended upgrades -----------------------------------------"
 #https://github.com/mvo5/unattended-upgrades/blob/master/README.md
 
@@ -863,6 +872,7 @@ echo "
 
 	chmod 440 ${ROOTFS}/etc/sudoers.d/updates
 
+cleaning_screen	
 echo "Setting up local admin account ------------------------------"
         echo "export LC_ALL=C LANGUAGE=C LANG=C
 	useradd -d /home/$username -G sudo -m -s /bin/bash $username
@@ -876,6 +886,7 @@ echo "Setting up local admin account ------------------------------"
         chmod +x ${ROOTFS}/tmp/local_admin.sh
         chroot ${ROOTFS} /bin/bash /tmp/local_admin.sh
         
+cleaning_screen	
 echo "Encrypted user script creation ------------------------------"
 cat <<EOF > ${ROOTFS}/usr/local/bin/useradd-encrypt
 	echo Adding local user -------------------------------------------
@@ -907,6 +918,7 @@ cat <<EOF > ${ROOTFS}/usr/local/bin/useradd-encrypt
 EOF
 	chmod +x ${ROOTFS}/usr/local/bin/useradd-encrypt
 
+cleaning_screen	
 echo "Replacing keybindings ----------------------------------------"
 	FILE=${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
 	echo --Making Backup file
@@ -980,9 +992,11 @@ echo "Replacing keybindings ----------------------------------------"
 		sed -i 's/&amp;\(lt;\|gt;\)/\1/g' "$FILE"
 	fi
 
+cleaning_screen	
 echo "Backing up logs ----------------------------------------------"
 	cp ${LOG} ${ERR} ${ROOTFS}/
 
+cleaning_screen	
 echo "Unmounting ${DEVICE} -----------------------------------------"
 	pgrep gpg | while read -r line
 	do kill -9 "$line"			2>/dev/null || true
@@ -1004,6 +1018,7 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${CACHE_FOLDER}                  2>/dev/null || true
         umount "${DEVICE}"*                     2>/dev/null || true
 
+cleaning_screen	
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}" || true
 	echo $SCRIPT_DATE
