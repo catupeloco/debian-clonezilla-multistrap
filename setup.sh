@@ -1,7 +1,7 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2132
+SCRIPT_DATE=20251106-2146
 set -e # Exit on error
-
+reset
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
 SELECTIONS=/tmp/selections
