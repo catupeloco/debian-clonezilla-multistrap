@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2208
+SCRIPT_DATE=20251106-2209
 set -e # Exit on error
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
@@ -268,7 +268,7 @@ grep iso /proc/cmdline >/dev/null && \
 echo "For remote access during installation, you can connect via ssh
 	---Connect via: ssh user@$LOCALIP
 	---password is \"live\""
-
+set +x
 max=50
 bar_width=40
 current=0
@@ -283,6 +283,7 @@ while [ $current -le $max ]; do
     sleep 0.05
 done
 echo "============================================================="
+set -x
 }
 
 cleaning_screen
