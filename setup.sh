@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2209
+SCRIPT_DATE=20251106-2211
 set -e # Exit on error
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
@@ -228,6 +228,10 @@ export SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/sy
 
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
+export max=50
+export bar_width=40
+export current=0
+
 ########################################################################################################################################################
 #cleaning_x_lines (){
 #	printf "\e[${1}A"
@@ -268,10 +272,7 @@ grep iso /proc/cmdline >/dev/null && \
 echo "For remote access during installation, you can connect via ssh
 	---Connect via: ssh user@$LOCALIP
 	---password is \"live\""
-set +x
-max=50
-bar_width=40
-current=0
+set +e
 while [ $current -le $max ]; do
     let "percent = current * 100 / max"
     let "filled_len = current * bar_width / max"
@@ -283,7 +284,7 @@ while [ $current -le $max ]; do
     sleep 0.05
 done
 echo "============================================================="
-set -x
+set -e
 }
 
 cleaning_screen
