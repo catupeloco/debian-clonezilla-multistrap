@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2246
+SCRIPT_DATE=20251106-2251
 set -e # Exit on error
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
@@ -552,8 +552,8 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
 	"deb [trusted=yes] ${FIREFOX_REPOSITORY}                          mozilla main"                            \
 	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable  non-free"                        \
 	"deb [trusted=yes] ${SYNCTHING_REPOSITORY}                        syncthing stable-v2"                     \
-        >> $LOG 2>>$ERR
-        #> >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
+        > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
+        #>> $LOG 2>>$ERR
 
 cleaning_screen	
 echo "Splitting sources.list\'s in sources.list.d ------------------"
