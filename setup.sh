@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2323
+SCRIPT_DATE=20251106-2324
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -228,7 +228,7 @@ export SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/sy
 
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
-export PROGRESS_BAR_MAX=30
+export PROGRESS_BAR_MAX=50
 export PROGRESS_BAR_WIDTH=43
 export PROGRESS_BAR_CURRENT=0
 
