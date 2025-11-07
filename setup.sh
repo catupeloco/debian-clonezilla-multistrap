@@ -229,7 +229,7 @@ export SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/sy
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
 export PROGRESS_BAR_MAX=22
-export PROGRESS_BAR_WIDTH=555550
+export PROGRESS_BAR_WIDTH=50
 export PROGRESS_BAR_CURRENT=0
 
 ########################################################################################################################################################
