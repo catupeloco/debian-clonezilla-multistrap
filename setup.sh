@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2228
+SCRIPT_DATE=20251106-2231
 set -e # Exit on error
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
@@ -272,9 +272,9 @@ echo "For remote access during installation, you can connect via ssh
 ########PROGRESS BAR#####################################################
 echo "============================================================="
 set +e
-let "PROGRESS_BAR_PERCENT    = PROGRESS_BAR_CURRENT * 100                / PROGRESS_BAR_MAX"
+let "PROGRESS_BAR_PERCENT = PROGRESS_BAR_CURRENT * 100 / PROGRESS_BAR_MAX"
 let "PROGRESS_BAR_FILLED_LEN = PROGRESS_BAR_CURRENT * PROGRESS_BAR_WIDTH / PROGRESS_BAR_MAX"
-let "PROGRESS_BAR_EMPTY_LEN  = PROGRESS_BAR_WIDTH   - PROGRESS_BAR_FILLED_LEN"
+let "PROGRESS_BAR_EMPTY_LEN = PROGRESS_BAR_WIDTH - PROGRESS_BAR_FILLED_LEN"
 PROGRESS_BAR_FILLED_BAR=$(printf '%.s#' $(seq 1 $PROGRESS_BAR_FILLED_LEN))
  PROGRESS_BAR_EMPTY_BAR=$(printf '%.s-' $(seq 1 $PROGRESS_BAR_EMPTY_LEN   ))
 printf "\rProgress: [%s%s] %3d%%" "$PROGRESS_BAR_FILLED_BAR" "$PROGRESS_BAR_EMPTY_BAR" "$PROGRESS_BAR_PERCENT"
