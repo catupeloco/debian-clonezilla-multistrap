@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2256
+SCRIPT_DATE=20251106-2323
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -228,7 +228,7 @@ export SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/sy
 
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
-export PROGRESS_BAR_MAX=22
+export PROGRESS_BAR_MAX=30
 export PROGRESS_BAR_WIDTH=43
 export PROGRESS_BAR_CURRENT=0
 
@@ -290,7 +290,7 @@ echo "Inicializing logs tails -------------------------------------"
 	touch $LOG
 	touch $ERR
 set +e
-	#if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
+	# RUNNING TAILS ON SECOND AND THIRD TTY
 	if ! pgrep tail ; then
 		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
 		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
@@ -299,9 +299,11 @@ set -e
 
 cleaning_screen
 echo "Unmounting ${DEVICE}  ----------------------------------------"
+	# JUST IN CASE KILLING GPG PROCESSES FOR MULTIPLE RUNS
 	pgrep gpg | while read -r line
 	do kill -9 "$line" 			2>/dev/null || true
 	done
+	# REPEATING UNMOUNT COMMANDS JUST IN CASE
         umount "${DEVICE}"*                     2>/dev/null || true
         umount "${DEVICE}"*                     2>/dev/null || true
         umount ${ROOTFS}/dev/pts                2>/dev/null || true
@@ -331,12 +333,14 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
 cleaning_screen
 echo "Comparing partitions target scheme vs actual schema ---------"
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Calculating OS partition size"
 		DISK_SIZE=$(parted "${DEVICE}" --script unit MiB print | awk '/Disk/ {print $3}' | tr -d 'MiB')
 		PART_OP_SIZE=$((DISK_SIZE * PART_OP_PERCENTAGE / 100))
 		PART_OS_START=$((PART_CZ_END + 1))
 		PART_OS_END=$((DISK_SIZE - PART_OP_SIZE)) 
 	
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Labels test"
 		LABELS_MATCH=no
 		blkid | grep "${DEVICE}"2 | grep CLONEZILLA >/dev/null && \
@@ -344,6 +348,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		blkid | grep "${DEVICE}"4 | grep RESOURCES  >/dev/null && \
 		LABELS_MATCH=yes && echo ------They DO match || echo ------They DON\'T match
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Sizes test"
 		PART_OP_SIZE_REAL=$( parted "${DEVICE}" --script unit MiB print | awk '$1 == "4" {print $4}' | tr -d 'MiB')
 		PART_OS_START_REAL=$(parted "${DEVICE}" --script unit MiB print | awk '$1 == "3" {print $2}' | tr -d 'MiB')
@@ -357,7 +362,9 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 			SIZES_MATCH=no
 		fi
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Reparted? :"
+		# SKIPPING REPARTED ONLY IF LABELS AND SIZES MATCH
 		if [ "$LABELS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
 			REPARTED=no
 		else
@@ -370,16 +377,20 @@ if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
 		parted "${DEVICE}" --script mktable gpt                         > /dev/null 2>&1
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating EFI partition --------------------------------------"
 		parted "${DEVICE}" --script mkpart ESP fat32 1MiB ${PART_EFI_END}MiB > /dev/null 2>&1
 		parted "${DEVICE}" --script set 1 esp on                          > /dev/null 2>&1
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating Clonezilla partition -------------------------------"
 		parted "${DEVICE}" --script mkpart CLONEZILLA ext4 ${PART_EFI_END}MiB ${PART_CZ_END}MiB > /dev/null 2>&1
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating OS partition ---------------------------------------"
 		parted "${DEVICE}" --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating Resources/Cache partition --------------------------"
 		parted "${DEVICE}" --script mkpart RESOURCES ext4 ${PART_OS_END}MiB 100% >/dev/null 2>&1
 		sleep 2
@@ -387,6 +398,7 @@ fi
 
 cleaning_screen
 echo "Formating partitions ----------------------------------------"
+		# EVEN IF THE PARTITION IS FORMATTED I TRY TO CHECK THE FILESYSTEM
 			  fsck -y "${DEVICE}"1			>/dev/null 2>&1 || true
 			  fsck -y "${DEVICE}"2			>/dev/null 2>&1 || true
 			  fsck -y "${DEVICE}"3			>/dev/null 2>&1 || true
@@ -401,26 +413,36 @@ echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
         mount "${DEVICE}"3 ${ROOTFS}                            > /dev/null 2>&1
+
+	let "PROGRESS_BAR_CURRENT += 1"
 echo "----Cleaning files just in case"
+	# I DON'T KNOW WHY BUT FORMAT SOME TIMES DOESN'T WORK, SO RM FOR THE WIN
 	find ${ROOTFS} -type f -exec rm -rf {} \; 		> /dev/null 2>&1
 	find ${ROOTFS} -type d -exec rm -rf {} \; 		> /dev/null 2>&1
 	
 echo "---Recovery partition"
         mkdir -p ${RECOVERYFS}                                  > /dev/null 2>&1
         mount "${DEVICE}"2 ${RECOVERYFS}                        > /dev/null 2>&1
+
+	let "PROGRESS_BAR_CURRENT += 1"
 echo "----Cleaning files just in case"
+	# I DON'T KNOW WHY BUT FORMAT SOME TIMES DOESN'T WORK, SO RM FOR THE WIN
 	find ${RECOVERYFS} -type f -exec rm -rf {} \; 		> /dev/null 2>&1 
 	find ${RECOVERYFS} -type d -exec rm -rf {} \;		> /dev/null 2>&1
 
+	let "PROGRESS_BAR_CURRENT += 1"
 echo "---Resources/Cache partition"
 	echo -n "-----"
         mkdir -vp ${CACHE_FOLDER}
         chown "${SUDO_USER}": -R ${CACHE_FOLDER}
 	mount "${DEVICE}"4 ${CACHE_FOLDER}
-        #mkdir -p ${ROOTFS}/var/cache/apt/archives               > /dev/null 2>&1 
-        #mount --bind ${CACHE_FOLDER} ${ROOTFS}/var/cache/apt/archives
+
+	let "PROGRESS_BAR_CURRENT += 1"
 echo "---Cleaning cache packages if necesary"
 	set +e
+	# CONSECUENCIES OF NOT FORMATING RESOURCE PARTITION TAKES TO HAVE 
+	# MORE THAN ONE DEB FILE FOR EACH PACKAGE. IN THIS CASES BOOTSTRAP
+	# MAY TRAY TO INSTALL EACH FILE FOR SOME PACKAGE AND FAILS.
 	while [ -n "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
 		echo ---This packages have more than one version.
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
@@ -440,9 +462,6 @@ echo "Downloading keyboard mappings -------------------------------"
 cleaning_screen
 echo "Downloading Libreoffice -------------------------------------"
 	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
-        #wget --show-progress -qcN "${LIBREOFFICE_MAIN}" -P $DOWNLOAD_DIR_LO
-        #wget --show-progress -qcN "${LIBREOFFICE_LAPA}" -P $DOWNLOAD_DIR_LO
-        #wget --show-progress -qcN "${LIBREOFFICE_HELP}" -P $DOWNLOAD_DIR_LO
         wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}" "${LIBREOFFICE_MAIN}"
         wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}" "${LIBREOFFICE_LAPA}"
         wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}" "${LIBREOFFICE_HELP}"
@@ -454,13 +473,11 @@ echo "Downloading Libreoffice -------------------------------------"
 cleaning_screen
 echo "Downloading Draw.io -----------------------------------------"
 	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
-        #wget --show-progress -qcN ${DRAWIO_URL} -P ${DRAWIO_FOLDER}
         wget --show-progress -qcN -O ${DRAWIO_FOLDER}/${DRAWIO_DEB} ${DRAWIO_URL}
 
 cleaning_screen
 echo "Downloading MarkText-----------------------------------------"
 	mkdir -p $MARKTEXT_FOLDER >/dev/null 2>&1
-        #wget --show-progress -qcN ${MARKTEXT_URL} -P ${MARKTEXT_FOLDER}
         wget --show-progress -qcN -O ${MARKTEXT_FOLDER}/${MARKTEXT_DEB} ${MARKTEXT_URL}
 
 cleaning_screen
@@ -477,6 +494,7 @@ echo "Downloading lastest clonezilla ------------------------------"
 			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" "${URL_CLONEZILLA}" ;;
         esac
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Extracting clonezilla"
 	unzip -u ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" -d ${RECOVERYFS} >>$LOG 2>>$ERR
 	cp -p ${RECOVERYFS}/boot/grub/grub.cfg ${RECOVERYFS}/boot/grub/grub.cfg.old
@@ -484,6 +502,7 @@ echo "Downloading lastest clonezilla ------------------------------"
 	sed -i '/submenu[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
 	mv ${RECOVERYFS}/live ${RECOVERYFS}/live-hd
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Creating grub.cfg for clonezilla"
 	set +e ###################################
 	if   fdisk -l | grep -c nvme0n1 | grep 5 >/dev/null ; then BASE=nvme0n1p
@@ -506,6 +525,7 @@ menuentry  --hotkey=r "Restaurar imagen"{
   initrd /live-hd/initrd.img
 }' >> ${RECOVERYFS}/boot/grub/grub.cfg
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Post image creation cleaning script"
 echo "
 mkdir /mnt/%%BASE%%3 /mnt/%%BASE%%4 2>/dev/null
@@ -541,7 +561,7 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/boot/grub/grub.cf
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
 cleaning_screen
-echo "Running mmdebstrap ------------------------------------------"
+echo "Running mmdebstrap (please be patient, longest step) --------"
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} google-chrome-stable ${FIREFOX_PACKAGE} spotify-client syncthing" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
@@ -558,12 +578,12 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
 cleaning_screen	
 echo "Splitting sources.list\'s in sources.list.d ------------------"
  	echo -----Downloading keyrings
-       #wget -qO- ${CHROME_REPOSITORY} | tee                    ${ROOTFS}${CHROME_TRUSTED}    > /dev/null
 	wget -qO- ${CHROME_KEY}        | tee                    ${ROOTFS}${CHROME_TRUSTED}    > /dev/null
 	wget -qO- ${FIREFOX_KEY}       | tee                    ${ROOTFS}${FIREFOX_TRUSTED}   > /dev/null
 	wget -qO- ${SPOTIFY_KEYS}      | gpg --dearmor --yes -o ${ROOTFS}${SPOTIFY_TRUSTED}   > /dev/null
 	wget -qO- ${SYNCTHING_KEYS}    | tee                    ${ROOTFS}${SYNCTHING_TRUSTED} > /dev/null
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo ----Generating each dot list file with signed-by
 	grep debian  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/debian.list
 	rm ${ROOTFS}/etc/apt/sources.list 
@@ -571,10 +591,6 @@ echo "Splitting sources.list\'s in sources.list.d ------------------"
 	echo "deb [signed-by=${FIREFOX_TRUSTED}]   ${FIREFOX_REPOSITORY}   mozilla main"        > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
 	echo "deb [signed-by=${SPOTIFY_TRUSTED}]   ${SPOTIFY_REPOSITORY}   stable non-free"     > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
 	echo "deb [signed-by=${SYNCTHING_TRUSTED}] ${SYNCTHING_REPOSITORY} syncthing stable-v2" > ${ROOTFS}/etc/apt/sources.list.d/syncthing.list
-	 #grep chrome  ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/google-chrome.list
-	 #grep mozilla ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/mozilla.list
-	 #grep spotify ${ROOTFS}/etc/apt/sources.list > ${ROOTFS}/etc/apt/sources.list.d/spotify.list
-	
 
 cleaning_screen	
 echo "Setting build date in hostname and filesystem ---------------"
@@ -607,6 +623,7 @@ echo "Setting Keyboard --------------------------------------------"
         mkdir -p ${ROOTFS}/usr/share/keymaps/
         cp -r ./* ${ROOTFS}/usr/share/keymaps/  >>$LOG 2>>$ERR
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---For everything else"
 	echo 'XKBLAYOUT="latam"' > ${ROOTFS}/etc/default/keyboard
 
@@ -640,14 +657,13 @@ echo "Getting ready for chroot ------------------------------------"
         mkdir -p ${ROOTFS}/boot/efi
         mount "${DEVICE}"1 ${ROOTFS}/boot/efi
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Mounting pseudo-filesystems"
         mount --bind /dev ${ROOTFS}/dev
         mount -t devpts /dev/pts ${ROOTFS}/dev/pts
         mount --bind /run  ${ROOTFS}/run
         mount -t sysfs sysfs ${ROOTFS}/sys
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
-	#ln -s ${LOG} ${ROOTFS}/var/log/notebook.log
-	#ln -s ${ERR} ${ROOTFS}/var/log/notebook.err
 
 cleaning_screen	
 echo "Entering chroot ---------------------------------------------"
@@ -837,6 +853,7 @@ echo -------------------------------------
 sleep 30'                         > ${ROOTFS}/usr/local/bin/status
 
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Repositories for testing scripts"
 	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/new.list
 	echo "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
@@ -844,10 +861,12 @@ sleep 30'                         > ${ROOTFS}/usr/local/bin/status
         echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/old.list
 	echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/old.list
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Sudoers file for testing scripts"
 	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
 $username ALL=(ALL) NOPASSWD: /usr/local/bin/desactualizar" > ${ROOTFS}/etc/sudoers.d/apt
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Shortcuts for testing scripts"
 	echo '[Desktop Entry]
 Type=Application
@@ -877,6 +896,7 @@ echo "
 %updates ALL = NOPASSWD : /usr/local/bin/actualizar 
 %updates ALL = NOPASSWD : /usr/local/bin/desactualizar " > ${ROOTFS}/etc/sudoers.d/updates
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Permissions for testing scripts"
 	chmod +x  ${ROOTFS}/usr/local/bin/actualizar ${ROOTFS}/usr/local/bin/desactualizar ${ROOTFS}/usr/local/bin/status
 
@@ -939,6 +959,7 @@ echo "Replacing keybindings ----------------------------------------"
 	echo --Making Backup file
 	cp ${FILE} ${FILE}.bak
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo --Replacing screenshooter by flameshot
 	sed -i \
 	-e 's/xfce4-screenshooter -w/flameshot gui/g' \
@@ -957,6 +978,7 @@ echo "Replacing keybindings ----------------------------------------"
 	sed -i '/tile_down_right_key/d' $FILE 
 	sed -i '/maximize_window_key/d' $FILE 
 
+	let "PROGRESS_BAR_CURRENT += 1"
 	echo --Ensuring custom keybinding section exists and applying new shortcuts
 	if command -v xmlstarlet >/dev/null 2>&1; then
 		if ! xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
@@ -988,12 +1010,10 @@ echo "Replacing keybindings ----------------------------------------"
 		    action=${MAP[$key]}
 		    echo -n "$key, "
 		    if xmlstarlet sel -t -v "count(/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}'])" "$FILE" 2>/dev/null | grep -q '^1$'; then
-			#echo "--Already Exists  : updateing value of    $key -> $action"
 			xmlstarlet ed -L \
 			    -u "/channel/property[@name='xfwm4']/property[@name='custom']/property[@name='${key}']/@value" \
 			    -v "$action" "$FILE"
 		    else
-			#echo "--It doesnt exists: creating property for $key -> $action"
 			xmlstarlet ed -L \
 			    -s "/channel/property[@name='xfwm4']/property[@name='custom']"                     -t elem -n "propertyTMP" -v ""        \
 			    -i "/channel/property[@name='xfwm4']/property[@name='custom']/propertyTMP[last()]" -t attr -n "name"        -v "$key"    \
@@ -1051,16 +1071,17 @@ echo "END of the road!! keep up the good work ---------------------"
 # Nala, seleccion de repositorio optimo
 	# Desde setup
 	# Desde XFCE4
+# lupa xfce4-appfinder
+
+##########################################################################
+# Discover no abre la primera vez hasta que haces sudo apt update
+	# Descartado
 # Mover salida principal a F2
 	# Dejar en F1, lista de tareas y la tarea actual
 	# Crear funcion front end
-
+	# Listo
 # Verificar progress bar en descargas desde cero
-
-# lupa xfce4-appfinder
-
-# Discover no abre la primera vez hasta que haces sudo apt update
-	# Descartado
+	# Listo
 # Screenshot no anda por teclado xfce4-settings-editor
 	# Listo
 # Teclas de control de ventanas
@@ -1068,3 +1089,4 @@ echo "END of the road!! keep up the good work ---------------------"
 	# xfconf-query  -l
 	# xfconf-query -c xfce4-panel -l
 	# /etc/xdg/xfce4/panel/default.xml
+##########################################################################
