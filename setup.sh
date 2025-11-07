@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2126
+SCRIPT_DATE=20251106-2128
 set -e # Exit on error
 
 LOG=/tmp/notebook.log
@@ -278,7 +278,7 @@ echo "Inicializing logs tails -------------------------------------"
 	touch $ERR
 set +e
 	#if [ -z "$(ps fax | grep -v grep | grep tail | grep $LOG)" ] ; then
-	if ! pgrep tail | grep -q $LOG ; then
+	if ! pgrep tail ; then
 		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
 		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
 	fi
