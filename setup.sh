@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2213
+SCRIPT_DATE=20251106-2228
 set -e # Exit on error
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
@@ -228,16 +228,11 @@ export SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/sy
 
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
-export max=50
-export bar_width=40
-export current=0
+export PROGRESS_BAR_MAX=50
+export PROGRESS_BAR_WIDTH=40
+export PROGRESS_BAR_CURRENT=0
 
 ########################################################################################################################################################
-#cleaning_x_lines (){
-#	printf "\e[${1}A"
-#	printf "\e[K"
-#	sleep 3
-#}
 cleaning_screen (){
 # for clear screen on tty (clear doesnt work)
 printf "\033c"
@@ -264,7 +259,8 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 		- Keymaps for tty.
 		- Optional : Firefox Rapid Release (from Mozilla repository).
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
-	To Follow extra details use: 
+
+To Follow extra details use: 
 		tail -F $LOG or Ctrl + Alt + F2
 		tail -F $ERR or Ctrl + Alt + F3"
 
@@ -272,17 +268,21 @@ grep iso /proc/cmdline >/dev/null && \
 echo "For remote access during installation, you can connect via ssh
 	---Connect via: ssh user@$LOCALIP
 	---password is \"live\""
+
+########PROGRESS BAR#####################################################
+echo "============================================================="
 set +e
-let "percent = current * 100 / max"
-let "filled_len = current * bar_width / max"
-let "empty_len = bar_width - filled_len"
-filled_bar=$(printf '%.s#' $(seq 1 $filled_len))
-empty_bar=$(printf '%.s-' $(seq 1 $empty_len))
-printf "\rProgress: [%s%s] %3d%%" "$filled_bar" "$empty_bar" "$percent"
+let "PROGRESS_BAR_PERCENT    = PROGRESS_BAR_CURRENT * 100                / PROGRESS_BAR_MAX"
+let "PROGRESS_BAR_FILLED_LEN = PROGRESS_BAR_CURRENT * PROGRESS_BAR_WIDTH / PROGRESS_BAR_MAX"
+let "PROGRESS_BAR_EMPTY_LEN  = PROGRESS_BAR_WIDTH   - PROGRESS_BAR_FILLED_LEN"
+PROGRESS_BAR_FILLED_BAR=$(printf '%.s#' $(seq 1 $PROGRESS_BAR_FILLED_LEN))
+ PROGRESS_BAR_EMPTY_BAR=$(printf '%.s-' $(seq 1 $PROGRESS_BAR_EMPTY_LEN   ))
+printf "\rProgress: [%s%s] %3d%%" "$PROGRESS_BAR_FILLED_BAR" "$PROGRESS_BAR_EMPTY_BAR" "$PROGRESS_BAR_PERCENT"
 let "current += 1"
 sleep 0.05
 printf "\n=============================================================\n"
 set -e
+#########################################################################
 }
 
 cleaning_screen
