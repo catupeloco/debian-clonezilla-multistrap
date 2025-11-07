@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2100
+SCRIPT_DATE=20251106-2108
 set -e # Exit on error
 
 LOG=/tmp/notebook.log
@@ -249,38 +249,24 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 		  --With custom keybindings for windows manager.
 		- Flameshot (replace for screenshots).
 		- Qterminal (replace for xfce terminal).
-		- Mousepad.
-		- VLC.
-		- QBittorrent.
-		- OBS Studio.
-		- KeePassXC.
+		- Mousepad, VLC, QBittorrent, OBS Studio, KeePassXC.
 		- Remmina, x11vnc and ssvnc.
-		- Unattended upgrades.
-        	- Virtual Machine Manager (KVM/QEMU).
+		- Unattended upgrades, Virtual Machine Manager (KVM/QEMU).
         	- Wifi and bluetooth drivers.
 		- NTFS support (to read Windows Partitions).
 		- Optional : 
-		  --Firefox ESR.
+		  --Firefox ESR (from Mozilla repository).
 		  --encrypted home.
 	- External latest :
-		- Libreoffice.
-		- Google Chrome. 
-		- Clonezilla recovery.
-		- Spotify.
-		- Flatpak
-		  -- Mission Center (task manager).
-		- SyncThing.
-		- X2Go Client.
-		- Draw.io.
-		- MarkText.
+		- Libreoffice, Google Chrome, Clonezilla recovery, Spotify.
+		- Flatpak: Mission Center (task manager).
+		- SyncThing. X2Go Client, Draw.io,  MarkText.
 		- Keymaps for tty.
 		- Optional : Firefox Rapid Release (from Mozilla repository).
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
-	Script Version=${SCRIPT_DATE}"
-
-echo "To Follow extra details use: 
-	tail -F $LOG or Ctrl + Alt + F2
-	tail -F $ERR or Ctrl + Alt + F3"
+	To Follow extra details use: 
+		tail -F $LOG or Ctrl + Alt + F2
+		tail -F $ERR or Ctrl + Alt + F3"
 
 grep iso /proc/cmdline >/dev/null && \
 echo "For remote access during installation, you can connect via ssh
@@ -547,7 +533,8 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
 	"deb [trusted=yes] ${FIREFOX_REPOSITORY}                          mozilla main"                            \
 	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable  non-free"                        \
 	"deb [trusted=yes] ${SYNCTHING_REPOSITORY}                        syncthing stable-v2"                     \
-        > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
+        >> $LOG 2>>$ERR
+        #> >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
 echo "Splitting sources.list\'s in sources.list.d ------------------"
  	echo -----Downloading keyrings
