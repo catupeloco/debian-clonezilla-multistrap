@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2128
+SCRIPT_DATE=20251106-2132
 set -e # Exit on error
 
 LOG=/tmp/notebook.log
@@ -388,12 +388,14 @@ echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
         mount "${DEVICE}"3 ${ROOTFS}                            > /dev/null 2>&1
+echo "----Cleaning files just in case"
 	find ${ROOTFS} -type f -exec rm -rf {} \; 		> /dev/null 2>&1
 	find ${ROOTFS} -type d -exec rm -rf {} \; 		> /dev/null 2>&1
 	
 echo "---Recovery partition"
         mkdir -p ${RECOVERYFS}                                  > /dev/null 2>&1
         mount "${DEVICE}"2 ${RECOVERYFS}                        > /dev/null 2>&1
+echo "----Cleaning files just in case"
 	find ${RECOVERYFS} -type f -exec rm -rf {} \; 		> /dev/null 2>&1 
 	find ${RECOVERYFS} -type d -exec rm -rf {} \;		> /dev/null 2>&1
 
