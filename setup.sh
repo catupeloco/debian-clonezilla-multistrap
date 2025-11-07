@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2211
+SCRIPT_DATE=20251106-2212
 set -e # Exit on error
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
@@ -273,16 +273,14 @@ echo "For remote access during installation, you can connect via ssh
 	---Connect via: ssh user@$LOCALIP
 	---password is \"live\""
 set +e
-while [ $current -le $max ]; do
-    let "percent = current * 100 / max"
-    let "filled_len = current * bar_width / max"
-    let "empty_len = bar_width - filled_len"
-    filled_bar=$(printf '%.s#' $(seq 1 $filled_len))
-    empty_bar=$(printf '%.s-' $(seq 1 $empty_len))
-    printf "\rProgress: [%s%s] %3d%%" "$filled_bar" "$empty_bar" "$percent"
-    let "current += 1"
-    sleep 0.05
-done
+let "percent = current * 100 / max"
+let "filled_len = current * bar_width / max"
+let "empty_len = bar_width - filled_len"
+filled_bar=$(printf '%.s#' $(seq 1 $filled_len))
+empty_bar=$(printf '%.s-' $(seq 1 $empty_len))
+printf "\rProgress: [%s%s] %3d%%" "$filled_bar" "$empty_bar" "$percent"
+let "current += 1"
+sleep 0.05
 echo "============================================================="
 set -e
 }
