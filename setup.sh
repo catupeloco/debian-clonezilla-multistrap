@@ -1,8 +1,8 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2251
+SCRIPT_DATE=20251106-2256
 set -e # Exit on error
-LOG=/tmp/notebook.log
-ERR=/tmp/notebook.err
+LOG=/tmp/laptop.log
+ERR=/tmp/laptop.err
 SELECTIONS=/tmp/selections
 
 echo ---------------------------------------------------------------------------
