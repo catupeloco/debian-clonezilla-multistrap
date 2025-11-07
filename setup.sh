@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251107-0012
+SCRIPT_DATE=20251107-0022
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -714,10 +714,10 @@ echo "Entering chroot ---------------------------------------------"
         echo ---Installing LibreOffice and its language pack
 	echo -----Cloning script for future updates
 	cd /opt
-	git clone ${LIBREOFFICE_UPDS} || true
-	chmod +x /opt/install-libreoffice-from-web/setup.sh || true
-        wait \$pid_LO
-        apt install --fix-broken -y   	                                                        1>&3 || true
+	git clone ${LIBREOFFICE_UPDS}
+	chmod +x /opt/install-libreoffice-from-web/setup.sh
+        wait \$pid_LO || true
+        apt install --fix-broken -y   	                                                        1>&3
         echo ------LibreOffice \$VERSION_LO installation done.
 
 	echo ---Flatpak and Mission Center
