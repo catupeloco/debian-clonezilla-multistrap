@@ -1,5 +1,8 @@
-#https://vicentech.com.ar/wp-content/uploads/2025/10/laptop.txt
-
+#      https://vicentech.com.ar/laptop ->>
+#  ->> https://vicentech.com.ar/wp-content/uploads/laptop.txt
+# Cleaning script and resetting terminal for multiple run fixes
+reset
+printf "\033c"
 echo --Installing git
 sudo apt install git -y >/dev/null 2>&1
 

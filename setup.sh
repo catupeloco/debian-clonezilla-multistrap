@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2058
+SCRIPT_DATE=20251106-2100
 set -e # Exit on error
 
 LOG=/tmp/notebook.log
