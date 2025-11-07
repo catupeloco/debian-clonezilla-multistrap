@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2108
+SCRIPT_DATE=20251106-2116
 set -e # Exit on error
 
 LOG=/tmp/notebook.log
@@ -229,18 +229,14 @@ export SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/sy
 LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 
 ########################################################################################################################################################
-cleaning_x_lines (){
-	printf "\e[${1}A"
-	printf "\e[K"
-	sleep 3
-}
-
+#cleaning_x_lines (){
+#	printf "\e[${1}A"
+#	printf "\e[K"
+#	sleep 3
+#}
+cleaning_screen (){
 # for clear screen on tty (clear doesnt work)
 printf "\033c"
-
-# SEND ALL TO SCRIPT - DISABLED -
-# exec &> >(tee -a "$LOG")
-
 echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin
 	- Debian ${DEBIAN_VERSION} with :
@@ -274,8 +270,9 @@ echo "For remote access during installation, you can connect via ssh
 	---password is \"live\""
 
 echo "============================================================="
-sleep 10
+}
 
+cleaning_screen
 echo "Inicializing logs tails -------------------------------------"
 	touch $LOG
 	touch $ERR
@@ -287,7 +284,7 @@ set +e
 	fi
 set -e
 
-cleaning_x_lines 1
+cleaning_screen
 echo "Unmounting ${DEVICE}  ----------------------------------------"
 	pgrep gpg | while read -r line
 	do kill -9 "$line" 			2>/dev/null || true
@@ -318,7 +315,7 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${CACHE_FOLDER}                   2>/dev/null || true
         umount ${CACHE_FOLDER}                   2>/dev/null || true
 
-cleaning_x_lines 1
+cleaning_screen
 echo "Comparing partitions target scheme vs actual schema ---------"
 
 	echo "---Calculating OS partition size"
@@ -355,7 +352,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		fi
 		echo ------${REPARTED}
 
-cleaning_x_lines 7 
+cleaning_screen 
 if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
 		parted "${DEVICE}" --script mktable gpt                         > /dev/null 2>&1
@@ -375,6 +372,7 @@ if [ "$REPARTED" == "yes" ] ; then
 		sleep 2
 fi
 
+cleaning_screen
 echo "Formating partitions ----------------------------------------"
 			  fsck -y "${DEVICE}"1			>/dev/null 2>&1 || true
 			  fsck -y "${DEVICE}"2			>/dev/null 2>&1 || true
@@ -385,7 +383,7 @@ echo "Formating partitions ----------------------------------------"
 		 	  mkfs.ext4 -L CLONEZILLA "${DEVICE}"2	>/dev/null 2>&1 || true
 			  mkfs.ext4 -L LINUX      "${DEVICE}"3	>/dev/null 2>&1 || true
 
-
+cleaning_screen
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
@@ -420,9 +418,11 @@ echo "---Cleaning cache packages if necesary"
 	done
 	set -e
 
+cleaning_screen	
 echo "Downloading keyboard mappings -------------------------------"
 	wget --show-progress -qcN -O ${CACHE_FOLDER}/"${KEYBOARD_MAPS}" ${KEYBOARD_FIX_URL}"${KEYBOARD_MAPS}"
 
+cleaning_screen
 echo "Downloading Libreoffice -------------------------------------"
 	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
         #wget --show-progress -qcN "${LIBREOFFICE_MAIN}" -P $DOWNLOAD_DIR_LO
@@ -436,16 +436,19 @@ echo "Downloading Libreoffice -------------------------------------"
         tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 	tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
 
+cleaning_screen
 echo "Downloading Draw.io -----------------------------------------"
 	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
         #wget --show-progress -qcN ${DRAWIO_URL} -P ${DRAWIO_FOLDER}
         wget --show-progress -qcN -O ${DRAWIO_FOLDER}/${DRAWIO_DEB} ${DRAWIO_URL}
 
+cleaning_screen
 echo "Downloading MarkText-----------------------------------------"
 	mkdir -p $MARKTEXT_FOLDER >/dev/null 2>&1
         #wget --show-progress -qcN ${MARKTEXT_URL} -P ${MARKTEXT_FOLDER}
         wget --show-progress -qcN -O ${MARKTEXT_FOLDER}/${MARKTEXT_DEB} ${MARKTEXT_URL}
 
+cleaning_screen
 echo "Downloading lastest clonezilla ------------------------------"
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
 	echo "---Downloading from ${MIRROR_CLONEZILLA}"
@@ -522,6 +525,7 @@ sed -i 's/%%KEYBOARD%%/'$CLONEZILLA_KEYBOARD'/g' ${RECOVERYFS}/boot/grub/grub.cf
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/boot/grub/grub.cfg
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
+cleaning_screen
 echo "Running mmdebstrap ------------------------------------------"
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} google-chrome-stable ${FIREFOX_PACKAGE} spotify-client syncthing" "${DEBIAN_VERSION}" "${ROOTFS}" \
