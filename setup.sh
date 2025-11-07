@@ -1,7 +1,6 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2146
+SCRIPT_DATE=20251106-2147
 set -e # Exit on error
-reset
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
 SELECTIONS=/tmp/selections
@@ -25,6 +24,7 @@ if [ -f $SELECTIONS ] ; then
 	echo Skiping cuestions, you may delete $SELECTIONS if you change your mind
 	source $SELECTIONS
 else
+	reset
 	disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
 	menu_options=()
 	while read -r name size; do
