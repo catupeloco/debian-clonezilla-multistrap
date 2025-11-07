@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251106-2212
+SCRIPT_DATE=20251106-2213
 set -e # Exit on error
 LOG=/tmp/notebook.log
 ERR=/tmp/notebook.err
@@ -281,7 +281,7 @@ empty_bar=$(printf '%.s-' $(seq 1 $empty_len))
 printf "\rProgress: [%s%s] %3d%%" "$filled_bar" "$empty_bar" "$percent"
 let "current += 1"
 sleep 0.05
-echo "============================================================="
+printf "\n=============================================================\n"
 set -e
 }
 
