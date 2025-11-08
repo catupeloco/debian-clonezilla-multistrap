@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251107-0029
+SCRIPT_DATE=20251107-2133
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1053,10 +1053,12 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${CACHE_FOLDER}                  2>/dev/null || true
         umount "${DEVICE}"*                     2>/dev/null || true
 
+
+PROGRESS_BAR_CURRENT=$PROGRESS_BAR_MAX
+	
 cleaning_screen	
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}" || true
-	echo $SCRIPT_DATE
 	exit
 
 # time sudo netselect -t40 $(wget -qO- http://www.debian.org/mirror/list | grep '/debian/' | grep -v download | cut -d \" -f6 | sort -u)
