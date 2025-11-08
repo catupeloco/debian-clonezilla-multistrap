@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251107-2133
+SCRIPT_DATE=20251107-2145
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1055,6 +1055,8 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 
 
 PROGRESS_BAR_CURRENT=$PROGRESS_BAR_MAX
+PROGRESS_BAR_FILLED_LEN=$PROGRESS_BAR_CURRENT
+PROGRESS_BAR_EMPTY_LEN=0
 	
 cleaning_screen	
 echo "END of the road!! keep up the good work ---------------------"
