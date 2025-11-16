@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1424
+SCRIPT_DATE=20251116-1427
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -564,7 +564,7 @@ EOF
 	--auto-file-renaming=false \
 	--force-save=true \
 	--allow-overwrite=true \
-	--console-log-level=error \
+	--console-log-level=warn \
 	--truncate-console-readout=false \
 	--summary-interval=0 \
 	--download-result=hide
