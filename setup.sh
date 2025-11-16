@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1147
+SCRIPT_DATE=20251116-1153
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -552,6 +552,7 @@ EOF
 	# --dir=/                    : Base directory (but 'out' has priority)
 	# --auto-file-renaming=false : With this 'out' works as expected
 	# --allow-overwrite=true     : Always redownload
+	# --allow-overwrite=true \
 	# -q                         : Keeps output quiet
 	aria2c \
 	-i /tmp/downloads.list \
@@ -559,9 +560,9 @@ EOF
 	-c \
 	-x 4 \
 	--dir="/" \
-	--auto-file-renaming=false \
-	--allow-overwrite=true \
-	--console-log-level=warn
+	--auto-file-renaming=false 
+		#\
+	#--console-log-level=warn
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Posttasks"
