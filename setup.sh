@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1506
+SCRIPT_DATE=20251116-1509
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -555,7 +555,6 @@ ${CLONEZILLA_ORIGIN}
 	# -i                         : Read URLs from input file
 	# -j 5                       : Run 5 paralell downloads
 	# -c                         : Resume broken downloads
-	# -c \
 	# -x 4                       : Uses up to 4 connections per server on each file
 	# --dir=/                    : Base directory (but 'out' has priority)
 	# --dir="/" \
@@ -566,6 +565,7 @@ ${CLONEZILLA_ORIGIN}
 	aria2c \
 	-i /tmp/downloads.list \
 	-j 5 \
+	-c \
 	-x 4 \
 	--auto-file-renaming=false \
 	--force-save=true \
