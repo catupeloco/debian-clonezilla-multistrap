@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1431
+SCRIPT_DATE=20251116-1437
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -552,7 +552,6 @@ EOF
 	# -c \
 	# -x 4                       : Uses up to 4 connections per server on each file
 	# --dir=/                    : Base directory (but 'out' has priority)
-	# --dir="/" \
 	# --auto-file-renaming=false : With this 'out' works as expected
 	# --allow-overwrite=true     : Always redownload
 	# -q                         : Keeps output quiet
@@ -561,6 +560,7 @@ EOF
 	-i /tmp/downloads.list \
 	-j 5 \
 	-x 4 \
+	--dir="/" \
 	--auto-file-renaming=false \
 	--force-save=true \
 	--allow-overwrite=true \
