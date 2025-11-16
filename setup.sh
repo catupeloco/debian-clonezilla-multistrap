@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251109-1635
+SCRIPT_DATE=20251115-2122
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -911,6 +911,30 @@ echo "
 	${ROOTFS}/usr/share/applications/_status.desktop
 
 	chmod 440 ${ROOTFS}/etc/sudoers.d/updates
+
+cleaning_screen	
+echo "Fixing volumen on startup because of software bug -----------"
+
+echo '#!/bin/bash
+while ! pactl info &>/dev/null; do
+    sleep 1 
+done
+pactl set-sink-volume @DEFAULT_SINK@ 100%
+pactl set-sink-mute @DEFAULT_SINK@ 0
+
+pactl set-source-volume @DEFAULT_SOURCE@ 100%
+pactl set-source-mute @DEFAULT_SOURCE@ 0' > ${ROOTFS}/usr/local/bin/volumen
+chmod +x ${ROOTFS}/usr/local/bin/volumen
+
+
+echo '[Desktop Entry]
+Type=Application
+Name=Set volumen
+Comment=Fixing volumen from mutting
+Exec=/usr/local/bin/volumen
+NoDisplay=true
+Terminal=false
+X-GNOME-Autostart-enabled=true'> ${ROOTFS}/etc/xdg/autostart/volumen.desktop
 
 cleaning_screen	
 echo "Setting up local admin account ------------------------------"
