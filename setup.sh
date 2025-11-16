@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251115-2247
+SCRIPT_DATE=20251115-2255
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -95,7 +95,7 @@ WIFI_DOMAIN="https://git.kernel.org"
 export WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
 export WIFI_MAX_PARALLEL=10
 
-KEYBOARD_FIX_URL="https://mirrors.edge.kernel.org/pub/linux/utils/kbd/"
+KEYBOARD_FIX_URL="https://mirrors.edge.kernel.org/pub/linux/utils/kbd"
 KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL} | grep tar.gz | cut -d'"' -f2 | tail -n1)
 
 RECOVERYFS=/tmp/recovery-rootfs
@@ -526,8 +526,8 @@ echo "Downloading externals software ------------------------------"
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Downloading"
 cat << EOF > /tmp/downloads.list
-${KEYBOARD_FIX_URL}"${KEYBOARD_MAPS}"
-  out=${CACHE_FOLDER}/"${KEYBOARD_MAPS}"
+${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
+  out=${CACHE_FOLDER}/${KEYBOARD_MAPS}
 ${LIBREOFFICE_MAIN}
   out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}
 ${LIBREOFFICE_LAPA}
