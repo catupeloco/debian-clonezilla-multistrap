@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1440
+SCRIPT_DATE=20251116-1450
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -532,19 +532,19 @@ echo "Downloading externals software ------------------------------"
 	echo "---Downloading"
 cat << EOF > /tmp/downloads.list
 ${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
-  out=${CACHE_FOLDER}/${KEYBOARD_MAPS}
+ out=${CACHE_FOLDER}/${KEYBOARD_MAPS}
 ${LIBREOFFICE_MAIN}
-  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}
+ out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}
 ${LIBREOFFICE_LAPA}
-  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}
+ out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}
 ${LIBREOFFICE_HELP}
-  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}
+ out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}
 ${DRAWIO_URL}
-  out=${DRAWIO_FOLDER}/${DRAWIO_DEB}
+ out=${DRAWIO_FOLDER}/${DRAWIO_DEB}
 ${MARKTEXT_URL}
-  out=${MARKTEXT_FOLDER}/${MARKTEXT_DEB}
+ out=${MARKTEXT_FOLDER}/${MARKTEXT_DEB}
 ${CLONEZILLA_ORIGIN}
-  out=${CLONEZILLA_DESTINY}
+ out=${CLONEZILLA_DESTINY}
 EOF
 	# -i                         : Read URLs from input file
 	# -j 5                       : Run 5 paralell downloads
@@ -552,6 +552,7 @@ EOF
 	# -c \
 	# -x 4                       : Uses up to 4 connections per server on each file
 	# --dir=/                    : Base directory (but 'out' has priority)
+	# --dir="/" \
 	# --auto-file-renaming=false : With this 'out' works as expected
 	# --allow-overwrite=true     : Always redownload
 	# -q                         : Keeps output quiet
@@ -560,7 +561,6 @@ EOF
 	-i /tmp/downloads.list \
 	-j 5 \
 	-x 4 \
-	--dir="/" \
 	--auto-file-renaming=false \
 	--force-save=true \
 	--allow-overwrite=true \
