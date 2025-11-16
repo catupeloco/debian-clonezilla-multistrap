@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1240
+SCRIPT_DATE=20251116-1354
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -563,7 +563,8 @@ EOF
 	--auto-file-renaming=false \
 	--force-save=true \
 	--allow-overwrite=true \
-	--console-log-level=info
+	--console-log-level=error \
+	--truncate-console-readout=false
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Posttasks"
