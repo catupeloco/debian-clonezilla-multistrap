@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251115-2122
+SCRIPT_DATE=20251115-2242
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -14,7 +14,8 @@ echo "Installing dependencies for this script ---------------------"
         apt update							 >/dev/null 2>&1
 	apt install --fix-broken -y					 >/dev/null 2>&1
         apt install dosfstools parted gnupg2 unzip \
-        wget curl openssh-server mmdebstrap xmlstarlet -y		 >/dev/null 2>&1
+        wget curl openssh-server mmdebstrap xmlstarlet \
+	netselect-apt aria2				-y		 >/dev/null 2>&1
 	systemctl start sshd						 >/dev/null 2>&1
 
 #####################################################################################################
@@ -186,7 +187,8 @@ ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
 DEBIAN_VERSION=trixie
-REPOSITORY_DEB="http://deb.debian.org/debian/"
+#REPOSITORY_DEB="http://deb.debian.org/debian/"
+REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1)
   SECURITY_DEB="http://security.debian.org/debian-security"
   SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250827T210843Z/"
 
@@ -460,6 +462,7 @@ echo "---Cleaning cache packages if necesary"
 	done
 	set -e
 
+<<'BYPASS'
 cleaning_screen	
 echo "Downloading keyboard mappings -------------------------------"
 	wget --show-progress -qcN -O ${CACHE_FOLDER}/"${KEYBOARD_MAPS}" ${KEYBOARD_FIX_URL}"${KEYBOARD_MAPS}"
@@ -498,6 +501,66 @@ echo "Downloading lastest clonezilla ------------------------------"
 			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
 			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" "${URL_CLONEZILLA}" ;;
         esac
+BYPASS
+###########################Paralell Downloads fixes############################################
+cleaning_screen
+echo "Downloading externals software ------------------------------"
+	echo "---Pretasks"
+	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
+	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
+	mkdir -p $MARKTEXT_FOLDER >/dev/null 2>&1
+        mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
+        case ${MIRROR_CLONEZILLA} in
+		Official_Fast )
+			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA}
+			CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA}
+		Official_Slow )
+			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
+			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
+			CLONEZILLA_ORIGIN=${URL_CLONEZILLA}
+			CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA}
+        esac
+
+	let "PROGRESS_BAR_CURRENT += 1"
+	echo "---Downloading"
+cat << EOF > /tmp/downloads.list
+${KEYBOARD_FIX_URL}"${KEYBOARD_MAPS}"
+  out=${CACHE_FOLDER}/"${KEYBOARD_MAPS}"
+${LIBREOFFICE_MAIN}
+  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}
+${LIBREOFFICE_LAPA}
+  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}
+${LIBREOFFICE_HELP}
+  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}
+${DRAWIO_URL}
+  out=${DRAWIO_FOLDER}/${DRAWIO_DEB}
+${MARKTEXT_URL}
+  out=${MARKTEXT_FOLDER}/${MARKTEXT_DEB}
+${CLONEZILLA_ORIGIN}
+  out=${CLONEZILLA_DESTINY}
+EOF
+	# -i                         : Read URLs from input file
+	# -j 5                       : Run 5 paralell downloads
+	# -c                         : Resume broken downloads
+	# -x 4                       : Usa hasta 4 conexiones por servidor para CADA archivo (acelera)
+	# --dir=/                    : Base directory (but 'out' has priority)
+	# --auto-file-renaming=false : With this 'out' works as expected
+	aria2c \
+	-i /tmp/downloads.list \
+	-j 5 \
+	-c \
+	-x 4 \
+	--dir="/" \
+	--auto-file-renaming=false
+
+	let "PROGRESS_BAR_CURRENT += 1"
+	echo "---Posttasks"
+	find $DOWNLOAD_DIR_LO/ -type f -name '*.deb' -exec rm {} \; || true
+        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
+        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
+	tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
+###########################Paralell Downloads fixes############################################
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Extracting clonezilla"
