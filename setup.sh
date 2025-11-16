@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1513
+SCRIPT_DATE=20251116-1529
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -454,11 +454,11 @@ echo "---Cleaning cache packages if necesary"
 	set +e
 	# CONSECUENCIES OF NOT FORMATING RESOURCE PARTITION TAKES TO HAVE 
 	# MORE THAN ONE DEB FILE FOR EACH PACKAGE. IN THIS CASES BOOTSTRAP
-	# MAY TRAY TO INSTALL EACH FILE FOR SOME PACKAGE AND FAILS.
+	# MAY TRAY TO INSTALL EACH FILE FOR SOME PACKAGE AND FAILS
 	while [ -n "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
 		echo ---This packages have more than one version.
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
-        	do find ${CACHE_FOLDER}/"${line}"* 
+        	do find ${CACHE_FOLDER}/"${line}"*
 		done
 		echo ---Removing older versions so mmdebstrap wont fail
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
@@ -467,46 +467,6 @@ echo "---Cleaning cache packages if necesary"
 	done
 	set -e
 
-<<BYPASS
-cleaning_screen	
-echo "Downloading keyboard mappings -------------------------------"
-	wget --show-progress -qcN -O ${CACHE_FOLDER}/"${KEYBOARD_MAPS}" ${KEYBOARD_FIX_URL}"${KEYBOARD_MAPS}"
-
-cleaning_screen
-echo "Downloading Libreoffice -------------------------------------"
-	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
-        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}" "${LIBREOFFICE_MAIN}"
-        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}" "${LIBREOFFICE_LAPA}"
-        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}" "${LIBREOFFICE_HELP}"
-	find $DOWNLOAD_DIR_LO/ -type f -name '*.deb' -exec rm {} \; || true
-        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
-        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
-	tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
-
-cleaning_screen
-echo "Downloading Draw.io -----------------------------------------"
-	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
-        wget --show-progress -qcN -O ${DRAWIO_FOLDER}/${DRAWIO_DEB} ${DRAWIO_URL}
-
-cleaning_screen
-echo "Downloading MarkText-----------------------------------------"
-	mkdir -p $MARKTEXT_FOLDER >/dev/null 2>&1
-        wget --show-progress -qcN -O ${MARKTEXT_FOLDER}/${MARKTEXT_DEB} ${MARKTEXT_URL}
-
-cleaning_screen
-echo "Downloading lastest clonezilla ------------------------------"
-        mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
-	echo "---Downloading from ${MIRROR_CLONEZILLA}"
-        case ${MIRROR_CLONEZILLA} in
-		Official_Fast )
-			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
-			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" ${BASEURL_CLONEZILLA_FAST}"${FILE_CLONEZILLA}" ;;
-		Official_Slow )
-			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
-			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
-			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" "${URL_CLONEZILLA}" ;;
-        esac
-BYPASS
 
 ###########################Paralell Downloads fixes############################################
 cleaning_screen
@@ -520,18 +480,17 @@ echo "Downloading externals software ------------------------------"
 		Official_Fast )
 			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
 			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
-			#CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ;;
 		Official_Slow )
 			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
 			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
 			CLONEZILLA_ORIGIN=${URL_CLONEZILLA} ;;
-			#CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ;;
         esac
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Downloading"
 
-echo "${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
+cat << EOF > /tmp/downloads.list
+${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
   dir=${CACHE_FOLDER}
   out=${KEYBOARD_MAPS}
 ${LIBREOFFICE_MAIN}
@@ -551,18 +510,19 @@ ${MARKTEXT_URL}
   out=${MARKTEXT_DEB}
 ${CLONEZILLA_ORIGIN}
   dir=${DOWNLOAD_DIR_CLONEZILLA}
-  out=${FILE_CLONEZILLA}" > /tmp/downloads.list
+  out=${FILE_CLONEZILLA}
+EOF
 	# -i                         : Read URLs from input file
 	# -j 5                       : Run 5 paralell downloads
 	# -c                         : Resume broken downloads
 	# -x 4                       : Uses up to 4 connections per server on each file
 	# --dir=/                    : Base directory (but 'out' has priority)
-	# --dir="/" \
-	# --auto-file-renaming=false : With this 'out' works as expected
+	# --dir=/ 
+	# --auto-file-renaming=false : With this out works as expected
 	# --allow-overwrite=true     : Always redownload
 	# -q                         : Keeps output quiet
 	# --download-result=hide
-	cd /
+####	cd /
 	aria2c \
 	-i /tmp/downloads.list \
 	-j 5 \
@@ -1218,3 +1178,43 @@ echo "END of the road!! keep up the good work ---------------------"
 	# xfconf-query -c xfce4-panel -l
 	# /etc/xdg/xfce4/panel/default.xml
 ##########################################################################
+<<BYPASS
+cleaning_screen	
+echo "Downloading keyboard mappings -------------------------------"
+	wget --show-progress -qcN -O ${CACHE_FOLDER}/"${KEYBOARD_MAPS}" ${KEYBOARD_FIX_URL}"${KEYBOARD_MAPS}"
+
+cleaning_screen
+echo "Downloading Libreoffice -------------------------------------"
+	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
+        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}" "${LIBREOFFICE_MAIN}"
+        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}" "${LIBREOFFICE_LAPA}"
+        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}" "${LIBREOFFICE_HELP}"
+	find $DOWNLOAD_DIR_LO/ -type f -name '*.deb' -exec rm {} \; || true
+        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
+        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
+	tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
+
+cleaning_screen
+echo "Downloading Draw.io -----------------------------------------"
+	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
+        wget --show-progress -qcN -O ${DRAWIO_FOLDER}/${DRAWIO_DEB} ${DRAWIO_URL}
+
+cleaning_screen
+echo "Downloading MarkText-----------------------------------------"
+	mkdir -p $MARKTEXT_FOLDER >/dev/null 2>&1
+        wget --show-progress -qcN -O ${MARKTEXT_FOLDER}/${MARKTEXT_DEB} ${MARKTEXT_URL}
+
+cleaning_screen
+echo "Downloading lastest clonezilla ------------------------------"
+        mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
+	echo "---Downloading from ${MIRROR_CLONEZILLA}"
+        case ${MIRROR_CLONEZILLA} in
+		Official_Fast )
+			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" ${BASEURL_CLONEZILLA_FAST}"${FILE_CLONEZILLA}" ;;
+		Official_Slow )
+			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
+			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
+			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" "${URL_CLONEZILLA}" ;;
+        esac
+BYPASS
