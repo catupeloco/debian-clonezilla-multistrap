@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1004
+SCRIPT_DATE=20251116-1012
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -569,7 +569,7 @@ EOF
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Extracting clonezilla"
-	unzip -u ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" -d ${RECOVERYFS} >>$LOG 2>>$ERR
+	unzip -u ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} -d ${RECOVERYFS} >>$LOG 2>>$ERR
 	cp -p ${RECOVERYFS}/boot/grub/grub.cfg ${RECOVERYFS}/boot/grub/grub.cfg.old
 	sed -i '/menuentry[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
 	sed -i '/submenu[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
