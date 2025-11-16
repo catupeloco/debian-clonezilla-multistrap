@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1427
+SCRIPT_DATE=20251116-1431
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -556,7 +556,7 @@ EOF
 	# --auto-file-renaming=false : With this 'out' works as expected
 	# --allow-overwrite=true     : Always redownload
 	# -q                         : Keeps output quiet
-	cd /
+	cd ${CACHE_FOLDER}
 	aria2c \
 	-i /tmp/downloads.list \
 	-j 5 \
