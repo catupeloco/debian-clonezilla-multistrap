@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1144
+SCRIPT_DATE=20251116-1146
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -86,7 +86,7 @@ fi
 #####################################################################################################
 DEBIAN_VERSION=trixie
 #REPOSITORY_DEB="http://deb.debian.org/debian/"
-if [ ! -f $SELECTIONS ] ; then
+if ! grep REPOSITORY_DEB $SELECTIONS ; then
 	echo "Selecting fastest debian mirror -----------------------------"
 	REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1)
 	echo export REPOSITORY_DEB=$REPOSITORY_DEB >> $SELECTIONS
