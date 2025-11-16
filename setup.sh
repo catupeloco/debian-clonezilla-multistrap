@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1837
+SCRIPT_DATE=20251116-1913
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -457,7 +457,7 @@ echo "---Cleaning cache packages if necesary"
 	# MAY TRAY TO INSTALL EACH FILE FOR SOME PACKAGE AND FAILS
 	while [ -n "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
 		echo ---This packages have more than one version.
-		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
+		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r linopo
         	do find ${CACHE_FOLDER}/"${line}"*
 		done
 		echo ---Removing older versions so mmdebstrap wont fail
@@ -476,15 +476,19 @@ echo "Downloading externals software ------------------------------"
 	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
 	mkdir -p $MARKTEXT_FOLDER >/dev/null 2>&1
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
-        case ${MIRROR_CLONEZILLA} in
-		Official_Fast )
-			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
-			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
-		Official_Slow )
-			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
-			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
-			CLONEZILLA_ORIGIN=${URL_CLONEZILLA} ;;
-        esac
+#        case ${MIRROR_CLONEZILLA} in
+#		Official_Fast )
+#			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+#			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
+#		Official_Slow )
+#			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
+#			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
+#			CLONEZILLA_ORIGIN=${URL_CLONEZILLA} ;;
+#        esac
+# ${CLONEZILLA_ORIGIN}
+
+	FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+	URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Downloading"
@@ -508,7 +512,7 @@ ${DRAWIO_URL}
 ${MARKTEXT_URL}
   dir=${MARKTEXT_FOLDER}
   out=${MARKTEXT_DEB}
-${CLONEZILLA_ORIGIN}
+${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ${URL_CLONEZILLA}
   dir=${DOWNLOAD_DIR_CLONEZILLA}
   out=${FILE_CLONEZILLA}
 EOF
