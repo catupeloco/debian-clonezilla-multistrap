@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1136
+SCRIPT_DATE=20251116-1144
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -84,7 +84,16 @@ fi
 #####################################################################################################
 #VARIABLES 
 #####################################################################################################
-
+DEBIAN_VERSION=trixie
+#REPOSITORY_DEB="http://deb.debian.org/debian/"
+if [ ! -f $SELECTIONS ] ; then
+	echo "Selecting fastest debian mirror -----------------------------"
+	REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1)
+	echo export REPOSITORY_DEB=$REPOSITORY_DEB >> $SELECTIONS
+fi
+SECURITY_DEB="http://security.debian.org/debian-security"
+SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250827T210843Z/"
+ 
 CACHE_FOLDER=/tmp/resources-fs
 ROOTFS=/tmp/os-rootfs
 
@@ -186,12 +195,6 @@ qemu-guest-agent \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
-DEBIAN_VERSION=trixie
-echo "Selecting fastest debian mirror -----------------------------"
-#REPOSITORY_DEB="http://deb.debian.org/debian/"
-REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1)
-  SECURITY_DEB="http://security.debian.org/debian-security"
-  SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250827T210843Z/"
 
 # https://www.google.com/linuxrepositories/
 #wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo tee /etc/apt/trusted.gpg.d/google.asc >/dev/null
