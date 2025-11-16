@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1130
+SCRIPT_DATE=20251116-1136
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -463,7 +463,7 @@ echo "---Cleaning cache packages if necesary"
 	done
 	set -e
 
-<<'BYPASS'
+<<BYPASS
 cleaning_screen	
 echo "Downloading keyboard mappings -------------------------------"
 	wget --show-progress -qcN -O ${CACHE_FOLDER}/"${KEYBOARD_MAPS}" ${KEYBOARD_FIX_URL}"${KEYBOARD_MAPS}"
@@ -503,6 +503,7 @@ echo "Downloading lastest clonezilla ------------------------------"
 			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" "${URL_CLONEZILLA}" ;;
         esac
 BYPASS
+
 ###########################Paralell Downloads fixes############################################
 cleaning_screen
 echo "Downloading externals software ------------------------------"
@@ -556,7 +557,8 @@ EOF
 	-x 4 \
 	--dir="/" \
 	--auto-file-renaming=false \
-	--allow-overwrite=true 
+	--allow-overwrite=true \
+	--console-log-level=info
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Posttasks"
