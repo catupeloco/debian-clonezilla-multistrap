@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251115-2255
+SCRIPT_DATE=20251115-2258
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -96,7 +96,7 @@ export WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware
 export WIFI_MAX_PARALLEL=10
 
 KEYBOARD_FIX_URL="https://mirrors.edge.kernel.org/pub/linux/utils/kbd"
-KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL} | grep tar.gz | cut -d'"' -f2 | tail -n1)
+KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL}/ | grep tar.gz | cut -d'"' -f2 | tail -n1)
 
 RECOVERYFS=/tmp/recovery-rootfs
 CLONEZILLA_KEYBOARD=latam
