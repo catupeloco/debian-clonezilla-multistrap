@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1459
+SCRIPT_DATE=20251116-1505
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -519,32 +519,39 @@ echo "Downloading externals software ------------------------------"
         case ${MIRROR_CLONEZILLA} in
 		Official_Fast )
 			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
-			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA}
-			CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ;;
+			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
+			#CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ;;
 		Official_Slow )
 			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
 			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
-			CLONEZILLA_ORIGIN=${URL_CLONEZILLA}
-			CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ;;
+			CLONEZILLA_ORIGIN=${URL_CLONEZILLA} ;;
+			#CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ;;
         esac
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Downloading"
 
 echo "${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
- out=${CACHE_FOLDER}/${KEYBOARD_MAPS}
+  dir=${CACHE_FOLDER}
+  out=${KEYBOARD_MAPS}
 ${LIBREOFFICE_MAIN}
-  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}
+  dir=${DOWNLOAD_DIR_LO}
+  out=${LIBREOFFICE_MAIN_FILE}
 ${LIBREOFFICE_LAPA}
-  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}
+  dir=${DOWNLOAD_DIR_LO}
+  out=${LIBREOFFICE_LAPA_FILE}
 ${LIBREOFFICE_HELP}
-  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}
+  dir=${DOWNLOAD_DIR_LO}
+  out=${LIBREOFFICE_HELP_FILE}
 ${DRAWIO_URL}
-  out=${DRAWIO_FOLDER}/${DRAWIO_DEB}
+  dir=${DRAWIO_FOLDER}
+  out=${DRAWIO_DEB}
 ${MARKTEXT_URL}
-  out=${MARKTEXT_FOLDER}/${MARKTEXT_DEB}
+  dir=${MARKTEXT_FOLDER}
+  out=${MARKTEXT_DEB}
 ${CLONEZILLA_ORIGIN}
-  out=${CLONEZILLA_DESTINY}"
+  dir=${DOWNLOAD_DIR_CLONEZILLA}
+  out=${FILE_CLONEZILLA}"
 > /tmp/downloads.list
 	# -i                         : Read URLs from input file
 	# -j 5                       : Run 5 paralell downloads
