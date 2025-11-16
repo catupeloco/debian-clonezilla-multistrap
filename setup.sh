@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1957
+SCRIPT_DATE=20251116-2001
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -472,7 +472,7 @@ echo "---Cleaning cache packages if necesary"
 
 ###########################Paralell Downloads fixes############################################
 cleaning_screen
-echo "Downloading externals software ------------------------------"
+echo "Downloading external software -------------------------------"
 	echo "---Pretasks"
 	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
 	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
@@ -489,9 +489,10 @@ echo "Downloading externals software ------------------------------"
         esac
 	#FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
 	#URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
+	#${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ${URL_CLONEZILLA}
 
 	let "PROGRESS_BAR_CURRENT += 1"
-	echo "---Downloading"
+	echo "---Parallel Downloading of Keyboard Maps, Libreoffice, Draw.io, MarkText and Clonezilla"
 
 cat << EOF > /tmp/downloads.list
 ${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
@@ -512,7 +513,6 @@ ${DRAWIO_URL}
 ${MARKTEXT_URL}
   dir=${MARKTEXT_FOLDER}
   out=${MARKTEXT_DEB}
-#${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ${URL_CLONEZILLA}
 ${CLONEZILLA_ORIGIN}
   dir=${DOWNLOAD_DIR_CLONEZILLA}
   out=${FILE_CLONEZILLA}
