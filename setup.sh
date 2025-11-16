@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1509
+SCRIPT_DATE=20251116-1510
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -561,6 +561,7 @@ ${CLONEZILLA_ORIGIN}
 	# --auto-file-renaming=false : With this 'out' works as expected
 	# --allow-overwrite=true     : Always redownload
 	# -q                         : Keeps output quiet
+	# --download-result=hide
 	cd /
 	aria2c \
 	-i /tmp/downloads.list \
@@ -572,8 +573,7 @@ ${CLONEZILLA_ORIGIN}
 	--allow-overwrite=true \
 	--console-log-level=warn \
 	--truncate-console-readout=true \
-	--summary-interval=0 \
-	--download-result=hide
+	--summary-interval=0
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Posttasks"
