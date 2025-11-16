@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1215
+SCRIPT_DATE=20251116-1217
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -90,7 +90,7 @@ if ! grep REPOSITORY_DEB $SELECTIONS ; then
 	echo "Selecting fastest debian mirror -----------------------------"
 	REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1)
 	REPOSITORY_DEB=${REPOSITORY_DEB// /}
-	echo export REPOSITORY_DEB=${REPOSITORY_DEB} >> $SELECTIONS
+	echo export REPOSITORY_DEB="${REPOSITORY_DEB}" >> $SELECTIONS
 fi
 SECURITY_DEB="http://security.debian.org/debian-security"
 SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250827T210843Z/"
@@ -549,6 +549,7 @@ EOF
 	# -i                         : Read URLs from input file
 	# -j 5                       : Run 5 paralell downloads
 	# -c                         : Resume broken downloads
+	# -c \
 	# -x 4                       : Uses up to 4 connections per server on each file
 	# --dir=/                    : Base directory (but 'out' has priority)
 	# --auto-file-renaming=false : With this 'out' works as expected
@@ -557,7 +558,6 @@ EOF
 	aria2c \
 	-i /tmp/downloads.list \
 	-j 5 \
-	-c \
 	-x 1 \
 	--dir="/" \
 	--auto-file-renaming=false \
