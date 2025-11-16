@@ -16,4 +16,4 @@ while [ ! -f debian-clonezilla-multistrap/setup.sh ] ; do
 done
 
 echo --Running main script
-sudo bash $HOME/debian-clonezilla-multistrap/setup.sh
+time sudo bash $HOME/debian-clonezilla-multistrap/setup.sh
