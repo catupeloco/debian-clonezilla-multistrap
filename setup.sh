@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1458
+SCRIPT_DATE=20251116-1459
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -534,17 +534,17 @@ echo "Downloading externals software ------------------------------"
 echo "${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
  out=${CACHE_FOLDER}/${KEYBOARD_MAPS}
 ${LIBREOFFICE_MAIN}
- out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}
+  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}
 ${LIBREOFFICE_LAPA}
- out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}
+  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}
 ${LIBREOFFICE_HELP}
- out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}
+  out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}
 ${DRAWIO_URL}
- out=${DRAWIO_FOLDER}/${DRAWIO_DEB}
+  out=${DRAWIO_FOLDER}/${DRAWIO_DEB}
 ${MARKTEXT_URL}
- out=${MARKTEXT_FOLDER}/${MARKTEXT_DEB}
+  out=${MARKTEXT_FOLDER}/${MARKTEXT_DEB}
 ${CLONEZILLA_ORIGIN}
- out=${CLONEZILLA_DESTINY}"
+  out=${CLONEZILLA_DESTINY}"
 > /tmp/downloads.list
 	# -i                         : Read URLs from input file
 	# -j 5                       : Run 5 paralell downloads
