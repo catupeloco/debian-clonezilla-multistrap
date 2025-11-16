@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251115-2242
+SCRIPT_DATE=20251115-2247
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -187,6 +187,7 @@ ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
 DEBIAN_VERSION=trixie
+echo "Selecting fastest debian mirror -----------------------------"
 #REPOSITORY_DEB="http://deb.debian.org/debian/"
 REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1)
   SECURITY_DEB="http://security.debian.org/debian-security"
@@ -514,12 +515,12 @@ echo "Downloading externals software ------------------------------"
 		Official_Fast )
 			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
 			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA}
-			CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA}
+			CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ;;
 		Official_Slow )
 			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
 			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
 			CLONEZILLA_ORIGIN=${URL_CLONEZILLA}
-			CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA}
+			CLONEZILLA_DESTINY=${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} ;;
         esac
 
 	let "PROGRESS_BAR_CURRENT += 1"
