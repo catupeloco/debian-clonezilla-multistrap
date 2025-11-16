@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1505
+SCRIPT_DATE=20251116-1506
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -551,8 +551,7 @@ ${MARKTEXT_URL}
   out=${MARKTEXT_DEB}
 ${CLONEZILLA_ORIGIN}
   dir=${DOWNLOAD_DIR_CLONEZILLA}
-  out=${FILE_CLONEZILLA}"
-> /tmp/downloads.list
+  out=${FILE_CLONEZILLA}" > /tmp/downloads.list
 	# -i                         : Read URLs from input file
 	# -j 5                       : Run 5 paralell downloads
 	# -c                         : Resume broken downloads
