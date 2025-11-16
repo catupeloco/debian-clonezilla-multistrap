@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1206
+SCRIPT_DATE=20251116-1208
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -553,7 +553,6 @@ EOF
 	# --dir=/                    : Base directory (but 'out' has priority)
 	# --auto-file-renaming=false : With this 'out' works as expected
 	# --allow-overwrite=true     : Always redownload
-	# --allow-overwrite=true \
 	# -q                         : Keeps output quiet
 	aria2c \
 	-i /tmp/downloads.list \
@@ -563,6 +562,7 @@ EOF
 	--dir="/" \
 	--auto-file-renaming=false \
 	--force-save=true \
+	--allow-overwrite=true \
 	--console-log-level=warn
 
 	let "PROGRESS_BAR_CURRENT += 1"
