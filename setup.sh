@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1208
+SCRIPT_DATE=20251116-1215
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -558,7 +558,7 @@ EOF
 	-i /tmp/downloads.list \
 	-j 5 \
 	-c \
-	-x 4 \
+	-x 1 \
 	--dir="/" \
 	--auto-file-renaming=false \
 	--force-save=true \
