@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1949
+SCRIPT_DATE=20251116-1952
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -387,7 +387,9 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 cleaning_screen 
 if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
-		parted "${DEVICE}" --script mktable gpt                         > /dev/null 2>&1 || echo Error you should reboot and start again && exit
+		if ! parted "${DEVICE}" --script mktable gpt                     > /dev/null 2>&1 ; then
+			echo Error you should reboot and start again && exit
+		fi
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating EFI partition --------------------------------------"
