@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-2001
+SCRIPT_DATE=20251116-2002
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -470,7 +470,7 @@ echo "---Cleaning cache packages if necesary"
 	set -e
 
 
-###########################Paralell Downloads fixes############################################
+###########################Parallel Downloads fixes############################################
 cleaning_screen
 echo "Downloading external software -------------------------------"
 	echo "---Pretasks"
@@ -546,7 +546,7 @@ EOF
         tar -xzf ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE} -C $DOWNLOAD_DIR_LO
         tar -xzf ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE} -C $DOWNLOAD_DIR_LO
 
-###########################Paralell Downloads fixes############################################
+###########################Parallel Downloads fixes############################################
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Extracting clonezilla"
