@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1531
+SCRIPT_DATE=20251116-1532
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -523,13 +523,13 @@ EOF
 	# --allow-overwrite=true     : Always redownload
 	# -q                         : Keeps output quiet
 	# --force-save=true \
+	# --allow-overwrite=true \
 ####	cd /
 	aria2c \
 	-i /tmp/downloads.list \
 	-j 5 \
 	-x 4 \
 	--auto-file-renaming=false \
-	--allow-overwrite=true \
 	--console-log-level=warn \
 	--truncate-console-readout=true \
 	--download-result=hide \
