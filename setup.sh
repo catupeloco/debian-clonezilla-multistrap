@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1534
+SCRIPT_DATE=20251116-1756
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -974,11 +974,23 @@ echo '#!/bin/bash
 while ! pactl info &>/dev/null; do
     sleep 1 
 done
-pactl set-sink-volume @DEFAULT_SINK@ 100%
-pactl set-sink-mute @DEFAULT_SINK@ 0
-
-pactl set-source-volume @DEFAULT_SOURCE@ 100%
-pactl set-source-mute @DEFAULT_SOURCE@ 0' > ${ROOTFS}/usr/local/bin/volumen
+sleep 5
+while [ -z "$(pactl get-sink-volume @DEFAULT_SINK@ | grep 100)" ] ; do
+             pactl set-sink-volume @DEFAULT_SINK@ 100%
+             sleep 2
+done &
+while [ -z "$(pactl get-sink-mute @DEFAULT_SINK@ | grep no )" ] ; do
+             pactl set-sink-mute @DEFAULT_SINK@ 0
+             sleep 2
+done &
+while [ -z "$(pactl get-source-volume @DEFAULT_SOURCE@ | grep 100)" ] ; do
+             pactl set-source-volume @DEFAULT_SOURCE@ 100%
+             sleep 2
+done &
+while [ -z "$(pactl get-source-mute @DEFAULT_SOURCE@ | grep no )" ] ; do
+             pactl set-source-mute @DEFAULT_SOURCE@ 0
+             sleep 2
+done &' > ${ROOTFS}/usr/local/bin/volumen
 chmod +x ${ROOTFS}/usr/local/bin/volumen
 
 
