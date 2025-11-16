@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1358
+SCRIPT_DATE=20251116-1406
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -551,7 +551,6 @@ EOF
 	# -c                         : Resume broken downloads
 	# -c \
 	# -x 4                       : Uses up to 4 connections per server on each file
-	# -x 1 \
 	# --dir=/                    : Base directory (but 'out' has priority)
 	# --dir="/" \
 	# --auto-file-renaming=false : With this 'out' works as expected
@@ -561,6 +560,7 @@ EOF
 	aria2c \
 	-i /tmp/downloads.list \
 	-j 5 \
+	-x 4 \
 	--auto-file-renaming=false \
 	--force-save=true \
 	--allow-overwrite=true \
