@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-1456
+SCRIPT_DATE=20251116-1457
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -530,8 +530,8 @@ echo "Downloading externals software ------------------------------"
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Downloading"
-cat << EOF > /tmp/downloads.list
-${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
+
+echo "${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
 	out=${CACHE_FOLDER}/${KEYBOARD_MAPS}
 ${LIBREOFFICE_MAIN}
 	out=${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}
@@ -544,8 +544,8 @@ ${DRAWIO_URL}
 ${MARKTEXT_URL}
 	out=${MARKTEXT_FOLDER}/${MARKTEXT_DEB}
 ${CLONEZILLA_ORIGIN}
-	out=${CLONEZILLA_DESTINY}
-EOF
+	out=${CLONEZILLA_DESTINY}"
+> /tmp/downloads.list
 	# -i                         : Read URLs from input file
 	# -j 5                       : Run 5 paralell downloads
 	# -c                         : Resume broken downloads
