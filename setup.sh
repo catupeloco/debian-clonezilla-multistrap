@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251116-2109
+SCRIPT_DATE=20251121-1648
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -540,7 +540,7 @@ EOF
 	--summary-interval=0
 
 	let "PROGRESS_BAR_CURRENT += 1"
-	echo "---Posttasks"
+	echo -e "\n---Posttasks"
 	find $DOWNLOAD_DIR_LO/ -type f -name '*.deb' -exec rm {} \; || true
         tar -xzf ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE} -C $DOWNLOAD_DIR_LO
         tar -xzf ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE} -C $DOWNLOAD_DIR_LO
