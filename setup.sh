@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251121-1856
+SCRIPT_DATE=20251121-1901
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -871,14 +871,14 @@ echo --Libreoffice
 /opt/install-libreoffice-from-web/setup.sh
 echo --Flatpak
 flatpak update -y
-
+echo --Firefox, Google Chrome, Draw.io and Marktext
 for package in jgraph/drawio-desktop marktext/marktext; do
 	cd /tmp
 	GH_HOST=github.com gh release download -R \$package --pattern '*.deb'
 done
 wget -qO- ${CHROME_KEY} | tee              ${CHROME_TRUSTED}                     > /dev/null
 echo "deb [signed-by=${CHROME_TRUSTED}]    ${CHROME_REPOSITORY}     stable main" > /etc/apt/sources.list.d/google-chrome.list
-apt install ./*.deb $FIREFOX_PACKAGE google-chrome-stable -y
+apt install ./drawio-amd64*.deb ./marktext-amd64.deb $FIREFOX_PACKAGE google-chrome-stable -y
 echo Listo -------------------------------
 sleep 10
 EOF
