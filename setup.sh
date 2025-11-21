@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251121-2014
+SCRIPT_DATE=20251121-2029
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -93,7 +93,7 @@ if ! grep REPOSITORY_DEB $SELECTIONS ; then
 	echo export REPOSITORY_DEB="${REPOSITORY_DEB}" >> $SELECTIONS
 fi
 SECURITY_DEB="http://security.debian.org/debian-security"
-SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20250827T210843Z/"
+SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20251031T203358Z/"
  
 CACHE_FOLDER=/tmp/resources-fs
 ROOTFS=/tmp/os-rootfs
@@ -881,7 +881,7 @@ echo --Flatpak
 echo --Firefox, Google Chrome, Draw.io and Marktext
 	for package in jgraph/drawio-desktop marktext/marktext; do
 		cd /tmp
-		GH_HOST=github.com gh release download -R \$package --pattern '*.deb'
+		GH_HOST=github.com gh release download -R \$package --pattern '*amd64*.deb'
 	done
 	apt install ./drawio-amd64*.deb ./marktext-amd64.deb $FIREFOX_PACKAGE google-chrome-stable -y
 
