@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251121-2042
+SCRIPT_DATE=20251121-2046
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -945,8 +945,11 @@ EOF
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Sudoers file for testing scripts"
-	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/System_Upgrade
-$username ALL=(ALL) NOPASSWD: /usr/local/bin/System_Downgrade" > ${ROOTFS}/etc/sudoers.d/apt
+
+cat << EOF > ${ROOTFS}/etc/sudoers.d/updates
+%updates ALL = NOPASSWD : /usr/local/bin/System_Upgrade 
+%updates ALL = NOPASSWD : /usr/local/bin/System_Downgrade
+EOF
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Shortcuts for testing scripts"
@@ -982,10 +985,6 @@ Name=System_Status
 EOF
 
 
-cat << EOF > ${ROOTFS}/etc/sudoers.d/updates
-%updates ALL = NOPASSWD : /usr/local/bin/System_Upgrade 
-%updates ALL = NOPASSWD : /usr/local/bin/System_Downgrade
-EOF
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Permissions for testing scripts"
