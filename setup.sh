@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251121-2029
+SCRIPT_DATE=20251121-2038
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -892,26 +892,28 @@ EOF
 cat << EOF > ${ROOTFS}/usr/local/bin/System_Downgrade
 #!/bin/bash
 echo Asi empezamos ----------------------
-dpkg -l | grep -E "firefox-esr|chrome"
-rm /etc/apt/sources.list.d/debian.list                  
-cp -p /root/old.list /etc/apt/sources.list.d/debian.list
+	dpkg -l | grep -E "firefox-esr|chrome"
+	rm /etc/apt/sources.list.d/debian.list                  
+	cp -p /root/old.list /etc/apt/sources.list.d/debian.list
+
 echo Borramos ---------------------------
-apt remove --purge firefox-esr google-chrome-stable -y
-apt update                                               
-CHROME_VERSION=131.0.6778.264-1
-wget --show-progress -qcN -O /tmp/google-chrome-stable.deb \
-https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb
+	apt remove --purge firefox-esr google-chrome-stable -y
+	apt update                                               
+	CHROME_VERSION=141.0.7390.65-1
+	wget --show-progress -qcN -O /tmp/google-chrome-stable.deb \
+	https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb
 
 echo Instalamos -------------------------
-apt install firefox-esr /tmp/google-chrome-stable.deb -y
+	apt install firefox-esr /tmp/google-chrome-stable.deb -y
+
 echo Asi quedamos -----------------------
-dpkg -l | grep -E "firefox-esr|chrome"
-sleep 5
-rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
-cp -p /root/new.list /etc/apt/sources.list.d/debian.list
-apt update                                             
-apt list --upgradable
-sleep 10
+	dpkg -l | grep -E "firefox-esr|chrome"
+	sleep 5
+	rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
+	cp -p /root/new.list /etc/apt/sources.list.d/debian.list
+	apt update                                             
+	apt list --upgradable
+	sleep 10
 EOF
 
 cat << EOF > ${ROOTFS}/usr/local/bin/System_Status 
