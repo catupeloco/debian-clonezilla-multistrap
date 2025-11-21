@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251121-1648
+SCRIPT_DATE=20251121-1750
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -126,9 +126,7 @@ LIBREOFFICE_LAPA=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_LAPA_F
 LIBREOFFICE_HELP=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_HELP_FILE}
 LIBREOFFICE_UPDS="https://github.com/catupeloco/install-libreoffice-from-web"
 
-#DRAWIO_URL=$(wget -qO- https://github.com/jgraph/drawio-desktop/releases/latest | cut -d \" -f2 | grep deb | grep amd64)
-# TODAY : 10/25/2025 latest release (28.2.8) has not linux version yet, so I fix previous release url
-DRAWIO_URL="https://github.com/jgraph/drawio-desktop/releases/download/v28.2.5/drawio-amd64-28.2.5.deb"
+DRAWIO_URL=$(wget -qO- https://github.com/jgraph/drawio-desktop/releases/latest | cut -d \" -f2 | grep deb | grep amd64)
 DRAWIO_FOLDER=${CACHE_FOLDER}/Draw.io
 DRAWIO_DEB=${DRAWIO_URL##*/}
 
@@ -245,7 +243,7 @@ cleaning_screen (){
 printf "\033c"
 echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin
-	- Debian ${DEBIAN_VERSION} with :
+	- Debian ${DEBIAN_VERSION} from FASTEST REPOSITORY at your location with :
 		- XFCE.
 		  --With custom skel for task bar.
 		  --With custom keybindings for windows manager.
@@ -262,7 +260,7 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 	- External latest :
 		- Libreoffice, Google Chrome, Clonezilla recovery, Spotify.
 		- Flatpak: Mission Center (task manager).
-		- SyncThing. X2Go Client, Draw.io,  MarkText.
+		- SyncThing, X2Go Client, Draw.io, MarkText.
 		- Keymaps for tty.
 		- Optional : Firefox Rapid Release (from Mozilla repository).
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
@@ -834,7 +832,8 @@ echo "Unattended upgrades -----------------------------------------"
 
 mv ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades ${ROOTFS}/root/50unattended-upgrades.bak
 	echo "---Configuration files"
-	echo '
+
+cat << EOF > ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades
 Unattended-Upgrade::Origins-Pattern {
 	"origin=Debian,codename=${distro_codename}-updates";
 	"origin=Debian,codename=${distro_codename},label=Debian";
@@ -845,17 +844,21 @@ Unattended-Upgrade::Origins-Pattern {
 };
 Unattended-Upgrade::Automatic-Reboot "true";
 Unattended-Upgrade::Automatic-Reboot-Time "02:00";
-//Unattended-Upgrade::InstallOnShutdown "true";' > ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades
+//Unattended-Upgrade::InstallOnShutdown "true";
+EOF
 
 
-	echo '
+cat << EOF >  ${ROOTFS}/etc/apt/apt.conf.d/10periodic
 APT::Periodic::Update-Package-Lists "1";
 APT::Periodic::Download-Upgradeable-Packages "1";
 APT::Periodic::AutocleanInterval "7";
-APT::Periodic::Unattended-Upgrade "1";' >  ${ROOTFS}/etc/apt/apt.conf.d/10periodic
+APT::Periodic::Unattended-Upgrade "1";
+EOF
 
 	echo "---Testing Scripts"
-	echo '#!/bin/bash
+
+cat << EOF > ${ROOTFS}/usr/local/bin/System_Upgrade
+#!/bin/bash
 echo Obteniendo lista---------------------
 apt update
 apt list --upgradable
@@ -868,10 +871,18 @@ echo --Libreoffice
 /opt/install-libreoffice-from-web/setup.sh
 echo --Flatpak
 flatpak update -y
-echo Listo -------------------------------
-sleep 10' > ${ROOTFS}/usr/local/bin/actualizar
 
-	echo '#!/bin/bash
+for package in jgraph/drawio-desktop marktext/marktext; do
+	cd /tmp
+	GH_HOST=github.com gh release download -R $package --pattern '*.deb'
+done
+apt install ./*.deb -y
+echo Listo -------------------------------
+sleep 10
+EOF
+
+cat << EOF > ${ROOTFS}/usr/local/bin/System_Downgrade
+#!/bin/bash
 echo Asi empezamos ----------------------
 dpkg -l | grep -E "firefox-esr|chrome"
 rm /etc/apt/sources.list.d/debian.list                  
@@ -892,9 +903,11 @@ rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
 cp -p /root/new.list /etc/apt/sources.list.d/debian.list
 apt update                                             
 apt list --upgradable
-sleep 10' > ${ROOTFS}/usr/local/bin/desactualizar
+sleep 10
+EOF
 
-	echo '#!/bin/bash 
+cat << EOF > ${ROOTFS}/usr/local/bin/System_Status 
+#!/bin/bash 
 FOLDER=/etc/apt/apt.conf.d/ 
  for file in $(ls $FOLDER)
   do 
@@ -904,7 +917,9 @@ FOLDER=/etc/apt/apt.conf.d/
 echo CUANTO FALTA-------------------------
 systemctl list-timers --all | grep apt
 echo ------------------------------------- 
-sleep 30'                         > ${ROOTFS}/usr/local/bin/status
+sleep 30
+EOF
+
 
 
 	let "PROGRESS_BAR_CURRENT += 1"
@@ -917,54 +932,66 @@ sleep 30'                         > ${ROOTFS}/usr/local/bin/status
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Sudoers file for testing scripts"
-	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/actualizar
-$username ALL=(ALL) NOPASSWD: /usr/local/bin/desactualizar" > ${ROOTFS}/etc/sudoers.d/apt
+	echo "$username ALL=(ALL) NOPASSWD: /usr/local/bin/System_Upgrade
+$username ALL=(ALL) NOPASSWD: /usr/local/bin/System_Downgrade" > ${ROOTFS}/etc/sudoers.d/apt
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Shortcuts for testing scripts"
-	echo '[Desktop Entry]
+
+cat << EOF > ${ROOTFS}/usr/share/applications/System_Downgrade.desktop
+[Desktop Entry]
 Type=Application
 Icon=utilities-terminal
-Exec=qterminal -e sudo /usr/local/bin/desactualizar
+Exec=qterminal -e sudo /usr/local/bin/System_Downgrade
 Terminal=false
 Categories=Qt;System;TerminalEmulator;
-Name=_Desactualizar '                              > ${ROOTFS}/usr/share/applications/_desactualizar.desktop
+Name=System_Downgrade
+EOF
 
-	echo '[Desktop Entry]
+cat << EOF > ${ROOTFS}/usr/share/applications/System_Upgrade.desktop
+[Desktop Entry]
 Type=Application
 Icon=utilities-terminal
-Exec=qterminal -e sudo /usr/local/bin/actualizar
+Exec=qterminal -e sudo /usr/local/bin/System_Upgrade
 Terminal=false
 Categories=Qt;System;TerminalEmulator;
-Name=_Actualizar '                                 > ${ROOTFS}/usr/share/applications/_actualizar.desktop
+Name=System_Upgrade
+EOF
 
-echo '[Desktop Entry]
+cat << EOF > ${ROOTFS}/usr/share/applications/System_Status.desktop 
+[Desktop Entry]
 Type=Application
 Icon=utilities-terminal
-Exec=qterminal -e /usr/local/bin/status
+Exec=qterminal -e /usr/local/bin/System_Status
 Terminal=false
 Categories=Qt;System;TerminalEmulator;
-Name=_Status '                                     > ${ROOTFS}/usr/share/applications/_status.desktop 
+Name=System_Status 
+EOF
 
-echo "
-%updates ALL = NOPASSWD : /usr/local/bin/actualizar 
-%updates ALL = NOPASSWD : /usr/local/bin/desactualizar " > ${ROOTFS}/etc/sudoers.d/updates
+
+cat << EOF > ${ROOTFS}/etc/sudoers.d/updates
+%updates ALL = NOPASSWD : /usr/local/bin/System_Upgrade 
+%updates ALL = NOPASSWD : /usr/local/bin/System_Downgrade
+EOF
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Permissions for testing scripts"
-	chmod +x  ${ROOTFS}/usr/local/bin/actualizar ${ROOTFS}/usr/local/bin/desactualizar ${ROOTFS}/usr/local/bin/status
+	chmod +x  ${ROOTFS}/usr/local/bin/System_Upgrade \
+	          ${ROOTFS}/usr/local/bin/System_Downgrade \
+		  ${ROOTFS}/usr/local/bin/System_Status
 
 	chmod 644 ${ROOTFS}/root/new.list            ${ROOTFS}/root/old.list \
-	${ROOTFS}/usr/share/applications/_desactualizar.desktop \
-	${ROOTFS}/usr/share/applications/_actualizar.desktop \
-	${ROOTFS}/usr/share/applications/_status.desktop
+	${ROOTFS}/usr/share/applications/System_Upgrade.desktop \
+	${ROOTFS}/usr/share/applications/System_Downgrade.desktop \
+	${ROOTFS}/usr/share/applications/System_Status.desktop
 
 	chmod 440 ${ROOTFS}/etc/sudoers.d/updates
 
 cleaning_screen	
 echo "Fixing volumen on startup because of software bug -----------"
 
-echo '#!/bin/bash
+cat << EOF > ${ROOTFS}/usr/local/bin/volumen
+#!/bin/bash
 while ! pactl info &>/dev/null; do
     sleep 1 
 done
@@ -984,7 +1011,8 @@ done &
 while [ -z "$(pactl get-source-mute @DEFAULT_SOURCE@ | grep no )" ] ; do
              pactl set-source-mute @DEFAULT_SOURCE@ 0
              sleep 2
-done &' > ${ROOTFS}/usr/local/bin/volumen
+done &
+EOF
 chmod +x ${ROOTFS}/usr/local/bin/volumen
 
 
