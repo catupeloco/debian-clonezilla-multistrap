@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251121-1901
+SCRIPT_DATE=20251121-2011
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -859,26 +859,32 @@ EOF
 
 cat << EOF > ${ROOTFS}/usr/local/bin/System_Upgrade
 #!/bin/bash
+wget -qO- ${CHROME_KEY} | tee              ${CHROME_TRUSTED}                     > /dev/null
+echo "deb [signed-by=${CHROME_TRUSTED}]    ${CHROME_REPOSITORY}     stable main" > /etc/apt/sources.list.d/google-chrome.list
+
 echo Obteniendo lista---------------------
 apt update
 apt list --upgradable
 sleep 3
+
 echo Actualizando-------------------------
 echo --Debian
 apt upgrade -y
 sleep 3
+
 echo --Libreoffice
 /opt/install-libreoffice-from-web/setup.sh
+
 echo --Flatpak
 flatpak update -y
+
 echo --Firefox, Google Chrome, Draw.io and Marktext
 for package in jgraph/drawio-desktop marktext/marktext; do
 	cd /tmp
 	GH_HOST=github.com gh release download -R \$package --pattern '*.deb'
 done
-wget -qO- ${CHROME_KEY} | tee              ${CHROME_TRUSTED}                     > /dev/null
-echo "deb [signed-by=${CHROME_TRUSTED}]    ${CHROME_REPOSITORY}     stable main" > /etc/apt/sources.list.d/google-chrome.list
 apt install ./drawio-amd64*.deb ./marktext-amd64.deb $FIREFOX_PACKAGE google-chrome-stable -y
+
 echo Listo -------------------------------
 sleep 10
 EOF
