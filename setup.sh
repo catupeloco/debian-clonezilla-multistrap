@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251121-1752
+SCRIPT_DATE=20251121-1836
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -874,7 +874,7 @@ flatpak update -y
 
 for package in jgraph/drawio-desktop marktext/marktext; do
 	cd /tmp
-	GH_HOST=github.com gh release download -R $package --pattern '*.deb'
+	GH_HOST=github.com gh release download -R \$package --pattern '*.deb'
 done
 apt install ./*.deb -y
 echo Listo -------------------------------
