@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251121-2038
+SCRIPT_DATE=20251121-2042
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -202,8 +202,11 @@ ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubunt
 #wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/google.gpg >/dev/null
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/" 
 export CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
-#CHROME_TRUSTED="/etc/apt/trusted.gpg.d/google.asc"
 CHROME_TRUSTED="/etc/apt/trusted.gpg.d/google.asc"
+
+#https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
+CHROME_OLD_VERSION=141.0.7390.65-1
+
 
 # https://support.mozilla.org/es/kb/Instalar-firefox-linux#w_instalar-el-paquete-deb-de-firefox-para-distribuciones-basadas-en-debian
 # wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
@@ -899,9 +902,9 @@ echo Asi empezamos ----------------------
 echo Borramos ---------------------------
 	apt remove --purge firefox-esr google-chrome-stable -y
 	apt update                                               
-	CHROME_VERSION=141.0.7390.65-1
+	CHROME_OLD_VERSION=$CHROME_OLD_VERSION
 	wget --show-progress -qcN -O /tmp/google-chrome-stable.deb \
-	https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb
+	https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_\${CHROME_OLD_VERSION}_amd64.deb
 
 echo Instalamos -------------------------
 	apt install firefox-esr /tmp/google-chrome-stable.deb -y
