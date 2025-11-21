@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251121-1836
+SCRIPT_DATE=20251121-1839
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -876,7 +876,7 @@ for package in jgraph/drawio-desktop marktext/marktext; do
 	cd /tmp
 	GH_HOST=github.com gh release download -R \$package --pattern '*.deb'
 done
-apt install ./*.deb -y
+apt install ./*.deb $FIREFOX_PACKAGE google-chrome-stable -y
 echo Listo -------------------------------
 sleep 10
 EOF
