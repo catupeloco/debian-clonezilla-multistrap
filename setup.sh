@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251121-2046
+SCRIPT_DATE=20251122-1004
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -26,6 +26,10 @@ if [ -f $SELECTIONS ] ; then
 	source $SELECTIONS
 else
 	reset
+	#Finding Fastest repo in the background
+	REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1) >/dev/null &
+	REPOSITORY_DEB_PID=$!
+	
 	disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
 	menu_options=()
 	while read -r name size; do
@@ -73,76 +77,64 @@ else
 			fi
 		done
 	fi
+	#####################################################################################################
+	echo "Selecting fastest debian mirror -----------------------------"
+	#Waiting to background process to finish
+	wait $REPOSITORY_DEB_PID
+	REPOSITORY_DEB=${REPOSITORY_DEB// /}
+	#####################################################################################################
 	echo export DEVICE="$DEVICE"				>  $SELECTIONS
 	echo export MIRROR_CLONEZILLA="$MIRROR_CLONEZILLA"	>> $SELECTIONS
 	echo export FIREFOX_PACKAGE=\"$FIREFOX_PACKAGE\"	>> $SELECTIONS
 	echo export username="$username"			>> $SELECTIONS
 	echo export password="$password"			>> $SELECTIONS
 	echo export PART_OP_PERCENTAGE="$PART_OP_PERCENTAGE"	>> $SELECTIONS
+	echo export REPOSITORY_DEB="${REPOSITORY_DEB}" 		>> $SELECTIONS
 
 fi
 #####################################################################################################
 #VARIABLES 
 #####################################################################################################
-DEBIAN_VERSION=trixie
 #REPOSITORY_DEB="http://deb.debian.org/debian/"
-if ! grep REPOSITORY_DEB $SELECTIONS ; then
-	echo "Selecting fastest debian mirror -----------------------------"
-	REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1) >/dev/null
-	REPOSITORY_DEB=${REPOSITORY_DEB// /}
-	echo export REPOSITORY_DEB="${REPOSITORY_DEB}" >> $SELECTIONS
-fi
+#if ! grep REPOSITORY_DEB $SELECTIONS ; then
+#	echo "Selecting fastest debian mirror -----------------------------"
+#	REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1) >/dev/null
+#	REPOSITORY_DEB=${REPOSITORY_DEB// /}
+#	echo export REPOSITORY_DEB="${REPOSITORY_DEB}" >> $SELECTIONS
+#fi
+##WIFI_DOMAIN="https://git.kernel.org"
+#export WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
+#export WIFI_MAX_PARALLEL=10
+
+# Debian Variables 
+DEBIAN_VERSION=trixie
 SECURITY_DEB="http://security.debian.org/debian-security"
 SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20251031T203358Z/"
  
+# Mount Points
 CACHE_FOLDER=/tmp/resources-fs
 ROOTFS=/tmp/os-rootfs
 
+# Partition Fixed Sizes
 PART_EFI_END=901
 PART_CZ_END=12901
 
-WIFI_DOMAIN="https://git.kernel.org"
-export WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
-export WIFI_MAX_PARALLEL=10
-
+# Keyboard Language for TTY consoles
 KEYBOARD_FIX_URL="https://mirrors.edge.kernel.org/pub/linux/utils/kbd"
 KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL}/ | grep tar.gz | cut -d'"' -f2 | tail -n1)
 
+# Clonning software for recovery partition
 RECOVERYFS=/tmp/recovery-rootfs
 CLONEZILLA_KEYBOARD=latam
 DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
 BASEURL_CLONEZILLA_FAST="https://free.nchc.org.tw/clonezilla-live/stable/"
 BASEURL_CLONEZILLA_SLOW="https://sourceforge.net/projects/clonezilla/files/latest/download"
 
-DOWNLOAD_DIR_LO=${CACHE_FOLDER}/Libreoffice
-LIBREOFFICE_URL="https://download.documentfoundation.org/libreoffice/stable/"
-LO_LANG=es 
-VERSION_LO=$(wget -qO- $LIBREOFFICE_URL | grep -oP '[0-9]+(\.[0-9]+)+' | sort -V | tail -1)
-LIBREOFFICE_MAIN_FILE=LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz
-LIBREOFFICE_LAPA_FILE=LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz
-LIBREOFFICE_HELP_FILE=LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz
-LIBREOFFICE_MAIN=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_MAIN_FILE}
-LIBREOFFICE_LAPA=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_LAPA_FILE}
-LIBREOFFICE_HELP=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_HELP_FILE}
-LIBREOFFICE_UPDS="https://github.com/catupeloco/install-libreoffice-from-web"
-
-DRAWIO_URL=$(wget -qO- https://github.com/jgraph/drawio-desktop/releases/latest | cut -d \" -f2 | grep deb | grep amd64)
-DRAWIO_FOLDER=${CACHE_FOLDER}/Draw.io
-DRAWIO_DEB=${DRAWIO_URL##*/}
-
-MARKTEXT_FOLDER=${CACHE_FOLDER}/Marktext
-MARKTEXT_URL_PREFIX=https://github.com/marktext/marktext/releases/download
-MARKTEXT_RELEASE=$(curl --silent "https://api.github.com/repos/marktext/marktext/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")')
-MARKTEXT_DEB=marktext-amd64.deb
-MARKTEXT_URL="${MARKTEXT_URL_PREFIX}/${MARKTEXT_RELEASE}/${MARKTEXT_DEB}"
-
-FLATPAK_REPO="https://dl.flathub.org/repo/flathub.flatpakrepo"
-
-THIS_SCRIPT="https://github.com/catupeloco/debian-clonezilla-multistrap.git"
-
+# Apt certificate repository folder
 APT_CONFIG="$(command -v apt-config 2> /dev/null)"
 eval "$("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')"
 
+# Apt packages list for installing with mmdebstrap
 # NOTE: Fictional variables below are only for title proposes ########################################
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
 apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak \
@@ -194,26 +186,41 @@ qemu-guest-agent \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
+# Linux Standard Office Suite
+DOWNLOAD_DIR_LO=${CACHE_FOLDER}/Libreoffice
+LIBREOFFICE_URL="https://download.documentfoundation.org/libreoffice/stable/"
+LO_LANG=es 
+VERSION_LO=$(wget -qO- $LIBREOFFICE_URL | grep -oP '[0-9]+(\.[0-9]+)+' | sort -V | tail -1)
+LIBREOFFICE_MAIN_FILE=LibreOffice_${VERSION_LO}_Linux_x86-64_deb.tar.gz
+LIBREOFFICE_LAPA_FILE=LibreOffice_${VERSION_LO}_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz
+LIBREOFFICE_HELP_FILE=LibreOffice_${VERSION_LO}_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz
+LIBREOFFICE_MAIN=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_MAIN_FILE}
+LIBREOFFICE_LAPA=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_LAPA_FILE}
+LIBREOFFICE_HELP=${LIBREOFFICE_URL}${VERSION_LO}/deb/x86_64/${LIBREOFFICE_HELP_FILE}
+LIBREOFFICE_UPDS="https://github.com/catupeloco/install-libreoffice-from-web"
 
+# Google Chrome Browser Repository
 # https://www.google.com/linuxrepositories/
-#wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo tee /etc/apt/trusted.gpg.d/google.asc >/dev/null
+# wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo tee /etc/apt/trusted.gpg.d/google.asc >/dev/null
  # NOTE: On systems with older versions of apt (i.e. versions prior to 1.4), the ASCII-armored
  # format public key must be converted to binary format before it can be used by apt.d
-#wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/google.gpg >/dev/null
+# wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/google.gpg >/dev/null
 CHROME_REPOSITORY="https://dl.google.com/linux/chrome/deb/" 
 export CHROME_KEY="https://dl.google.com/linux/linux_signing_key.pub"
 CHROME_TRUSTED="/etc/apt/trusted.gpg.d/google.asc"
 
-#https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
+# For Updating Testing Script
+# https://www.ubuntuupdates.org/package/google_chrome/stable/main/base/google-chrome-stable
 CHROME_OLD_VERSION=141.0.7390.65-1
 
-
+# Mozilla Firefox Browser Repository for Firefox Rapid Release and Firefox ESR
 # https://support.mozilla.org/es/kb/Instalar-firefox-linux#w_instalar-el-paquete-deb-de-firefox-para-distribuciones-basadas-en-debian
 # wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
 FIREFOX_REPOSITORY="https://packages.mozilla.org/apt"
 FIREFOX_KEY="https://packages.mozilla.org/apt/repo-signing-key.gpg"
 FIREFOX_TRUSTED="/etc/apt/keyrings/packages.mozilla.org.asc"
 
+# Online Music player
 # https://www.spotify.com/es/download/linux/
 # curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
 # echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
@@ -221,11 +228,11 @@ SPOTIFY_REPOSITORY="https://repository.spotify.com"
 SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
 SPOTIFY_TRUSTED="/etc/apt/trusted.gpg.d/spotify.gpg"
 
+# Cross platform app for syncing folders between devices
 # https://apt.syncthing.net/
 # sudo mkdir -p /etc/apt/keyrings
 # sudo curl -L -o /etc/apt/keyrings/syncthing-archive-keyring.gpg https://syncthing.net/release-key.gpg
 # echo "deb [signed-by=/etc/apt/keyrings/syncthing-archive-keyring.gpg] https://apt.syncthing.net/ syncthing stable-v2" | sudo tee /etc/apt/sources.list.d/syncthing.list
-# 
 SYNCTHING_REPOSITORY="https://apt.syncthing.net"
 SYNCTHING_KEYS="https://syncthing.net/release-key.gpg"
 SYNCTHING_TRUSTED="/etc/apt/keyrings/syncthing-archive-keyring.gpg"
@@ -234,8 +241,29 @@ export SYNCTHING_SERV_RESUME_URL="https://raw.githubusercontent.com/syncthing/sy
 export SYNCTHING_SERV_ARROBA_TARGET="/etc/systemd/system/syncthing@.service"
 export SYNCTHING_SERV_ARROBA_URL="https://raw.githubusercontent.com/syncthing/syncthing/main/etc/linux-systemd/system/syncthing%40.service"
 
-LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
+# Diagram offline app	
+# https://www.drawio.com/ https://app.diagrams.net/ https://get.diagrams.net/
+DRAWIO_URL=$(wget -qO- https://github.com/jgraph/drawio-desktop/releases/latest | cut -d \" -f2 | grep deb | grep amd64)
+DRAWIO_FOLDER=${CACHE_FOLDER}/Draw.io
+DRAWIO_DEB=${DRAWIO_URL##*/}
 
+# Mark Down syntax app
+# https://www.marktext.cc/
+# https://flathub.org/es/apps/com.github.marktext.marktext
+MARKTEXT_FOLDER=${CACHE_FOLDER}/Marktext
+MARKTEXT_URL_PREFIX=https://github.com/marktext/marktext/releases/download
+MARKTEXT_RELEASE=$(curl --silent "https://api.github.com/repos/marktext/marktext/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")')
+MARKTEXT_DEB=marktext-amd64.deb
+MARKTEXT_URL="${MARKTEXT_URL_PREFIX}/${MARKTEXT_RELEASE}/${MARKTEXT_DEB}"
+
+# For MissionCenter and others 
+FLATPAK_REPO="https://dl.flathub.org/repo/flathub.flatpakrepo"
+
+# For Faskbar Skel
+THIS_SCRIPT="https://github.com/catupeloco/debian-clonezilla-multistrap.git"
+
+# For Cleaning Screen and progress bar
+LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
 export PROGRESS_BAR_MAX=45
 export PROGRESS_BAR_WIDTH=43
 export PROGRESS_BAR_CURRENT=0
@@ -470,7 +498,6 @@ echo "---Cleaning cache packages if necesary"
 	done
 	set -e
 
-
 ###########################Parallel Downloads fixes############################################
 cleaning_screen
 echo "Downloading external software -------------------------------"
@@ -495,6 +522,7 @@ echo "Downloading external software -------------------------------"
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Parallel Downloading of Keyboard Maps, Libreoffice, Draw.io, MarkText and Clonezilla"
 
+# List of origins and destinations parallel downloads
 cat << EOF > /tmp/downloads.list
 ${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
   dir=${CACHE_FOLDER}
@@ -518,16 +546,17 @@ ${CLONEZILLA_ORIGIN}
   dir=${DOWNLOAD_DIR_CLONEZILLA}
   out=${FILE_CLONEZILLA}
 EOF
-	# -i                         : Read URLs from input file
-	# -j 5                       : Run 5 paralell downloads
-	# -c                         : Resume broken downloads
-	# -x 4                       : Uses up to 4 connections per server on each file
-	# --dir=/                    : Base directory (but 'out' has priority)
-	# --dir=/ 
-	# --auto-file-renaming=false : With this out works as expected
-	# --allow-overwrite=true     : Always redownload
-	# -q                         : Keeps output quiet
-	# --force-save=true \
+	# -i                         		: Read URLs from input file
+	# -j 5                      		: Run 5 paralell downloads
+	# -x 4                      		: Uses up to 4 connections per server on each file
+	# -c                        		: Resume broken downloads
+	# --allow-overwrite=true    		: Always redownload
+	# --auto-file-renaming=false 		: With this out works as expected
+	# --truncate-console-readout=true 	: Single line output
+	# --truncate-console-readout=false 	: Multiple lines output
+	# --console-log-level=warn   		: Minimize verbose output
+	# --download-result=hide 		: Minimize verbose output
+	# --summary-interval=0			: Minimize verbose output
 	aria2c \
 	-i /tmp/downloads.list \
 	-j 5 \
@@ -535,13 +564,15 @@ EOF
 	-c \
 	--allow-overwrite=true \
 	--auto-file-renaming=false \
+	--truncate-console-readout=false \
 	--console-log-level=warn \
-	--truncate-console-readout=true \
 	--download-result=hide \
 	--summary-interval=0
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo -e "\n---Posttasks"
+
+	# Uncompress Libreoffice
 	find $DOWNLOAD_DIR_LO/ -type f -name '*.deb' -exec rm {} \; || true
         tar -xzf ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE} -C $DOWNLOAD_DIR_LO
         tar -xzf ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE} -C $DOWNLOAD_DIR_LO
@@ -566,6 +597,8 @@ EOF
 	elif fdisk -l | grep -c vda     | grep 5 >/dev/null ; then BASE=vda
 	fi
 	set -e ##################################
+
+# Recovery Grub Menu
 echo '
 ##PREFIX##
 menuentry  --hotkey=s "Salvar imagen"{
@@ -610,6 +643,7 @@ umount /dev/%%BASE%%4
 "> ${RECOVERYFS}/clean
 chmod +x ${RECOVERYFS}/clean
 
+# Customizing Clonezilla Menu
 sed -i 's/timeout=30/timeout=5/g'		 ${RECOVERYFS}/boot/grub/grub.cfg	
 sed -i 's/%%KEYBOARD%%/'$CLONEZILLA_KEYBOARD'/g' ${RECOVERYFS}/boot/grub/grub.cfg
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/boot/grub/grub.cfg
@@ -628,7 +662,6 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
 	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable  non-free"                        \
 	"deb [trusted=yes] ${SYNCTHING_REPOSITORY}                        syncthing stable-v2"                     \
         > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
-        #>> $LOG 2>>$ERR
 
 cleaning_screen	
 echo "Splitting sources.list\'s in sources.list.d ------------------"
@@ -692,6 +725,7 @@ echo "Fixing nm-applet from empty icon bug ------------------------"
 
 cleaning_screen	
 echo "Creating recovery -------------------------------------------"
+# Grub shortcut to Clonezilla Grub
 echo '#!/bin/sh
 exec tail -n +3 $0
 # This file provides an easy way to add custom menu entries.  Simply type the
@@ -704,7 +738,6 @@ menuentry "Restaurar" {
    search --no-floppy --set=root -f /live-hd/vmlinuz
    chainloader ($root)/EFI/boot/grubx64.efi
 }'> ${ROOTFS}/etc/grub.d/40_custom
-
 
 cleaning_screen	
 echo "Getting ready for chroot ------------------------------------"
@@ -838,10 +871,10 @@ mv ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades ${ROOTFS}/root/50unattende
 
 cat << EOF > ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades
 Unattended-Upgrade::Origins-Pattern {
-	"origin=Debian,codename=${distro_codename}-updates";
-	"origin=Debian,codename=${distro_codename},label=Debian";
-	"origin=Debian,codename=${distro_codename},label=Debian-Security";
-	"origin=Debian,codename=${distro_codename}-security,label=Debian-Security";
+	"origin=Debian,codename=\${distro_codename}-updates";
+	"origin=Debian,codename=\${distro_codename},label=Debian";
+	"origin=Debian,codename=\${distro_codename},label=Debian-Security";
+	"origin=Debian,codename=\${distro_codename}-security,label=Debian-Security";
 	"origin=Google LLC,codename=stable";
 
 };
@@ -922,18 +955,16 @@ EOF
 cat << EOF > ${ROOTFS}/usr/local/bin/System_Status 
 #!/bin/bash 
 FOLDER=/etc/apt/apt.conf.d/ 
- for file in $(ls $FOLDER)
+ for file in \$(ls \$FOLDER)
   do 
-   echo ${FOLDER}${file} --------------------------
-   cat ${FOLDER}${file}
+   echo \${FOLDER}\${file} --------------------------
+   cat \${FOLDER}\${file}
   done
 echo CUANTO FALTA-------------------------
 systemctl list-timers --all | grep apt
 echo ------------------------------------- 
 sleep 30
 EOF
-
-
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Repositories for testing scripts"
@@ -984,8 +1015,6 @@ Categories=Qt;System;TerminalEmulator;
 Name=System_Status 
 EOF
 
-
-
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Permissions for testing scripts"
 	chmod +x  ${ROOTFS}/usr/local/bin/System_Upgrade \
@@ -1008,25 +1037,24 @@ while ! pactl info &>/dev/null; do
     sleep 1 
 done
 sleep 5
-while [ -z "$(pactl get-sink-volume @DEFAULT_SINK@ | grep 100)" ] ; do
+while [ -z "\$(pactl get-sink-volume @DEFAULT_SINK@ | grep 100)" ] ; do
              pactl set-sink-volume @DEFAULT_SINK@ 100%
              sleep 2
 done &
-while [ -z "$(pactl get-sink-mute @DEFAULT_SINK@ | grep no )" ] ; do
+while [ -z "\$(pactl get-sink-mute @DEFAULT_SINK@ | grep no )" ] ; do
              pactl set-sink-mute @DEFAULT_SINK@ 0
              sleep 2
 done &
-while [ -z "$(pactl get-source-volume @DEFAULT_SOURCE@ | grep 100)" ] ; do
+while [ -z "\$(pactl get-source-volume @DEFAULT_SOURCE@ | grep 100)" ] ; do
              pactl set-source-volume @DEFAULT_SOURCE@ 100%
              sleep 2
 done &
-while [ -z "$(pactl get-source-mute @DEFAULT_SOURCE@ | grep no )" ] ; do
+while [ -z "\$(pactl get-source-mute @DEFAULT_SOURCE@ | grep no )" ] ; do
              pactl set-source-mute @DEFAULT_SOURCE@ 0
              sleep 2
 done &
 EOF
 chmod +x ${ROOTFS}/usr/local/bin/volumen
-
 
 echo '[Desktop Entry]
 Type=Application
@@ -1090,7 +1118,7 @@ echo "Replacing keybindings ----------------------------------------"
 	cp ${FILE} ${FILE}.bak
 
 	let "PROGRESS_BAR_CURRENT += 1"
-	echo --Replacing screenshooter by flameshot
+	echo --Replacing screenshooter for flameshot
 	sed -i \
 	-e 's/xfce4-screenshooter -w/flameshot gui/g' \
 	-e 's/xfce4-screenshooter -r/flameshot gui/g' \
@@ -1193,17 +1221,17 @@ echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}" || true
 	exit
 
-# time sudo netselect -t40 $(wget -qO- http://www.debian.org/mirror/list | grep '/debian/' | grep -v download | cut -d \" -f6 | sort -u)
-# sudo nala fetch --debian trixie --auto --fetches 10 --non-free -c AR -c UR -c CL -c BR
-# sudo nala fetch --debian trixie --auto              --non-free -c AR
-# sudo nala fetch --debian trixie --auto --fetches 10 --non-free
-
-
+######################################################################################################################################################
 # TODO
 # Volumen siempre vuelve a cero
-	# Pendiente
+	# Listo
 # Nala, seleccion de repositorio optimo
 	# Desde setup
+	  # Listo
+		# time sudo netselect -t40 $(wget -qO- http://www.debian.org/mirror/list | grep '/debian/' | grep -v download | cut -d \" -f6 | sort -u)
+		# sudo nala fetch --debian trixie --auto --fetches 10 --non-free -c AR -c UR -c CL -c BR
+		# sudo nala fetch --debian trixie --auto              --non-free -c AR
+		# sudo nala fetch --debian trixie --auto --fetches 10 --non-free
 	# Desde XFCE4
 # lupa xfce4-appfinder
 
