@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251122-1017
+SCRIPT_DATE=20251122-1700
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -554,7 +554,6 @@ EOF
 	# --allow-overwrite=true    		: Always redownload
 	# --auto-file-renaming=false 		: With this out works as expected
 	# --truncate-console-readout=true 	: Single line output
-	# --truncate-console-readout=false 	: Multiple lines output
 	# --console-log-level=warn   		: Minimize verbose output
 	# --download-result=hide 		: Minimize verbose output
 	# --summary-interval=0			: Minimize verbose output
@@ -565,7 +564,7 @@ EOF
 	-c \
 	--allow-overwrite=true \
 	--auto-file-renaming=false \
-	--truncate-console-readout=false \
+	--truncate-console-readout=true \
 	--console-log-level=warn \
 	--download-result=hide \
 	--summary-interval=0
