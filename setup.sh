@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251122-1004
+SCRIPT_DATE=20251122-1017
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -123,7 +123,7 @@ PART_CZ_END=12901
 KEYBOARD_FIX_URL="https://mirrors.edge.kernel.org/pub/linux/utils/kbd"
 KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL}/ | grep tar.gz | cut -d'"' -f2 | tail -n1)
 
-# Clonning software for recovery partition
+# Cloning software for recovery partition
 RECOVERYFS=/tmp/recovery-rootfs
 CLONEZILLA_KEYBOARD=latam
 DOWNLOAD_DIR_CLONEZILLA=${CACHE_FOLDER}/Clonezilla
@@ -135,7 +135,7 @@ APT_CONFIG="$(command -v apt-config 2> /dev/null)"
 eval "$("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')"
 
 # Apt packages list for installing with mmdebstrap
-# NOTE: Fictional variables below are only for title proposes ########################################
+# NOTE: Fictional variables below are only for title purposes ########################################
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
 apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
@@ -259,7 +259,7 @@ MARKTEXT_URL="${MARKTEXT_URL_PREFIX}/${MARKTEXT_RELEASE}/${MARKTEXT_DEB}"
 # For MissionCenter and others 
 FLATPAK_REPO="https://dl.flathub.org/repo/flathub.flatpakrepo"
 
-# For Faskbar Skel
+# For Taskbar Skel
 THIS_SCRIPT="https://github.com/catupeloco/debian-clonezilla-multistrap.git"
 
 # For Cleaning Screen and progress bar
@@ -273,11 +273,11 @@ cleaning_screen (){
 # for clear screen on tty (clear doesnt work)
 printf "\033c"
 echo "============================================================="
-echo "Installing on Device ${DEVICE} with ${username} as local admin
+echo "Installing on Device ${DEVICE} with ${username} as local admin :
 	- Debian ${DEBIAN_VERSION} from FASTEST REPOSITORY at your location with :
 		- XFCE.
-		  --With custom skel for task bar.
-		  --With custom keybindings for windows manager.
+		  --With custom skel for taskbar.
+		  --With custom keybindings for window manager.
 		- Flameshot (replace for screenshots).
 		- Qterminal (replace for xfce terminal).
 		- Mousepad, VLC, QBittorrent, OBS Studio, KeePassXC.
@@ -296,7 +296,7 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin
 		- Optional : Firefox Rapid Release (from Mozilla repository).
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
 
-To Follow extra details use: 
+To follow extra details, use: 
 		tail -F $LOG or Ctrl + Alt + F2
 		tail -F $ERR or Ctrl + Alt + F3"
 
@@ -305,7 +305,7 @@ echo "For remote access during installation, you can connect via ssh
 	---Connect via: ssh user@$LOCALIP
 	---password is \"live\""
 
-########PROGRESS BAR#####################################################
+######## PROGRESS BAR ###################################################
 echo "============================================================="
 set +e
 if [ $PROGRESS_BAR_CURRENT -eq $PROGRESS_BAR_MAX ]; then
@@ -331,7 +331,7 @@ echo "Inicializing logs tails -------------------------------------"
 	touch $LOG
 	touch $ERR
 set +e
-	# RUNNING TAILS ON SECOND AND THIRD TTY
+	# RUNNING TAILS ON SECOND AND THIRD TTYs
 	if ! pgrep tail ; then
 		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
 		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
@@ -404,7 +404,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		fi
 
 	let "PROGRESS_BAR_CURRENT += 1"
-	echo "---Reparted? :"
+	echo "---Repartitioning needed? :"
 		# SKIPPING REPARTED ONLY IF LABELS AND SIZES MATCH
 		if [ "$LABELS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
 			REPARTED=no
