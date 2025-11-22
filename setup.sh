@@ -27,7 +27,7 @@ if [ -f $SELECTIONS ] ; then
 else
 	reset
 	#Finding Fastest repo in the background
-	REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1) >/dev/null &
+	netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1 > /tmp/fastest_repo &
 	REPOSITORY_DEB_PID=$!
 	
 	disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
@@ -81,6 +81,7 @@ else
 	echo "Selecting fastest debian mirror -----------------------------"
 	#Waiting to background process to finish
 	wait $REPOSITORY_DEB_PID
+	REPOSITORY_DEB=$(cat /tmp/fastest_repo)
 	REPOSITORY_DEB=${REPOSITORY_DEB// /}
 	#####################################################################################################
 	echo export DEVICE="$DEVICE"				>  $SELECTIONS
