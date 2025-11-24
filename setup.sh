@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251122-2246
+SCRIPT_DATE=20251124-1646
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -817,6 +817,10 @@ echo "Entering chroot ---------------------------------------------"
 	git clone ${THIS_SCRIPT}								1>&3
 	cd debian-clonezilla-multistrap
 	rsync -av --delete /opt/debian-clonezilla-multistrap/skel/ /etc/skel			1>&3
+	
+	echo ---Kernel
+	cd /opt	
+	git clone https://github.com/alexiarstein/kernelinstall.git				1>&3
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
