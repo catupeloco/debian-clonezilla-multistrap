@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251129-1225
+SCRIPT_DATE=20251129-1230
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -161,7 +161,7 @@ blueman bluetooth bluez bluez-firmware bluez-alsa-utils \
 bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping isc-dhcp-client \
 network-manager network-manager-gnome powermgmt-base util-linux wpasupplicant xfce4-power-manager xfce4-power-manager-plugins \
 firmware-ath9k-htc firmware-amd-graphics firmware-intel-graphics firmware-linux firmware-linux-free firmware-realtek \
-amd-microcode intel-microcode mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-drivers firmware-iwlwifi network-manager-l10n \
+amd64-microcode intel-microcode mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-drivers firmware-iwlwifi network-manager-l10n \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio audacity pulseaudio-module-bluetooth xfce4-pulseaudio-plugin \
 alsa-topology-conf alsa-ucm-conf alsa-utils sound-icons \
