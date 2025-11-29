@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251126-2229
+SCRIPT_DATE=20251129-1217
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -160,8 +160,8 @@ ${NETWORK_PACKAGES_AND_DRIVERS} \
 blueman bluetooth bluez bluez-firmware bluez-alsa-utils \
 bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping isc-dhcp-client \
 network-manager network-manager-gnome powermgmt-base util-linux wpasupplicant xfce4-power-manager xfce4-power-manager-plugins \
-firmware-iwlwifi firmware-ath9k-htc firmware-linux-free firmware-ath9k-htc firmware-realtek \
-network-manager-l10n \
+firmware-ath9k-htc firmware-amd-graphics firmware-intel-graphics firmware-linux firmware-linux-free firmware-realtek \
+amd-microcode intel-microcode mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-drivers firmware-iwlwifi network-manager-l10n \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio audacity pulseaudio-module-bluetooth xfce4-pulseaudio-plugin \
 alsa-topology-conf alsa-ucm-conf alsa-utils sound-icons \
@@ -442,6 +442,9 @@ fi
 
 cleaning_screen
 echo "Formating partitions ----------------------------------------"
+	if grep -i nvme ${DEVICE} > /dev/null ; then
+		DEVICE=${DEVICE}p
+	fi
 		# EVEN IF THE PARTITION IS FORMATTED I TRY TO CHECK THE FILESYSTEM
 			  fsck -y "${DEVICE}"1			>/dev/null 2>&1 || true
 			  fsck -y "${DEVICE}"2			>/dev/null 2>&1 || true
