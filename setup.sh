@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251129-1323
+SCRIPT_DATE=20251129-1354
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -821,7 +821,7 @@ echo "Entering chroot ---------------------------------------------"
 	cd debian-clonezilla-multistrap
 	rsync -av --delete /opt/debian-clonezilla-multistrap/skel/ /etc/skel			1>&3
 	set +e
-	if which firefox-esr >/dev/null ; then
+	if ls /usr/bin/firefox-esr >/dev/null ; then
 		sed -i 's/Icon=firefox/Icon=firefox-esr/' /skel/.config/xfce4/panel/launcher-1/17608458202.desktop
 	fi
 	set -e
