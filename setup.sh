@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251129-1354
+SCRIPT_DATE=20251129-1445
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -822,7 +822,7 @@ echo "Entering chroot ---------------------------------------------"
 	rsync -av --delete /opt/debian-clonezilla-multistrap/skel/ /etc/skel			1>&3
 	set +e
 	if ls /usr/bin/firefox-esr >/dev/null ; then
-		sed -i 's/Icon=firefox/Icon=firefox-esr/' /skel/.config/xfce4/panel/launcher-1/17608458202.desktop
+		sed -i 's/Icon\=firefox/Icon\=firefox\-esr/' /skel/.config/xfce4/panel/launcher-1/17608458202.desktop
 	fi
 	set -e
 	
@@ -1163,7 +1163,7 @@ echo "Replacing keybindings ----------------------------------------"
 	    	    echo "--Custom block already exists"
 	    	fi
 
-		echo "--Mapping keys to Alt \+ ... "
+		echo "--Mapping keys to Alt \+ ... and Super_L to Whisker menu"
 		declare -A MAP=(
 		    ["<Alt>a"]="tile_left_key"
 		    ["<Alt>d"]="tile_right_key"
@@ -1174,6 +1174,7 @@ echo "Replacing keybindings ----------------------------------------"
 		    ["<Alt>z"]="tile_down_left_key"
 		    ["<Alt>c"]="tile_down_right_key"
 		    ["<Alt>s"]="maximize_window_key"
+		    ["Super_L"]="xfce4-popup-whiskermenu"
 	    	)
 
 		for key in "${!MAP[@]}"; do
