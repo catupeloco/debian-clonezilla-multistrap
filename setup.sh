@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251130-1241
+SCRIPT_DATE=20251130-1243
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -442,7 +442,7 @@ fi
 
 cleaning_screen
 echo "Formating partitions ----------------------------------------"
-	if grep -i nvme ${DEVICE} > /dev/null ; then
+	if echo ${DEVICE} | grep -i nvme > /dev/null ; then
 		DEVICE=${DEVICE}p
 	fi
 		# EVEN IF THE PARTITION IS FORMATTED I TRY TO CHECK THE FILESYSTEM
