@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251130-1548
+SCRIPT_DATE=20251130-1608
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -298,8 +298,9 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin :
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
 
 To follow extra details, use: 
-		tail -F $LOG or Ctrl + Alt + F2
-		tail -F $ERR or Ctrl + Alt + F3"
+		Ctrl + Alt + F2 or tail -F $LOG
+		Ctrl + Alt + F3 or tail -F $ERR
+		Ctrl + Alt + F4 to follow Parallel downloads "
 
 grep iso /proc/cmdline >/dev/null && \
 echo "For remote access during installation, you can connect via ssh
@@ -334,8 +335,9 @@ echo "Inicializing logs tails -------------------------------------"
 set +e
 	# RUNNING TAILS ON SECOND AND THIRD TTYs
 	if ! pgrep tail ; then
-		setsid bash -c 'exec tail -f '$LOG' <> /dev/tty2 >&0 2>&1' &
-		setsid bash -c 'exec tail -f '$ERR' <> /dev/tty3 >&0 2>&1' &
+		setsid bash -c 'exec tail -f '$LOG'				<> /dev/tty2 >&0 2>&1' &
+		setsid bash -c 'exec tail -f '$ERR' 				<> /dev/tty3 >&0 2>&1' &
+		setsid bash -c 'exec watch sudo ls -lart /tmp/resources-fs/*/	<> /dev/tty4 >&0 2>&1' &
 	fi
 set -e
 
