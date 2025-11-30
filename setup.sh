@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251130-1727
+SCRIPT_DATE=20251130-1915
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -15,7 +15,7 @@ echo "Installing dependencies for this script ---------------------"
 	apt install --fix-broken -y					 >/dev/null 2>&1
         apt install dosfstools parted gnupg2 unzip \
         wget curl openssh-server mmdebstrap xmlstarlet \
-	netselect-apt aria2				-y		 >/dev/null 2>&1
+	netselect-apt aria2  btrfs-progs		-y		 >/dev/null 2>&1
 	systemctl start sshd						 >/dev/null 2>&1
 
 #####################################################################################################
@@ -138,7 +138,7 @@ eval "$("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')"
 # Apt packages list for installing with mmdebstrap
 # NOTE: Fictional variables below are only for title purposes ########################################
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
-apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak \
+apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak btrfs-progs \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
 xfce4 xorg dbus-x11 	   gvfs cups thunar-volman  system-config-printer    xarchiver                vlc flameshot	       mousepad              \
 lm-sensors 		   qbittorrent  	    qpdfview		     keepassxc-full 	      light-locker             gnome-keyring         \
@@ -434,7 +434,8 @@ if [ "$REPARTED" == "yes" ] ; then
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating OS partition ---------------------------------------"
-		parted "${DEVICE}" --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
+		#parted "${DEVICE}" --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
+		parted "${DEVICE}" --script mkpart LINUX btrfs ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating Resources/Cache partition --------------------------"
@@ -452,10 +453,11 @@ echo "Formating partitions ----------------------------------------"
 			  fsck -y "${DEVICE}"2			>/dev/null 2>&1 || true
 			  fsck -y "${DEVICE}"3			>/dev/null 2>&1 || true
 			  fsck -y "${DEVICE}"4			>/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.vfat -n EFI        "${DEVICE}"1	>/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.ext4 -L RESOURCES  "${DEVICE}"4	>/dev/null 2>&1 || true
-		 	  mkfs.ext4 -L CLONEZILLA "${DEVICE}"2	>/dev/null 2>&1 || true
-			  mkfs.ext4 -L LINUX      "${DEVICE}"3	>/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1	>/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	>/dev/null 2>&1 || true
+		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2	>/dev/null 2>&1 || true
+			 #mkfs.ext4  -L LINUX      "${DEVICE}"3	>/dev/null 2>&1 || true
+			  mkfs.btrfs -L LINUX      "${DEVICE}"3	>/dev/null 2>&1 || true
 
 cleaning_screen
 echo "Mounting ----------------------------------------------------"
