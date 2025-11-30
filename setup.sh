@@ -822,7 +822,7 @@ echo "Entering chroot ---------------------------------------------"
 	rsync -av --delete /opt/debian-clonezilla-multistrap/skel/ /etc/skel			1>&3
 	set +e
 	if ls /usr/bin/firefox-esr >/dev/null ; then
-		sed -i 's/Icon\=firefox/Icon\=firefox\-esr/' /etc/skel/.config/xfce4/panel/launcher-1/17608458202.desktop
+		sed -i 's/Icon\=firefox/Icon\=firefox\-esr/' /etc/skel/.config/xfce4/panel/launcher-4/17645275222.desktop
 	fi
 	set -e
 	
