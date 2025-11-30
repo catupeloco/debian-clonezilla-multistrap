@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251130-1253
+SCRIPT_DATE=20251130-1316
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1040,7 +1040,42 @@ EOF
 
 	chmod 440 ${ROOTFS}/etc/sudoers.d/updates
 
-## VOLUMEN FIX REMOVED
+cleaning_screen	
+echo "Fixing volumen on startup because of software bug -----------"
+
+cat << EOF > ${ROOTFS}/usr/local/bin/volumen
+#!/bin/bash
+while ! pactl info &>/dev/null; do
+    sleep 1 
+done
+sleep 5
+while [ -z "\$(pactl get-sink-volume @DEFAULT_SINK@ | grep 100)" ] ; do
+             pactl set-sink-volume @DEFAULT_SINK@ 100%
+             sleep 2
+done &
+while [ -z "\$(pactl get-sink-mute @DEFAULT_SINK@ | grep no )" ] ; do
+             pactl set-sink-mute @DEFAULT_SINK@ 0
+             sleep 2
+done &
+while [ -z "\$(pactl get-source-volume @DEFAULT_SOURCE@ | grep 100)" ] ; do
+             pactl set-source-volume @DEFAULT_SOURCE@ 100%
+             sleep 2
+done &
+while [ -z "\$(pactl get-source-mute @DEFAULT_SOURCE@ | grep no )" ] ; do
+             pactl set-source-mute @DEFAULT_SOURCE@ 0
+             sleep 2
+done &
+EOF
+chmod +x ${ROOTFS}/usr/local/bin/volumen
+
+echo '[Desktop Entry]
+Type=Application
+Name=Set volumen
+Comment=Fixing volumen from mutting
+Exec=/usr/local/bin/volumen
+NoDisplay=true
+Terminal=false
+X-GNOME-Autostart-enabled=true'> ${ROOTFS}/etc/xdg/autostart/volumen.desktop
 
 cleaning_screen	
 echo "Setting up local admin account ------------------------------"
@@ -1270,40 +1305,4 @@ echo "Downloading lastest clonezilla ------------------------------"
 			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" "${URL_CLONEZILLA}" ;;
         esac
 
-cleaning_screen	
-echo "Fixing volumen on startup because of software bug -----------"
-
-cat << EOF > ${ROOTFS}/usr/local/bin/volumen
-#!/bin/bash
-while ! pactl info &>/dev/null; do
-    sleep 1 
-done
-sleep 5
-while [ -z "\$(pactl get-sink-volume @DEFAULT_SINK@ | grep 100)" ] ; do
-             pactl set-sink-volume @DEFAULT_SINK@ 100%
-             sleep 2
-done &
-while [ -z "\$(pactl get-sink-mute @DEFAULT_SINK@ | grep no )" ] ; do
-             pactl set-sink-mute @DEFAULT_SINK@ 0
-             sleep 2
-done &
-while [ -z "\$(pactl get-source-volume @DEFAULT_SOURCE@ | grep 100)" ] ; do
-             pactl set-source-volume @DEFAULT_SOURCE@ 100%
-             sleep 2
-done &
-while [ -z "\$(pactl get-source-mute @DEFAULT_SOURCE@ | grep no )" ] ; do
-             pactl set-source-mute @DEFAULT_SOURCE@ 0
-             sleep 2
-done &
-EOF
-chmod +x ${ROOTFS}/usr/local/bin/volumen
-
-echo '[Desktop Entry]
-Type=Application
-Name=Set volumen
-Comment=Fixing volumen from mutting
-Exec=/usr/local/bin/volumen
-NoDisplay=true
-Terminal=false
-X-GNOME-Autostart-enabled=true'> ${ROOTFS}/etc/xdg/autostart/volumen.desktop
 BYPASS
