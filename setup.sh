@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251130-1243
+SCRIPT_DATE=20251130-1244
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -458,8 +458,8 @@ echo "Formating partitions ----------------------------------------"
 cleaning_screen
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
-        mkdir -p ${ROOTFS}                                     # > /dev/null 2>&1
-        mount "${DEVICE}"3 ${ROOTFS}                           # > /dev/null 2>&1
+        mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
+        mount "${DEVICE}"3 ${ROOTFS}                            > /dev/null 2>&1
 
 	let "PROGRESS_BAR_CURRENT += 1"
 echo "----Cleaning files just in case"
