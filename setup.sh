@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251130-2209
+SCRIPT_DATE=20251130-2218
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -340,7 +340,7 @@ set +e
 		setsid bash -c 'exec watch sudo ls -larth /tmp/resources-fs/*/	<> /dev/tty4 >&0 2>&1' &
 		setsid bash -c 'exec watch sudo fdisk -l			<> /dev/tty5 >&0 2>&1' &
 		setsid bash -c 'exec watch sudo blkid				<> /dev/tty6 >&0 2>&1' &
-		setsid bash -c 'exec watch sudo lsblk				<> /dev/tty7 >&0 2>&1' &
+		setsid bash -c 'exec watch sudo lsblk -f			<> /dev/tty7 >&0 2>&1' &
 	fi
 set -e
 
@@ -452,15 +452,15 @@ echo "Formating partitions ----------------------------------------"
 		DEVICE=${DEVICE}p
 	fi
 		# EVEN IF THE PARTITION IS FORMATTED I TRY TO CHECK THE FILESYSTEM
-			  fsck -y "${DEVICE}"1			>/dev/null 2>&1 || true
-			  fsck -y "${DEVICE}"2			>/dev/null 2>&1 || true
-			  fsck -y "${DEVICE}"3			>/dev/null 2>&1 || true
-			  fsck -y "${DEVICE}"4			>/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1	>/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	>/dev/null 2>&1 || true
-		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2	>/dev/null 2>&1 || true
-			 #mkfs.ext4  -L LINUX      "${DEVICE}"3	>/dev/null 2>&1 || true
-			  mkfs.btrfs -L LINUX      "${DEVICE}"3	>/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"1				>/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"2				>/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"3				>/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"4				>/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 -f	>/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	-f	>/dev/null 2>&1 || true
+		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -f	>/dev/null 2>&1 || true
+			 #mkfs.ext4  -L LINUX      "${DEVICE}"3		>/dev/null 2>&1 || true
+			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	>/dev/null 2>&1 || true
 
 cleaning_screen
 echo "Mounting ----------------------------------------------------"
