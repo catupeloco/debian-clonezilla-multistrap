@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251130-2158
+SCRIPT_DATE=20251130-2206
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -337,7 +337,10 @@ set +e
 	if ! pgrep tail ; then
 		setsid bash -c 'exec tail -f '$LOG'				<> /dev/tty2 >&0 2>&1' &
 		setsid bash -c 'exec tail -f '$ERR' 				<> /dev/tty3 >&0 2>&1' &
-		setsid bash -c 'exec watch sudo ls -lart /tmp/resources-fs/*/	<> /dev/tty4 >&0 2>&1' &
+		setsid bash -c 'exec watch sudo ls -larth /tmp/resources-fs/*/	<> /dev/tty4 >&0 2>&1' &
+		setsid bash -c 'exec watch sudo fdisk -l			<> /dev/tty5 >&0 2>&1' &
+		setsid bash -c 'exec watch sudo blkid | sort			<> /dev/tty6 >&0 2>&1' &
+		setsid bash -c 'exec watch sudo lsblk | sort			<> /dev/tty7 >&0 2>&1' &
 	fi
 set -e
 
