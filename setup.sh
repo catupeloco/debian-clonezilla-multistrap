@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-2006
+SCRIPT_DATE=20251202-2012
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -598,6 +598,7 @@ while [ ! -z "$PENDING" ] ; do
 		fi
 	done
 	ls "${FILES_TO_DOWNLOAD[@]}" || true
+	read -p pause
 done
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo -e "\n---Posttasks"
