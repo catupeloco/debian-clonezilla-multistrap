@@ -84,16 +84,16 @@ In this instance, the goal is to build a laptop/desktop image with the following
     ip -br a
     ```
   
-  - ###### Enable the interface (replace ```wlan0``` with your interface name) :
+  - ###### NO: Enable the interface (replace ```wlp0s20f3``` with your interface name) :
     
     ```
-    sudo ip link set wlan0 up
+    NO: sudo ip link set wlp0s20f3 up
     ```
   
   - ###### Scan for available networks :
     
     ```
-    iwlist wlan0 scan | grep SSID
+    sudo iw dev wlp0s20f3 scan | grep SSID
     ```
   
   - ###### Set up the Wi-Fi configuration :
@@ -105,13 +105,13 @@ In this instance, the goal is to build a laptop/desktop image with the following
   - ###### Connect to wireless network :
     
     ```
-    sudo wpa_supplicant -B -i wlan0 -c /etc/wpa_supplicant.conf
+    sudo wpa_supplicant -B -i wlp0s20f3 -c /etc/wpa_supplicant.conf
     ```
   
   - ###### Request an IP address :
     
     ```
-    sudo dhclient wlan0
+    sudo dhcpcd wlp0s20f3
     ```
 
 ## Step 5 : Run the installation Script
@@ -220,5 +220,7 @@ GOOD THINGS TAKE TIME.
   
   - On the first boot, the device will automatically restore itself.
     - This is done to reduce the size of the disk image created earlier.
+
+# Enjoy :rocket:
 
 # Enjoy :rocket:
