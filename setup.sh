@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1520
+SCRIPT_DATE=20251202-1523
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -532,13 +532,13 @@ echo "Downloading external software -------------------------------"
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Parallel Downloading of Keyboard Maps, Libreoffice, Draw.io, MarkText and Clonezilla"
 FILES_TO_DOWNLOAD=(
-	           ${CACHE_FOLDER}/${KEYBOARD_MAPS}
-        ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}
-        ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}
-        ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}
-          ${DRAWIO_FOLDER}/${DRAWIO_DEB}
-        ${MARKTEXT_FOLDER}/${MARKTEXT_DEB}
-${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA}
+	           "${CACHE_FOLDER}/${KEYBOARD_MAPS}"
+        "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}"
+        "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}"
+        "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}"
+          "${DRAWIO_FOLDER}/${DRAWIO_DEB}"
+        "${MARKTEXT_FOLDER}/${MARKTEXT_DEB}"
+"${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA}"
 )
 
 # List of origins and destinations parallel downloads
