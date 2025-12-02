@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1543
+SCRIPT_DATE=20251202-1551
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -123,6 +123,7 @@ PART_CZ_END=12901
 # Keyboard Language for TTY consoles
 KEYBOARD_FIX_URL="https://mirrors.edge.kernel.org/pub/linux/utils/kbd"
 KEYBOARD_MAPS=$(curl -s ${KEYBOARD_FIX_URL}/ | grep tar.gz | cut -d'"' -f2 | tail -n1)
+KEYBOARD_MAPS_DOWNLOAD_DIR=${CACHE_FOLDER}/Keyboard_maps/
 
 # Cloning software for recovery partition
 RECOVERYFS=/tmp/recovery-rootfs
@@ -512,10 +513,11 @@ echo "---Cleaning cache packages if necesary"
 cleaning_screen
 echo "Downloading external software -------------------------------"
 	echo "---Pretasks"
-	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
-	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
-	mkdir -p $MARKTEXT_FOLDER >/dev/null 2>&1
-        mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
+	mkdir -p $KEYBOARD_MAPS_DOWNLOAD_DIR	>/dev/null 2>&1
+	mkdir -p $DOWNLOAD_DIR_LO		>/dev/null 2>&1
+	mkdir -p $DRAWIO_FOLDER			>/dev/null 2>&1
+	mkdir -p $MARKTEXT_FOLDER		>/dev/null 2>&1
+        mkdir -p $DOWNLOAD_DIR_CLONEZILLA	>/dev/null 2>&1 || true
         case ${MIRROR_CLONEZILLA} in
 		Official_Fast )
 			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
@@ -532,19 +534,19 @@ echo "Downloading external software -------------------------------"
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Parallel Downloading of Keyboard Maps, Libreoffice, Draw.io, MarkText and Clonezilla"
 FILES_TO_DOWNLOAD=(
-	           "${CACHE_FOLDER}\/${KEYBOARD_MAPS}"
-        "${DOWNLOAD_DIR_LO}\/${LIBREOFFICE_MAIN_FILE}"
-        "${DOWNLOAD_DIR_LO}\/${LIBREOFFICE_LAPA_FILE}"
-        "${DOWNLOAD_DIR_LO}\/${LIBREOFFICE_HELP_FILE}"
-          "${DRAWIO_FOLDER}\/${DRAWIO_DEB}"
-        "${MARKTEXT_FOLDER}\/${MARKTEXT_DEB}"
-"${DOWNLOAD_DIR_CLONEZILLA}\/${FILE_CLONEZILLA}"
+"${KEYBOARD_MAPS_DOWNLOAD_DIR}\/${KEYBOARD_MAPS}"
+           "${DOWNLOAD_DIR_LO}\/${LIBREOFFICE_MAIN_FILE}"
+           "${DOWNLOAD_DIR_LO}\/${LIBREOFFICE_LAPA_FILE}"
+           "${DOWNLOAD_DIR_LO}\/${LIBREOFFICE_HELP_FILE}"
+             "${DRAWIO_FOLDER}\/${DRAWIO_DEB}"
+           "${MARKTEXT_FOLDER}\/${MARKTEXT_DEB}"
+   "${DOWNLOAD_DIR_CLONEZILLA}\/${FILE_CLONEZILLA}"
 )
 
 # List of origins and destinations parallel downloads
 cat << EOF > /tmp/downloads.list
 ${KEYBOARD_FIX_URL}/${KEYBOARD_MAPS}
-  dir=${CACHE_FOLDER}
+  dir=${KEYBOARD_MAPS_DOWNLOAD_DIR}
   out=${KEYBOARD_MAPS}
 ${LIBREOFFICE_MAIN}
   dir=${DOWNLOAD_DIR_LO}
@@ -733,7 +735,7 @@ echo "Setting Keyboard --------------------------------------------"
 	echo "---For non graphical console"
         # FIX DEBIAN BUG
         cd /tmp
-        tar xzvf ${CACHE_FOLDER}/"${KEYBOARD_MAPS}"   >>$LOG 2>>$ERR
+        tar xzvf ${KEYBOARD_MAPS_DOWNLOAD_DIR}/"${KEYBOARD_MAPS}"   >>$LOG 2>>$ERR
         cd kbd-*/data/keymaps/
         mkdir -p ${ROOTFS}/usr/share/keymaps/
         cp -r ./* ${ROOTFS}/usr/share/keymaps/  >>$LOG 2>>$ERR
