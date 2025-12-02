@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1431
+SCRIPT_DATE=20251202-1432
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -404,11 +404,9 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		if [ "$((PART_OP_SIZE - 1))" == "$PART_OP_SIZE_REAL" ] && [ "$PART_OS_START" == "$PART_OS_START_REAL" ] && [ "$PART_OS_END" == "$PART_OS_END_REAL" ] ; then
 			echo ------They DO match
 			SIZES_MATCH=yes
-			sleep 30
 		else
 			echo ------They DON\'T match
 			SIZES_MATCH=no
-			sleep 30
 		fi
 
 	let "PROGRESS_BAR_CURRENT += 1"
@@ -416,8 +414,10 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		# SKIPPING REPARTED ONLY IF LABELS AND SIZES MATCH
 		if [ "$LABELS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
 			REPARTED=no
+			sleep 30
 		else
 			REPARTED=yes
+			sleep 30
 		fi
 		echo ------${REPARTED}
 
