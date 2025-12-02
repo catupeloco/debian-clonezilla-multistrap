@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1434
+SCRIPT_DATE=20251202-1436
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -414,40 +414,36 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		# SKIPPING REPARTED ONLY IF LABELS AND SIZES MATCH
 		if [ "$LABELS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
 			REPARTED=no
-			echo REPARTED=no
-			sleep 30
 		else
 			REPARTED=yes
-			echo REPARTED=yes
-			sleep 30
 		fi
 		echo ------${REPARTED}
 
 cleaning_screen 
 if [ "$REPARTED" == "yes" ] ; then
 	echo "Setting partition table to GPT (UEFI) -----------------------"
-		if ! parted "${DEVICE}" --script mktable gpt                     > /dev/null 2>&1 ; then
+		if ! parted "${DEVICE}" --script mktable gpt                    			# > /dev/null 2>&1 ; then
 			echo Error you should reboot and start again && exit
 		fi
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating EFI partition --------------------------------------"
-		parted "${DEVICE}" --script mkpart ESP fat32 1MiB ${PART_EFI_END}MiB > /dev/null 2>&1
-		parted "${DEVICE}" --script set 1 esp on                          > /dev/null 2>&1
+		parted "${DEVICE}" --script mkpart ESP fat32 1MiB ${PART_EFI_END}MiB			# > /dev/null 2>&1
+		parted "${DEVICE}" --script set 1 esp on                          			# > /dev/null 2>&1
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating Clonezilla partition -------------------------------"
-		parted "${DEVICE}" --script mkpart CLONEZILLA ext4 ${PART_EFI_END}MiB ${PART_CZ_END}MiB > /dev/null 2>&1
+		parted "${DEVICE}" --script mkpart CLONEZILLA ext4 ${PART_EFI_END}MiB ${PART_CZ_END}MiB # > /dev/null 2>&1
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating OS partition ---------------------------------------"
-		#parted "${DEVICE}" --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
-		parted "${DEVICE}" --script mkpart LINUX btrfs ${PART_OS_START}MiB ${PART_OS_END}MiB >/dev/null 2>&1
+		#parted "${DEVICE}" --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB 	# >/dev/null 2>&1
+		parted "${DEVICE}" --script mkpart LINUX btrfs ${PART_OS_START}MiB ${PART_OS_END}MiB 	# >/dev/null 2>&1
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating Resources/Cache partition --------------------------"
-		parted "${DEVICE}" --script mkpart RESOURCES ext4 ${PART_OS_END}MiB 100% >/dev/null 2>&1
-		sleep 2
+		parted "${DEVICE}" --script mkpart RESOURCES ext4 ${PART_OS_END}MiB 100% 		# >/dev/null 2>&1
+	sleep 30
 fi
 
 cleaning_screen
