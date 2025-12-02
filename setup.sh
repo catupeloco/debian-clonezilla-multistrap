@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1504
+SCRIPT_DATE=20251202-1506
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -508,7 +508,6 @@ echo "---Cleaning cache packages if necesary"
 	done
 	set -e
 
-	sleep 30
 ###########################Parallel Downloads fixes############################################
 cleaning_screen
 echo "Downloading external software -------------------------------"
