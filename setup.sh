@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1506
+SCRIPT_DATE=20251202-1518
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -531,6 +531,15 @@ echo "Downloading external software -------------------------------"
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Parallel Downloading of Keyboard Maps, Libreoffice, Draw.io, MarkText and Clonezilla"
+FILES_TO_DOWNLOAD=(
+	           ${CACHE_FOLDER}/${KEYBOARD_MAPS}
+        ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}
+        ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}
+        ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}
+          ${DRAWIO_FOLDER}/${DRAWIO_DEB}
+        ${MARKTEXT_FOLDER}/${MARKTEXT_DEB}
+${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA}
+)
 
 # List of origins and destinations parallel downloads
 cat << EOF > /tmp/downloads.list
@@ -556,6 +565,7 @@ ${CLONEZILLA_ORIGIN}
   dir=${DOWNLOAD_DIR_CLONEZILLA}
   out=${FILE_CLONEZILLA}
 EOF
+while [ -n "$FILES_TO_DOWNLOAD" ] ; do
 	# -i                         		: Read URLs from input file
 	# -j 5                      		: Run 5 paralell downloads
 	# -x 4                      		: Uses up to 4 connections per server on each file
@@ -577,7 +587,7 @@ EOF
 	--console-log-level=warn \
 	--download-result=hide \
 	--summary-interval=0
-
+done
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo -e "\n---Posttasks"
 
