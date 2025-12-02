@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1523
+SCRIPT_DATE=20251202-1536
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -565,7 +565,8 @@ ${CLONEZILLA_ORIGIN}
   dir=${DOWNLOAD_DIR_CLONEZILLA}
   out=${FILE_CLONEZILLA}
 EOF
-while [ -n "$FILES_TO_DOWNLOAD" ] ; do
+PENDING=$FILES_TO_DOWNLOAD
+while [ ! -z "$PENDING" ] ; do
 	# -i                         		: Read URLs from input file
 	# -j 5                      		: Run 5 paralell downloads
 	# -x 4                      		: Uses up to 4 connections per server on each file
@@ -587,7 +588,12 @@ while [ -n "$FILES_TO_DOWNLOAD" ] ; do
 	--console-log-level=warn \
 	--download-result=hide \
 	--summary-interval=0
-	ls ${FILES_TO_DOWNLOAD} || true
+	local PENDING=()
+   	for FILE in "${FILES_TO_DOWNLOAD[@]}"; do
+        if [[ ! -f "$FILE" ]]; then
+            PENDING+=("$FILE")
+        fi
+	ls "${FILES_TO_DOWNLOAD[@]}" || true
 done
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo -e "\n---Posttasks"
