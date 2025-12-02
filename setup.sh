@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1518
+SCRIPT_DATE=20251202-1520
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -587,6 +587,7 @@ while [ -n "$FILES_TO_DOWNLOAD" ] ; do
 	--console-log-level=warn \
 	--download-result=hide \
 	--summary-interval=0
+	ls ${FILES_TO_DOWNLOAD} || true
 done
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo -e "\n---Posttasks"
