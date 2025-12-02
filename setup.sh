@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1439
+SCRIPT_DATE=20251202-1445
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -443,25 +443,25 @@ if [ "$REPARTED" == "yes" ] ; then
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating Resources/Cache partition --------------------------"
 		parted "${DEVICE}" --script mkpart RESOURCES ext4 ${PART_OS_END}MiB 100% 		# >/dev/null 2>&1
-	sleep 30
 fi
 
-#cleaning_screen
+cleaning_screen
 echo "Formating partitions ----------------------------------------"
 	if echo ${DEVICE} | grep -i nvme > /dev/null ; then
 		DEVICE=${DEVICE}p
 	fi
 		# EVEN IF THE PARTITION IS FORMATTED I TRY TO CHECK THE FILESYSTEM
-			  fsck -y "${DEVICE}"1				# >/dev/null 2>&1 || true
-			  fsck -y "${DEVICE}"2				# >/dev/null 2>&1 || true
-			  fsck -y "${DEVICE}"3				# >/dev/null 2>&1 || true
-			  fsck -y "${DEVICE}"4				# >/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 -f	# >/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	-f	# >/dev/null 2>&1 || true
-		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -f	# >/dev/null 2>&1 || true
-			 #mkfs.ext4  -L LINUX      "${DEVICE}"3		# >/dev/null 2>&1 || true
-			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	# >/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"1				 >/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"2				 >/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"3				 >/dev/null 2>&1 || true
+			  fsck -y "${DEVICE}"4				 >/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 -f	 >/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	-f	 >/dev/null 2>&1 || true
+		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -f	 >/dev/null 2>&1 || true
+			 #mkfs.ext4  -L LINUX      "${DEVICE}"3		 >/dev/null 2>&1 || true
+			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	 >/dev/null 2>&1 || true
 
+	sleep 30
 cleaning_screen
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
