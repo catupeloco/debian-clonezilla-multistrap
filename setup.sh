@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1420
+SCRIPT_DATE=20251202-1427
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -264,7 +264,7 @@ FLATPAK_REPO="https://dl.flathub.org/repo/flathub.flatpakrepo"
 THIS_SCRIPT="https://github.com/catupeloco/debian-clonezilla-multistrap.git"
 
 # For Cleaning Screen and progress bar
-LOCALIP=$(ip -br a | grep -v ^lo | awk '{print $3}' | cut -d\/ -f1)
+LOCALIP=$(ip -br a | grep -v ^lo | grep -i UP | awk '{print $3}' | cut -d\/ -f1)
 export PROGRESS_BAR_MAX=45
 export PROGRESS_BAR_WIDTH=43
 export PROGRESS_BAR_CURRENT=0
