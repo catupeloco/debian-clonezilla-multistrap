@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251202-1432
+SCRIPT_DATE=20251202-1434
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -414,9 +414,11 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		# SKIPPING REPARTED ONLY IF LABELS AND SIZES MATCH
 		if [ "$LABELS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
 			REPARTED=no
+			echo REPARTED=no
 			sleep 30
 		else
 			REPARTED=yes
+			echo REPARTED=yes
 			sleep 30
 		fi
 		echo ------${REPARTED}
