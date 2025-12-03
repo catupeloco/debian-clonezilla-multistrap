@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251203-1709
+SCRIPT_DATE=20251203-1714
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -535,13 +535,13 @@ echo "Downloading external software -------------------------------"
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Parallel Downloading of Keyboard Maps, Libreoffice, Draw.io, MarkText and Clonezilla"
 FILES_TO_DOWNLOAD=(
-"${KEYBOARD_MAPS_DOWNLOAD_DIR}\/${KEYBOARD_MAPS}"
-           "${DOWNLOAD_DIR_LO}\/${LIBREOFFICE_MAIN_FILE}"
-           "${DOWNLOAD_DIR_LO}\/${LIBREOFFICE_LAPA_FILE}"
-           "${DOWNLOAD_DIR_LO}\/${LIBREOFFICE_HELP_FILE}"
-             "${DRAWIO_FOLDER}\/${DRAWIO_DEB}"
-           "${MARKTEXT_FOLDER}\/${MARKTEXT_DEB}"
-   "${DOWNLOAD_DIR_CLONEZILLA}\/${FILE_CLONEZILLA}"
+"${KEYBOARD_MAPS_DOWNLOAD_DIR}/${KEYBOARD_MAPS}"
+           "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}"
+           "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}"
+           "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}"
+             "${DRAWIO_FOLDER}/${DRAWIO_DEB}"
+           "${MARKTEXT_FOLDER}/${MARKTEXT_DEB}"
+   "${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA}"
 )
 
 # List of origins and destinations parallel downloads
@@ -597,7 +597,7 @@ while [ ! -z "$PENDING" ] ; do
 		    PENDING+=("$FILE")
 		fi
 	done
-	ls "${FILES_TO_DOWNLOAD[@]}" || true
+	ls -la "${FILES_TO_DOWNLOAD[@]}" >/dev/null || true
 	read -p pause
 done
 	let "PROGRESS_BAR_CURRENT += 1"
