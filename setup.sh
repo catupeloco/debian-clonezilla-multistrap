@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251203-2210
+SCRIPT_DATE=20251203-2230
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -277,7 +277,7 @@ cleaning_screen (){
 printf "\033c"
 echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin :
-	- Debian ${DEBIAN_VERSION} from FASTEST REPOSITORY at your location with :
+	- Debian ${DEBIAN_VERSION} from ${REPOSITORY_DEB} \(FASTEST REPOSITORY at your location\) with :
 		- XFCE.
 		  --With custom skel for taskbar.
 		  --With custom keybindings for window manager.
