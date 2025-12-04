@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251203-2230
+SCRIPT_DATE=20251203-2237
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -78,11 +78,17 @@ else
 		done
 	fi
 	#####################################################################################################
-	echo "Selecting fastest debian mirror -----------------------------"
+	echo "Detecting fastest debian mirror, please wait ----------------"
 	#Waiting to background process to finish
 	wait $REPOSITORY_DEB_PID
-	REPOSITORY_DEB=$(cat /tmp/fastest_repo)
-	REPOSITORY_DEB=${REPOSITORY_DEB// /}
+	REPOSITORY_DEB_FAST=$(cat /tmp/fastest_repo)
+	REPOSITORY_DEB_FAST=${REPOSITORY_DEB_FAST// /}
+	REPOSITORY_DEB_STANDARD="http://deb.debian.org/debian/"
+	REPOSITORY_DEB=$(whiptail --title "Debian respository" --menu "Choose one option:" 20 60 10 \
+                           "${REPOSITORY_DEB_FAST}" "Fastest detected" \
+                       "${REPOSITORY_DEB_STANDARD}" "Default Debian"   \
+               3>&1 1>&2 2>&3)
+
 	#####################################################################################################
 	echo export DEVICE="$DEVICE"				>  $SELECTIONS
 	echo export MIRROR_CLONEZILLA="$MIRROR_CLONEZILLA"	>> $SELECTIONS
