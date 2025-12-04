@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251203-2036
+SCRIPT_DATE=20251203-2203
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -468,6 +468,11 @@ echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
         mount "${DEVICE}"3 ${ROOTFS}                            > /dev/null 2>&1
+#####################################################################################
+        btrfs subvolume create  ${ROOTFS}/@ || true
+        umount ${ROOTFS}
+        mount -o subvol=@,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}
+#####################################################################################
 
 	let "PROGRESS_BAR_CURRENT += 1"
 echo "----Cleaning files just in case"
@@ -599,8 +604,8 @@ while [ ! -z "$PENDING" ] ; do
 		fi
 	done
 	ls -la "${FILES_TO_DOWNLOAD[@]}" >/dev/null || true
-	read -p pause
 	set -e
+	sleep 5
 done
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo -e "\n---Posttasks"
@@ -731,7 +736,10 @@ echo "Generating fstab --------------------------------------------"
         root_uuid="$(blkid | grep ^"$DEVICE" | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         efi_uuid="$(blkid  | grep ^"$DEVICE" | grep ' LABEL="EFI" '   | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         FILE=${ROOTFS}/etc/fstab
-        echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
+	#echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
+        ############################################################################
+        echo "$root_uuid /        btrfs subvol=@,compress=zstd,noatime 0 0"  > $FILE
+        ############################################################################
         echo "$efi_uuid  /boot/efi vfat defaults 0 1" >> $FILE
 
 cleaning_screen	
