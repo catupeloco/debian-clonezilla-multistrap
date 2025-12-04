@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251203-2237
+SCRIPT_DATE=20251203-2243
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -287,6 +287,7 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin :
 		- XFCE.
 		  --With custom skel for taskbar.
 		  --With custom keybindings for window manager.
+		- BTRFS and Timeshift for snapshots of root file system.
 		- Flameshot (replace for screenshots).
 		- Qterminal (replace for xfce terminal).
 		- Mousepad, VLC, QBittorrent, OBS Studio, KeePassXC.
