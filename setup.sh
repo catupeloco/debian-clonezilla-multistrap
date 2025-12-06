@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251206-0036
+SCRIPT_DATE=20251206-0043
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -476,10 +476,10 @@ echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
         mount "${DEVICE}"3 ${ROOTFS}                            > /dev/null 2>&1
 #####################################################################################
-        btrfs subvolume create  ${ROOTFS}/@         || true
-        btrfs subvolume create  ${ROOTFS}/@home     || true
-        btrfs subvolume create  ${ROOTFS}/@varlog   || true
-        btrfs subvolume create  ${ROOTFS}/@varcache || true
+        btrfs subvolume create  ${ROOTFS}/@         2>/dev/null || true
+        btrfs subvolume create  ${ROOTFS}/@home     2>/dev/null || true
+        btrfs subvolume create  ${ROOTFS}/@varlog   2>/dev/null || true
+        btrfs subvolume create  ${ROOTFS}/@varcache 2>/dev/null || true
         umount ${ROOTFS}
         mount -o subvol=@,compress=zstd,noatime         "${DEVICE}"3 ${ROOTFS}
 	#mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
@@ -704,7 +704,7 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
 cleaning_screen
 echo "Running mmdebstrap (please be patient, longest step) --------"
-ls -la ${ROOTFS}
+ls -a ${ROOTFS}
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} google-chrome-stable ${FIREFOX_PACKAGE} spotify-client syncthing" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
