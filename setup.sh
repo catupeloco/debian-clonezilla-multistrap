@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251205-2111
+SCRIPT_DATE=20251205-2126
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -283,7 +283,7 @@ cleaning_screen (){
 printf "\033c"
 echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin :
-	- Debian ${DEBIAN_VERSION} from ${REPOSITORY_DEB} \(FASTEST REPOSITORY at your location\) with :
+	- Debian ${DEBIAN_VERSION} from ${REPOSITORY_DEB} (FASTEST REPOSITORY at your location) with :
 		- XFCE.
 		  --With custom skel for taskbar.
 		  --With custom keybindings for window manager.
@@ -482,10 +482,10 @@ echo "---OS partition"
         btrfs subvolume create  ${ROOTFS}/@varcache || true
         umount ${ROOTFS}
         mount -o subvol=@,compress=zstd,noatime         "${DEVICE}"3 ${ROOTFS}
-	mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
-        mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
-        mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
-        mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
+	#mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
+        #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
+        #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
+        #mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
 
 #####################################################################################
 
@@ -753,6 +753,10 @@ echo "Generating fstab --------------------------------------------"
         FILE=${ROOTFS}/etc/fstab
 	#echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
         ############################################################################
+	#mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
+        #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
+        #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
+        #mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
         echo "$root_uuid /          btrfs subvol=@,compress=zstd,noatime 0 0        "  > $FILE
         echo "$root_uuid /home      btrfs subvol=@home,compress=zstd,noatime 0 0    " >> $FILE
         echo "$root_uuid /var/log   btrfs subvol=@varlog,compress=zstd,noatime 0 0  " >> $FILE
