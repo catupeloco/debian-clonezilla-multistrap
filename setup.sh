@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251206-0043
+SCRIPT_DATE=20251206-0055
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -468,7 +468,7 @@ echo "Formating partitions ----------------------------------------"
 [ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	-f	 >/dev/null 2>&1 || mkfs.ext4  -L RESOURCES  "${DEVICE}"4 >/dev/null 2>&1 || true
 		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -f	 >/dev/null 2>&1 || mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 >/dev/null 2>&1 || true
 			 #mkfs.ext4  -L LINUX      "${DEVICE}"3		 >/dev/null 2>&1 || true
-			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	 >/dev/null 2>&1 || mkfs.btrfs -L LINUX      "${DEVICE}"3 >/dev/null 2>&1 || true
+			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	# >/dev/null 2>&1 || mkfs.btrfs -L LINUX      "${DEVICE}"3 >/dev/null 2>&1 || true
 
 cleaning_screen
 echo "Mounting ----------------------------------------------------"
@@ -479,7 +479,7 @@ echo "---OS partition"
         btrfs subvolume create  ${ROOTFS}/@         2>/dev/null || true
         btrfs subvolume create  ${ROOTFS}/@home     2>/dev/null || true
         btrfs subvolume create  ${ROOTFS}/@varlog   2>/dev/null || true
-        btrfs subvolume create  ${ROOTFS}/@varcache 2>/dev/null || true
+        #btrfs subvolume create  ${ROOTFS}/@varcache 2>/dev/null || true
         umount ${ROOTFS}
         mount -o subvol=@,compress=zstd,noatime         "${DEVICE}"3 ${ROOTFS}
 	#mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
@@ -757,11 +757,11 @@ echo "Generating fstab and mounting more btrfs subvols ------------"
 	mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
         mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
         mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
-        mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
+        #mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
         echo "$root_uuid /          btrfs subvol=@,compress=zstd,noatime 0 0        "  > $FILE
         echo "$root_uuid /home      btrfs subvol=@home,compress=zstd,noatime 0 0    " >> $FILE
         echo "$root_uuid /var/log   btrfs subvol=@varlog,compress=zstd,noatime 0 0  " >> $FILE
-        echo "$root_uuid /var/cache btrfs subvol=@varcache,compress=zstd,noatime 0 0" >> $FILE
+        #echo "$root_uuid /var/cache btrfs subvol=@varcache,compress=zstd,noatime 0 0" >> $FILE
         ############################################################################
         echo "$efi_uuid  /boot/efi vfat defaults 0 1                                " >> $FILE
 
