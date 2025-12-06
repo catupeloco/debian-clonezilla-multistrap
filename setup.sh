@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251205-2134
+SCRIPT_DATE=20251206-0036
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -748,16 +748,16 @@ EOF
         touch ${ROOTFS}/ImageDate."$(date +'%Y-%m-%d')"
 
 cleaning_screen	
-echo "Generating fstab --------------------------------------------"
+echo "Generating fstab and mounting more btrfs subvols ------------"
         root_uuid="$(blkid | grep ^"$DEVICE" | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         efi_uuid="$(blkid  | grep ^"$DEVICE" | grep ' LABEL="EFI" '   | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         FILE=${ROOTFS}/etc/fstab
 	#echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
         ############################################################################
-	#mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
-        #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
-        #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
-        #mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
+	mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
+        mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
+        mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
+        mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
         echo "$root_uuid /          btrfs subvol=@,compress=zstd,noatime 0 0        "  > $FILE
         echo "$root_uuid /home      btrfs subvol=@home,compress=zstd,noatime 0 0    " >> $FILE
         echo "$root_uuid /var/log   btrfs subvol=@varlog,compress=zstd,noatime 0 0  " >> $FILE
