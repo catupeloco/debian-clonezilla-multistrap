@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251205-2126
+SCRIPT_DATE=20251205-2134
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -704,6 +704,7 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
 cleaning_screen
 echo "Running mmdebstrap (please be patient, longest step) --------"
+ls -la ${ROOTFS}
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} google-chrome-stable ${FIREFOX_PACKAGE} spotify-client syncthing" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
