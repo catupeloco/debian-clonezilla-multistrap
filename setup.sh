@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251203-2243
+SCRIPT_DATE=20251205-2111
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -476,9 +476,17 @@ echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
         mount "${DEVICE}"3 ${ROOTFS}                            > /dev/null 2>&1
 #####################################################################################
-        btrfs subvolume create  ${ROOTFS}/@ || true
+        btrfs subvolume create  ${ROOTFS}/@         || true
+        btrfs subvolume create  ${ROOTFS}/@home     || true
+        btrfs subvolume create  ${ROOTFS}/@varlog   || true
+        btrfs subvolume create  ${ROOTFS}/@varcache || true
         umount ${ROOTFS}
-        mount -o subvol=@,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}
+        mount -o subvol=@,compress=zstd,noatime         "${DEVICE}"3 ${ROOTFS}
+	mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
+        mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
+        mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
+        mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
+
 #####################################################################################
 
 	let "PROGRESS_BAR_CURRENT += 1"
@@ -745,9 +753,12 @@ echo "Generating fstab --------------------------------------------"
         FILE=${ROOTFS}/etc/fstab
 	#echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
         ############################################################################
-        echo "$root_uuid /        btrfs subvol=@,compress=zstd,noatime 0 0"  > $FILE
+        echo "$root_uuid /          btrfs subvol=@,compress=zstd,noatime 0 0        "  > $FILE
+        echo "$root_uuid /home      btrfs subvol=@home,compress=zstd,noatime 0 0    " >> $FILE
+        echo "$root_uuid /var/log   btrfs subvol=@varlog,compress=zstd,noatime 0 0  " >> $FILE
+        echo "$root_uuid /var/cache btrfs subvol=@varcache,compress=zstd,noatime 0 0" >> $FILE
         ############################################################################
-        echo "$efi_uuid  /boot/efi vfat defaults 0 1" >> $FILE
+        echo "$efi_uuid  /boot/efi vfat defaults 0 1                                " >> $FILE
 
 cleaning_screen	
 echo "Setting Keyboard --------------------------------------------"
