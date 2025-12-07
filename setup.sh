@@ -1,12 +1,14 @@
 #!/bin/bash
-SCRIPT_DATE=20251207-1501
+SCRIPT_DATE=20251207-1800
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
 SELECTIONS=/tmp/selections
 
 echo ---------------------------------------------------------------------------
-echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
+timedate-ctl set-timezone America/Argentina/Buenos_Aires
+echo "now    $(date +'%Y%m%d-%H%M')"
+# echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
 echo ---------------------------------------------------------------------------
 echo "Installing dependencies for this script ---------------------"
@@ -102,16 +104,6 @@ fi
 #####################################################################################################
 #VARIABLES 
 #####################################################################################################
-#REPOSITORY_DEB="http://deb.debian.org/debian/"
-#if ! grep REPOSITORY_DEB $SELECTIONS ; then
-#	echo "Selecting fastest debian mirror -----------------------------"
-#	REPOSITORY_DEB=$(netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1) >/dev/null
-#	REPOSITORY_DEB=${REPOSITORY_DEB// /}
-#	echo export REPOSITORY_DEB="${REPOSITORY_DEB}" >> $SELECTIONS
-#fi
-##WIFI_DOMAIN="https://git.kernel.org"
-#export WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
-#export WIFI_MAX_PARALLEL=10
 
 # Debian Variables 
 DEBIAN_VERSION=trixie
@@ -271,6 +263,15 @@ FLATPAK_REPO="https://dl.flathub.org/repo/flathub.flatpakrepo"
 # For Taskbar Skel
 THIS_SCRIPT="https://github.com/catupeloco/debian-clonezilla-multistrap.git"
 
+# Old Versions of this script used Debian 12 which didnt have drivers for my wifi, so I've 
+# downloaded drivers from kernel.org, but this method is not recommended as it can't be
+# updated as the files are not in a package. Newer option was to install backport package
+# for wifi but it was discontinuated after migration to Debian 13 Trixie.
+# 
+# WIFI_DOMAIN="https://git.kernel.org"
+# export WIFI_URL="${WIFI_DOMAIN}/pub/scm/linux/kernel/git/firmware/linux-firmware.git/plain" 
+# export WIFI_MAX_PARALLEL=10
+
 # For Cleaning Screen and progress bar
 LOCALIP=$(ip -br a | grep -v ^lo | grep -i UP | awk '{print $3}' | cut -d\/ -f1)
 export PROGRESS_BAR_MAX=45
@@ -379,12 +380,16 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount          /var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}/var/log                2>/dev/null || true
+        umount ${ROOTFS}/var/log                2>/dev/null || true
+        umount ${ROOTFS}/home                   2>/dev/null || true
+        umount ${ROOTFS}/home                   2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
-        umount ${CACHE_FOLDER}                   2>/dev/null || true
-        umount ${CACHE_FOLDER}                   2>/dev/null || true
+        umount ${CACHE_FOLDER}                  2>/dev/null || true
+        umount ${CACHE_FOLDER}                  2>/dev/null || true
 
 cleaning_screen
 echo "Comparing partitions target scheme vs actual schema ---------"
@@ -446,7 +451,8 @@ if [ "$REPARTED" == "yes" ] ; then
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "Creating OS partition ---------------------------------------"
-		#parted "${DEVICE}" --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB 	# >/dev/null 2>&1
+	#	Changed to btfs for snapshots with timeshift
+	#	parted "${DEVICE}" --script mkpart LINUX ext4 ${PART_OS_START}MiB ${PART_OS_END}MiB 	# >/dev/null 2>&1
 		parted "${DEVICE}" --script mkpart LINUX btrfs ${PART_OS_START}MiB ${PART_OS_END}MiB 	# >/dev/null 2>&1
 
 	let "PROGRESS_BAR_CURRENT += 1"
@@ -467,8 +473,10 @@ echo "Formating partitions ----------------------------------------"
 [ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 -f	 >/dev/null 2>&1 || mkfs.vfat  -n EFI        "${DEVICE}"1 >/dev/null 2>&1 || true
 [ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	-f	 >/dev/null 2>&1 || mkfs.ext4  -L RESOURCES  "${DEVICE}"4 >/dev/null 2>&1 || true
 		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -f	 >/dev/null 2>&1 || mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 >/dev/null 2>&1 || true
-			 #mkfs.ext4  -L LINUX      "${DEVICE}"3		 >/dev/null 2>&1 || true
 			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	# >/dev/null 2>&1 || mkfs.btrfs -L LINUX      "${DEVICE}"3 >/dev/null 2>&1 || true
+
+			# Changed to btrs for snapshots with timeshift 
+			# mkfs.ext4  -L LINUX      "${DEVICE}"3		 >/dev/null 2>&1 || true
 
 cleaning_screen
 echo "Mounting ----------------------------------------------------"
@@ -953,6 +961,7 @@ echo "Unattended upgrades -----------------------------------------"
 mv ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades ${ROOTFS}/root/50unattended-upgrades.bak
 	echo "---Configuration files"
 
+# The best configurations I've read and tested
 cat << EOF > ${ROOTFS}/etc/apt/apt.conf.d/50unattended-upgrades
 Unattended-Upgrade::Origins-Pattern {
 	"origin=Debian,codename=\${distro_codename}-updates";
@@ -967,7 +976,7 @@ Unattended-Upgrade::Automatic-Reboot-Time "02:00";
 //Unattended-Upgrade::InstallOnShutdown "true";
 EOF
 
-
+# The best configurations I've read and tested
 cat << EOF >  ${ROOTFS}/etc/apt/apt.conf.d/10periodic
 APT::Periodic::Update-Package-Lists "1";
 APT::Periodic::Download-Upgradeable-Packages "1";
@@ -977,6 +986,9 @@ EOF
 
 	echo "---Testing Scripts"
 
+# As unattended upgrades only upgrade packages from standard repositories 
+# I've added my script for libreoffice, flatpak, external git debs and
+# packages of Firefox and Chrome I've downgraded for testing purposes.
 cat << EOF > ${ROOTFS}/usr/local/bin/System_Upgrade
 #!/bin/bash
 wget -qO- ${CHROME_KEY} | tee              ${CHROME_TRUSTED}                     > /dev/null
@@ -1009,6 +1021,8 @@ echo Listo -------------------------------
 	sleep 10
 EOF
 
+# For testing Unattended upgrades I've added an option to downgrade Firefox and Chrome
+# Not to use in normal cases.
 cat << EOF > ${ROOTFS}/usr/local/bin/System_Downgrade
 #!/bin/bash
 echo Asi empezamos ----------------------
@@ -1036,6 +1050,8 @@ echo Asi quedamos -----------------------
 	sleep 10
 EOF
 
+# To get an estimated time of upgrade I've added this script
+# Not to use in normal cases.
 cat << EOF > ${ROOTFS}/usr/local/bin/System_Status 
 #!/bin/bash 
 FOLDER=/etc/apt/apt.conf.d/ 
@@ -1050,6 +1066,8 @@ echo -------------------------------------
 sleep 30
 EOF
 
+# The scripts above uses this testing repositories
+# Not to use in normal cases.
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Repositories for testing scripts"
 	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/new.list
@@ -1061,6 +1079,7 @@ EOF
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Sudoers file for testing scripts"
 
+# To run testing scripts without user password prompt
 cat << EOF > ${ROOTFS}/etc/sudoers.d/updates
 %updates ALL = NOPASSWD : /usr/local/bin/System_Upgrade 
 %updates ALL = NOPASSWD : /usr/local/bin/System_Downgrade
@@ -1069,16 +1088,7 @@ EOF
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Shortcuts for testing scripts"
 
-cat << EOF > ${ROOTFS}/usr/share/applications/System_Downgrade.desktop
-[Desktop Entry]
-Type=Application
-Icon=utilities-terminal
-Exec=qterminal -e sudo /usr/local/bin/System_Downgrade
-Terminal=false
-Categories=Qt;System;TerminalEmulator;
-Name=System_Downgrade
-EOF
-
+# Next three shortcuts are for easy access of testing scripts
 cat << EOF > ${ROOTFS}/usr/share/applications/System_Upgrade.desktop
 [Desktop Entry]
 Type=Application
@@ -1087,6 +1097,17 @@ Exec=qterminal -e sudo /usr/local/bin/System_Upgrade
 Terminal=false
 Categories=Qt;System;TerminalEmulator;
 Name=System_Upgrade
+EOF
+
+# Next two are not for normal use.
+cat << EOF > ${ROOTFS}/usr/share/applications/System_Downgrade.desktop
+[Desktop Entry]
+Type=Application
+Icon=utilities-terminal
+Exec=qterminal -e sudo /usr/local/bin/System_Downgrade
+Terminal=false
+Categories=Qt;System;TerminalEmulator;
+Name=System_Downgrade
 EOF
 
 cat << EOF > ${ROOTFS}/usr/share/applications/System_Status.desktop 
@@ -1115,6 +1136,10 @@ EOF
 cleaning_screen	
 echo "Fixing volumen on startup because of software bug -----------"
 
+# Another annoying but, volumen keeps shutting down on logon.
+# For months I've searched for reason but I didn't found one.
+# So I've came out with a script that runs on start up until
+# microphone and speakers are unmutted and at 100% volumen
 cat << EOF > ${ROOTFS}/usr/local/bin/volumen
 #!/bin/bash
 while ! pactl info &>/dev/null; do
@@ -1140,6 +1165,7 @@ done &
 EOF
 chmod +x ${ROOTFS}/usr/local/bin/volumen
 
+# In this folder every user created will be fixed on logon
 echo '[Desktop Entry]
 Type=Application
 Name=Set volumen
@@ -1151,6 +1177,7 @@ X-GNOME-Autostart-enabled=true'> ${ROOTFS}/etc/xdg/autostart/volumen.desktop
 
 cleaning_screen	
 echo "Setting up local admin account ------------------------------"
+# I create default admin user with password and groups for upgrades and virtmanager
         echo "export LC_ALL=C LANGUAGE=C LANG=C
 	useradd -d /home/$username -G sudo -m -s /bin/bash $username
 	groupadd updates
@@ -1165,6 +1192,8 @@ echo "Setting up local admin account ------------------------------"
         
 cleaning_screen	
 echo "Encrypted user script creation ------------------------------"
+# If you choose to encrypt your home you may use this script to automatically
+# create a user with all groups and password. This script must be run outside of iso.
 cat <<EOF > ${ROOTFS}/usr/local/bin/useradd-encrypt
 	echo Adding local user -------------------------------------------
         read -p "What username do you want for local_encrypted_user ?: " username
@@ -1197,6 +1226,11 @@ EOF
 
 cleaning_screen	
 echo "Replacing keybindings ----------------------------------------"
+# First I need to replace screenshooter app so the keybinds must be replaced.
+# Second I've got used to manage windows with my key bindings. The idea is use Alt and
+# Q W E   : each Key to fix selected window position as the keys represents window
+# A S D   : positions. Corners for quarter screen. Middle ones to split in two the screen.
+# Z X C   : Finally S to maximize.
 	FILE=${ROOTFS}/etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xfce4-keyboard-shortcuts.xml
 	echo --Making Backup file
 	cp ${FILE} ${FILE}.bak
@@ -1290,6 +1324,7 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${ROOTFS}/boot/efi               2>/dev/null || true
         umount          /var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}/home                   2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
         umount ${CACHE_FOLDER}                  2>/dev/null || true
