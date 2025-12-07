@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251207-1800
+SCRIPT_DATE=20251207-1834
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -384,6 +384,7 @@ echo "Unmounting ${DEVICE}  ----------------------------------------"
         umount ${ROOTFS}/var/log                2>/dev/null || true
         umount ${ROOTFS}/home                   2>/dev/null || true
         umount ${ROOTFS}/home                   2>/dev/null || true
+        umount ${ROOTFS}                        2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${ROOTFS}                        2>/dev/null || true
         umount ${RECOVERYFS}                    2>/dev/null || true
