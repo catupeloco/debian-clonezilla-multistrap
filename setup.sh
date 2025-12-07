@@ -6,7 +6,7 @@ ERR=/tmp/laptop.err
 SELECTIONS=/tmp/selections
 
 echo ---------------------------------------------------------------------------
-timedate-ctl set-timezone America/Argentina/Buenos_Aires
+timedatectl set-timezone America/Argentina/Buenos_Aires
 echo "now    $(date +'%Y%m%d-%H%M')"
 # echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
