@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251206-0119
+SCRIPT_DATE=20251207-1501
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -481,7 +481,8 @@ echo "---OS partition"
         btrfs subvolume create  ${ROOTFS}/@varlog   2>/dev/null || true
         #btrfs subvolume create  ${ROOTFS}/@varcache 2>/dev/null || true
         umount ${ROOTFS}
-        mount -o subvol=@,compress=zstd,noatime         "${DEVICE}"3 ${ROOTFS}
+	mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@     "${DEVICE}"3 ${ROOTFS}
+        #mount -o subvol=@,compress=zstd,noatime         "${DEVICE}"3 ${ROOTFS}
 	#mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
         #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
         #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
@@ -755,12 +756,22 @@ echo "Generating fstab and mounting more btrfs subvols ------------"
 	#echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
         ############################################################################
 	mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
-        mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
-        mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
-        #mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
-        echo "$root_uuid /          btrfs subvol=@,compress=zstd,noatime 0 0        "  > $FILE
-        echo "$root_uuid /home      btrfs subvol=@home,compress=zstd,noatime 0 0    " >> $FILE
-        echo "$root_uuid /var/log   btrfs subvol=@varlog,compress=zstd,noatime 0 0  " >> $FILE
+
+	# Commented because I change command order to be more beautiful for the eyes (?)
+        #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
+        #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
+        #echo "$root_uuid /          btrfs subvol=@,compress=zstd,noatime 0 0        "  > $FILE
+        #echo "$root_uuid /home      btrfs subvol=@home,compress=zstd,noatime 0 0    " >> $FILE
+        #echo "$root_uuid /var/log   btrfs subvol=@varlog,compress=zstd,noatime 0 0  " >> $FILE
+
+	mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@home     "${DEVICE}"3 ${ROOTFS}/home
+        mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@varlog   "${DEVICE}"3 ${ROOTFS}/var/log
+        echo "$root_uuid /          btrfs compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@	 0 0"  > $FILE
+        echo "$root_uuid /home      btrfs compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@home	 0 0" >> $FILE
+        echo "$root_uuid /var/log   btrfs compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@varlog	 0 0" >> $FILE
+        
+	# Disabled maybe for boot bug
+	#mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
         #echo "$root_uuid /var/cache btrfs subvol=@varcache,compress=zstd,noatime 0 0" >> $FILE
         ############################################################################
         echo "$efi_uuid  /boot/efi vfat defaults 0 1                                " >> $FILE
