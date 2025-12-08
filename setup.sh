@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-0156
+SCRIPT_DATE=20251208-0213
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -877,8 +877,8 @@ echo "Entering chroot ---------------------------------------------"
         echo ---Running tasksel for fixes
 	tasksel install ssh-server laptop xfce --new-install                                    1>&3
 
-	echo ---Installing Draw.io and MarktText
-	dpkg -i /var/cache/apt/archives/Draw.io/${DRAWIO_DEB} \	
+	echo ---Installing Draw.io and MarkText
+	dpkg -i /var/cache/apt/archives/Draw.io/${DRAWIO_DEB} \
 	        /var/cache/apt/archives/Marktext/${MARKTEXT_DEB} 				1>&3
 
         #Installing Libreoffice in backgroupd
