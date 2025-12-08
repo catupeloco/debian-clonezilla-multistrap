@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-1029
+SCRIPT_DATE=20251208-1035
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -605,6 +605,8 @@ while [ ! -z "$PENDING" ] ; do
 	# -x 4                      		: Uses up to 4 connections per server on each file
 	# -c                        		: Resume broken downloads
 	# --allow-overwrite=true    		: Always redownload
+	# --allow-overwrite=false    		: NOT redownload
+	# --continue=true			: Resumes interrupted downloads
 	# --auto-file-renaming=false 		: With this out works as expected
 	# --truncate-console-readout=true 	: Single line output
 	# --console-log-level=warn   		: Minimize verbose output
@@ -615,7 +617,8 @@ while [ ! -z "$PENDING" ] ; do
 	-j 5 \
 	-x 4 \
 	-c \
-	--allow-overwrite=true \
+	--allow-overwrite=false \
+	--continue=true \
 	--auto-file-renaming=false \
 	--truncate-console-readout=true \
 	--console-log-level=warn \
