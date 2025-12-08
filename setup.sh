@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-1111
+SCRIPT_DATE=20251208-1112
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -474,7 +474,7 @@ echo "Formating partitions ----------------------------------------"
 [ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 -F	                 || true
 [ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	-F	                 || true 
 		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -F	                 || true
-			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -F	                 || true
+			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	                 || true
 
 [ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 	                 || true
 [ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4		                 || true 
