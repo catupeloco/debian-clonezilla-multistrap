@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251207-2332
+SCRIPT_DATE=20251208-0123
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -926,7 +926,7 @@ echo "Entering chroot ---------------------------------------------"
 	cd grub-btrfs
 	make install
 	cd -
-	systemctl enable --now grub-btrfsd
+	systemctl enable --now grub-btrfsd || true
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
