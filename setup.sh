@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251207-1834
+SCRIPT_DATE=20251207-2332
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -146,6 +146,8 @@ xfce4-fsguard-plugin       xfce4-genmon-plugin      xfce4-mailwatch-plugin   xfc
 xfce4-smartbookmark-plugin xfce4-systemload-plugin  xfce4-timer-plugin       xfce4-verve-plugin       xfce4-wavelan-plugin     xfce4-weather-plugin  \
 xfce4-xkb-plugin           xfce4-whiskermenu-plugin xfce4-dict 		     xfce4-notifyd            xfce4-indicator-plugin   xfce4-mpc-plugin      \
 thunar-archive-plugin      thunar-media-tags-plugin ntfs-3g timeshift \
+${BUG_FIXES_PACKAGES} \
+at-spi2-core xinput gawk inotify-tools \
 ${FONTS_PACKAGES_AND_THEMES}  \
 fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand \
 fonts-symbola fonts-urw-base35 gsfonts arc-theme \
@@ -186,6 +188,11 @@ qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils vi
 qemu-guest-agent \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
+
+
+# dbus-update-activation-environment --systemd --all > ~/.xinitrc	
+
+
 
 # Linux Standard Office Suite
 DOWNLOAD_DIR_LO=${CACHE_FOLDER}/Libreoffice
@@ -262,6 +269,9 @@ FLATPAK_REPO="https://dl.flathub.org/repo/flathub.flatpakrepo"
 
 # For Taskbar Skel
 THIS_SCRIPT="https://github.com/catupeloco/debian-clonezilla-multistrap.git"
+
+# Auto entries on grub of snapshots made by btrfs and timeshift
+GRUB_BTRFS="https://github.com/Antynea/grub-btrfs.git"
 
 # Old Versions of this script used Debian 12 which didnt have drivers for my wifi, so I've 
 # downloaded drivers from kernel.org, but this method is not recommended as it can't be
@@ -910,6 +920,13 @@ echo "Entering chroot ---------------------------------------------"
 	echo ---Kernel
 	cd /opt	
 	git clone https://github.com/alexiarstein/kernelinstall.git				1>&3
+
+	echo ---Grub-btrfs
+	git clone ${GRUB_BTRFS}
+	cd grub-btrfs
+	make install
+	cd -
+	systemctl enable --now grub-btrfsd
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
