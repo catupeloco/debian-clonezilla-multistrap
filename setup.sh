@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-0213
+SCRIPT_DATE=20251208-1017
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -296,16 +296,13 @@ echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin :
 	- Debian ${DEBIAN_VERSION} from ${REPOSITORY_DEB} (FASTEST REPOSITORY at your location) with :
 		- XFCE.
-		  --With custom skel for taskbar.
-		  --With custom keybindings for window manager.
-		- BTRFS and Timeshift for snapshots of root file system.
-		- Flameshot (replace for screenshots).
-		- Qterminal (replace for xfce terminal).
+		  --With custom skel (for taskbar) and keybindings (for window manager).
+		- BTRFS, GRUB-BTRFS and Timeshift for snapshots of root file system.
+		- Flameshot (replace for screenshots), Qterminal (replace for xfce terminal).
 		- Mousepad, VLC, QBittorrent, OBS Studio, KeePassXC.
 		- Remmina, x11vnc and ssvnc.
 		- Unattended upgrades, Virtual Machine Manager (KVM/QEMU).
-        	- Wifi and bluetooth drivers.
-		- NTFS support (to read Windows Partitions).
+        	- Wifi and bluetooth drivers. NTFS support (to read Windows Partitions).
 		- Optional : 
 		  --Firefox ESR (from Mozilla repository).
 		  --encrypted home.
@@ -316,16 +313,9 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin :
 		- Keymaps for tty.
 		- Optional : Firefox Rapid Release (from Mozilla repository).
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
-
-To follow extra details, use: 
-		Ctrl + Alt + F2 or tail -F $LOG
-		Ctrl + Alt + F3 or tail -F $ERR
-		Ctrl + Alt + F4 to follow Parallel downloads "
-
+To follow extra details, use: Alt and left and right arrows"
 grep iso /proc/cmdline >/dev/null && \
-echo "For remote access during installation, you can connect via ssh
-	---Connect via: ssh user@$LOCALIP
-	---password is \"live\""
+echo "For remote access during installation, you can connect remotely : ssh user@$LOCALIP (password is \"live\") "
 
 ######## PROGRESS BAR ###################################################
 echo "============================================================="
