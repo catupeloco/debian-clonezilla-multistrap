@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-1102
+SCRIPT_DATE=20251208-1103
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -24,7 +24,7 @@ echo "Installing dependencies for this script ---------------------"
 #Selections
 #####################################################################################################
 if [ -f $SELECTIONS ] ; then
-	echo Skiping cuestions, you may delete $SELECTIONS if you change your mind
+	echo Skiping questions, you may delete $SELECTIONS if you change your mind
 	source $SELECTIONS
 else
 	reset
