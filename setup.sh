@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-1017
+SCRIPT_DATE=20251208-1029
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -295,12 +295,11 @@ printf "\033c"
 echo "============================================================="
 echo "Installing on Device ${DEVICE} with ${username} as local admin :
 	- Debian ${DEBIAN_VERSION} from ${REPOSITORY_DEB} (FASTEST REPOSITORY at your location) with :
-		- XFCE.
-		  --With custom skel (for taskbar) and keybindings (for window manager).
+		- XFCE with custom skel (for taskbar) and keybindings (for window manager).
 		- BTRFS, GRUB-BTRFS and Timeshift for snapshots of root file system.
 		- Flameshot (replace for screenshots), Qterminal (replace for xfce terminal).
 		- Mousepad, VLC, QBittorrent, OBS Studio, KeePassXC.
-		- Remmina, x11vnc and ssvnc.
+		- X2goclient, Remmina, x11vnc and ssvnc.
 		- Unattended upgrades, Virtual Machine Manager (KVM/QEMU).
         	- Wifi and bluetooth drivers. NTFS support (to read Windows Partitions).
 		- Optional : 
@@ -313,7 +312,8 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin :
 		- Keymaps for tty.
 		- Optional : Firefox Rapid Release (from Mozilla repository).
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
-To follow extra details, use: Alt and left and right arrows"
+
+To follow extra details, use: Alt plus left or right arrows"
 grep iso /proc/cmdline >/dev/null && \
 echo "For remote access during installation, you can connect remotely : ssh user@$LOCALIP (password is \"live\") "
 
