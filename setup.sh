@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-1201
+SCRIPT_DATE=20251208-1204
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -628,12 +628,11 @@ while [ ! -z "$PENDING" ] ; do
 	-x 4 \
 	-c \
 	--allow-overwrite=true \
-	--continue=true \
 	--auto-file-renaming=false \
 	--truncate-console-readout=true \
 	--console-log-level=warn \
 	--download-result=hide \
-	--summary-interval=0 || true
+	--summary-interval=0 
 	set +e
 	PENDING=""
    	for FILE in "${FILES_TO_DOWNLOAD[@]}"; do
