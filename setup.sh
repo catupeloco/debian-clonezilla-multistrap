@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-1155
+SCRIPT_DATE=20251208-1157
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -480,7 +480,6 @@ echo "Formating partitions ----------------------------------------"
 #[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	                 || true 
 #		 	   mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 	                 || true
 #			   mkfs.btrfs -L LINUX      "${DEVICE}"3 	                 || true
-read -p pause
 		     # Disabled because it formats even if REPARTED = no
 		     # || mkfs.vfat  -n EFI        "${DEVICE}"1          >/dev/null 2>&1 || true
 		     # || mkfs.ext4  -L RESOURCES  "${DEVICE}"4          >/dev/null 2>&1 || true
