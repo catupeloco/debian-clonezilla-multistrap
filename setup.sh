@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-0127
+SCRIPT_DATE=20251208-0152
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -866,37 +866,41 @@ echo "Entering chroot ---------------------------------------------"
                 PROC_NEEDS_UMOUNT=1
         fi
 	
-	echo ---Enabling virtual-networks
+	echo ---Enabling virtual-networks and kernel modules
+	# Adding Virtual networks
 	/usr/sbin/libvirtd & 		>/dev/null 2>&1
 	virsh net-autostart default	>/dev/null 2>&1
 	pkill libvirtd			>/dev/null 2>&1
-
-	echo ---Adding virtual-networks to kernel modules
+	# Adding virtual-networks to kernel modules
 	echo vhost_net >> /etc/modules
 
         echo ---Running tasksel for fixes
 	tasksel install ssh-server laptop xfce --new-install                                    1>&3
 
-	echo ---Installing Draw.io
-	dpkg -i /var/cache/apt/archives/Draw.io/${DRAWIO_DEB}					1>&3
-	
-	echo ---Installing MarkText
-	dpkg -i /var/cache/apt/archives/Marktext/${MARKTEXT_DEB} 				1>&3
+	echo ---Installing Draw.io and MarktText
+	dpkg -i /var/cache/apt/archives/Draw.io/${DRAWIO_DEB} \	
+	        /var/cache/apt/archives/Marktext/${MARKTEXT_DEB} 				1>&3
 
         #Installing Libreoffice in backgroupd
         dpkg -i \$(find \$DOWNLOAD_DIR_LO/ -type f -name \*.deb)				1>&3
         pid_LO=\$!
 
-        echo ---Installing grub
+        echo ---Installing grub and Grub-BTRFS
         update-initramfs -c -k all                                                              1>&3
         grub-install --target=x86_64-efi --efi-directory=/boot/efi \
 	      --bootloader-id=debian --recheck --no-nvram --removable  				1>&3
         update-grub                                                                             1>&3
-
-        echo ---Installing LibreOffice and its language pack
-	echo -----Cloning script for future updates
+	# Grub-btrfs
 	cd /opt
-	git clone ${LIBREOFFICE_UPDS}
+	git clone ${GRUB_BTRFS}									1>&3
+	cd grub-btrfs
+	make install										1>&3
+	cd -
+	systemctl enable --now grub-btrfsd || true
+
+        echo ---Installing LibreOffice, its language pack and upgrade script
+	cd /opt
+	git clone ${LIBREOFFICE_UPDS} 								1>&3
 	chmod +x /opt/install-libreoffice-from-web/setup.sh
         wait \$pid_LO || true
         apt install --fix-broken -y   	                                                        1>&3
@@ -917,16 +921,11 @@ echo "Entering chroot ---------------------------------------------"
 	fi
 	set -e
 	
-	echo ---Kernel
+	# echo ---Kernel
+	# This is not read for prime time lol
 	cd /opt	
 	git clone https://github.com/alexiarstein/kernelinstall.git				1>&3
 
-	echo ---Grub-btrfs
-	git clone ${GRUB_BTRFS}
-	cd grub-btrfs
-	make install
-	cd -
-	systemctl enable --now grub-btrfsd || true
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
