@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-1204
+SCRIPT_DATE=20251208-1532
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -345,12 +345,12 @@ echo "Inicializing logs tails -------------------------------------"
 set +e
 	# RUNNING TAILS ON SECOND AND THIRD TTYs
 	if ! pgrep tail ; then
-		setsid bash -c 'exec tail -f '$LOG'											<> /dev/tty2 >&0 2>&1' &
-		setsid bash -c 'exec tail -f '$ERR' 											<> /dev/tty3 >&0 2>&1' &
-		setsid bash -c 'exec watch sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/	<> /dev/tty4 >&0 2>&1' &
-		setsid bash -c 'exec watch sudo fdisk -l										<> /dev/tty5 >&0 2>&1' &
-		setsid bash -c 'exec watch sudo blkid											<> /dev/tty6 >&0 2>&1' &
-		setsid bash -c 'exec watch sudo lsblk -f										<> /dev/tty7 >&0 2>&1' &
+		setsid bash -c 'exec watch sudo fdisk -l										<> /dev/tty2 >&0 2>&1' &
+		setsid bash -c 'exec watch sudo blkid											<> /dev/tty3 >&0 2>&1' &
+		setsid bash -c 'exec watch sudo lsblk -f										<> /dev/tty4 >&0 2>&1' &
+		setsid bash -c 'exec watch sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/	<> /dev/tty5 >&0 2>&1' &
+		setsid bash -c 'exec tail -f '$LOG'											<> /dev/tty6 >&0 2>&1' &
+		setsid bash -c 'exec tail -f '$ERR' 											<> /dev/tty7 >&0 2>&1' &
 	fi
 set -e
 
