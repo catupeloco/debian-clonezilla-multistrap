@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-1036
+SCRIPT_DATE=20251208-1042
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -471,10 +471,16 @@ echo "Formating partitions ----------------------------------------"
 			  fsck -y "${DEVICE}"2				 >/dev/null 2>&1 || true
 			  fsck -y "${DEVICE}"3				 >/dev/null 2>&1 || true
 			  fsck -y "${DEVICE}"4				 >/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 -f	 >/dev/null 2>&1 || mkfs.vfat  -n EFI        "${DEVICE}"1 >/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	-f	 >/dev/null 2>&1 # || mkfs.ext4  -L RESOURCES  "${DEVICE}"4 >/dev/null 2>&1 || true
-		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -f	 >/dev/null 2>&1 || mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 >/dev/null 2>&1 || true
-			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	# >/dev/null 2>&1 || mkfs.btrfs -L LINUX      "${DEVICE}"3 >/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 -f	 >/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	-f	 >/dev/null 2>&1 || true 
+		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -f	 >/dev/null 2>&1 || true
+			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	 >/dev/null 2>&1 || true
+
+		     # Disabled because it formats even if REPARTED = no
+		     # || mkfs.vfat  -n EFI        "${DEVICE}"1          >/dev/null 2>&1 || true
+		     # || mkfs.ext4  -L RESOURCES  "${DEVICE}"4          >/dev/null 2>&1 || true
+		     # || mkfs.ext4  -L CLONEZILLA "${DEVICE}"2          >/dev/null 2>&1 || true
+		     # || mkfs.btrfs -L LINUX      "${DEVICE}"3          >/dev/null 2>&1 || true
 
 			# Changed to btrs for snapshots with timeshift 
 			# mkfs.ext4  -L LINUX      "${DEVICE}"3		 >/dev/null 2>&1 || true
