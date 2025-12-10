@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251208-1609
+SCRIPT_DATE=20251210-1324
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1194,16 +1194,28 @@ NoDisplay=true
 Terminal=false
 X-GNOME-Autostart-enabled=true'> ${ROOTFS}/etc/xdg/autostart/volumen.desktop
 
+
+
+
+cleaning_screen	
+echo "Final touches for timeshift snapshots -----------------------"
+# To run snapshots without user password prompt
+cat << EOF > ${ROOTFS}/etc/sudoers.d/timeshift
+%timeshift ALL = NOPASSWD : /usr/bin/timeshift-gtk
+EOF
+
 cleaning_screen	
 echo "Setting up local admin account ------------------------------"
 # I create default admin user with password and groups for upgrades and virtmanager
         echo "export LC_ALL=C LANGUAGE=C LANG=C
 	useradd -d /home/$username -G sudo -m -s /bin/bash $username
 	groupadd updates
+	groupadd timeshift
         adduser $username updates		>/dev/null
+        adduser $username timeshift		>/dev/null
         adduser $username kvm			>/dev/null
 	adduser $username libvirt		>/dev/null
-	adduser $username libvirt-qemu	>/dev/null
+	adduser $username libvirt-qemu	        >/dev/null
 	echo ${username}:${password} | chpasswd
 	rm /tmp/local_admin.sh" > ${ROOTFS}/tmp/local_admin.sh
         chmod +x ${ROOTFS}/tmp/local_admin.sh
@@ -1218,6 +1230,7 @@ cat <<EOF > ${ROOTFS}/usr/local/bin/useradd-encrypt
         read -p "What username do you want for local_encrypted_user ?: " username
         sudo useradd -d /home/\$username -c local_encrypted_user -m -s /bin/bash \$username
         sudo adduser \$username updates
+        sudo adduser \$username timeshift
         sudo adduser \$username kvm
         sudo adduser \$username libvirt
         sudo adduser \$username libvirt-qemu
