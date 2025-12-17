@@ -212,7 +212,7 @@ GOOD THINGS TAKE TIME.
 
 - ## Optional : Take a full disk image.
   
-  - Boot the PC using a USB drvie with your preferred imaging software.
+  - Boot the PC using a USB drive with your preferred imaging software.
   - Connect an external storage to allocate the image.
   - Follow the software's manual steps to capture the image.
 
@@ -220,7 +220,5 @@ GOOD THINGS TAKE TIME.
   
   - On the first boot, the device will automatically restore itself.
     - This is done to reduce the size of the disk image created earlier.
-
-# Enjoy :rocket:
 
 # Enjoy :rocket:
