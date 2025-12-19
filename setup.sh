@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251218-2201
+SCRIPT_DATE=20251218-2205
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1335,6 +1335,8 @@ echo "Replacing keybindings ----------------------------------------"
 		echo -e "\n--Just in case replacing wrong characters"
 		sed -i 's/&amp;\(lt;\|gt;\)/\1/g' "$FILE"
 	fi
+
+#DISPLAY=:0.0 xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/power-button-action -s 4
 
 cleaning_screen	
 echo "Backing up logs ----------------------------------------------"
