@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251217-0002
+SCRIPT_DATE=20251218-2201
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1312,7 +1312,7 @@ echo "Replacing keybindings ----------------------------------------"
 		    ["<Alt>z"]="tile_down_left_key"
 		    ["<Alt>c"]="tile_down_right_key"
 		    ["<Alt>s"]="maximize_window_key"
-		    ["Super_L"]="xfce4-popup-whiskermenu"
+		    ["Super_L"]="/usr/bin/xfce4-popup-whiskermenu"
 	    	)
 
 		for key in "${!MAP[@]}"; do
