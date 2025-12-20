@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-0016
+SCRIPT_DATE=20251220-0025
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -100,6 +100,7 @@ else
 
 	#####################################################################################################
 	echo export DEVICE="$DEVICE"				>  $SELECTIONS
+	echo export DEBIAN_VERSION="$DEBIAN_VERSION"		>> $SELECTIONS
 	echo export MIRROR_CLONEZILLA="$MIRROR_CLONEZILLA"	>> $SELECTIONS
 	echo export FIREFOX_PACKAGE=\"$FIREFOX_PACKAGE\"	>> $SELECTIONS
 	echo export username="$username"			>> $SELECTIONS
@@ -664,7 +665,7 @@ done
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Extracting clonezilla"
-	unzip -u ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} -d ${RECOVERYFS} >>$LOG 2>>$ERR
+	unzip -u ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} -d ${RECOVERYFS} >>$LOG 2>>$ERR || sed 's/Official_Fast/Official_Slow/' $SELECTIONS 
 	cp -p ${RECOVERYFS}/boot/grub/grub.cfg ${RECOVERYFS}/boot/grub/grub.cfg.old
 	sed -i '/menuentry[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
 	sed -i '/submenu[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
