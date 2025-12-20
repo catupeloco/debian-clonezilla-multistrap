@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251218-2205
+SCRIPT_DATE=20251220-0016
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -28,8 +28,15 @@ if [ -f $SELECTIONS ] ; then
 	source $SELECTIONS
 else
 	reset
+	#####################################################################################################
+	DEBIAN_VERSION=$(whiptail --title "Please select debian version" --radiolist \
+		"Which one do you prefere this time?" 20 60 10 \
+		"trixie  " "Debian 13 (current stable)"    ON  \
+		"bookworm" "Debian 12 (latest old stable)" OFF \
+			3>&1 1>&2 2>&3)
+	#####################################################################################################
 	#Finding Fastest repo in the background
-	netselect-apt -n -s -a amd64 trixie 2>&1 | grep -A1 "fastest valid for http" | tail -n1 > /tmp/fastest_repo &
+	netselect-apt -n -s -a amd64 $DEBIAN_VERSION 2>&1 | grep -A1 "fastest valid for http" | tail -n1 > /tmp/fastest_repo &
 	REPOSITORY_DEB_PID=$!
 	
 	disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
@@ -106,7 +113,7 @@ fi
 #####################################################################################################
 
 # Debian Variables 
-DEBIAN_VERSION=trixie
+#DEBIAN_VERSION=trixie
 SECURITY_DEB="http://security.debian.org/debian-security"
 SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20251031T203358Z/"
  
