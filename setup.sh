@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-0031
+SCRIPT_DATE=20251220-0042
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -144,11 +144,20 @@ eval "$("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')"
 
 # Apt packages list for installing with mmdebstrap
 # NOTE: Fictional variables below are only for title purposes ########################################
+if [ "$DEBIAN_VERISON" == "trixie" ] ; then
+	DIFFERENT_PACKAGES="keepassxc-full linux-sysctl-defaults network-manager-applet network-manager-l10n firmware-intel-graphics "
+#lm-sensors 		   qbittorrent  	    qpdfview		     keepassxc-full 	      light-locker             gnome-keyring         \
+#bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping linux-sysctl-defaults isc-dhcp-client \
+#network-manager network-manager-applet network-manager-openconnect network-manager-l2tp network-manager-l10n \
+#firmware-ath9k-htc firmware-amd-graphics firmware-intel-graphics firmware-linux firmware-linux-free firmware-realtek \
+else
+	DIFFERENT_PACKAGES=""
+fi
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
 apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak btrfs-progs \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
 xfce4 xorg dbus-x11 	   gvfs cups thunar-volman  system-config-printer    xarchiver                vlc flameshot	       mousepad              \
-lm-sensors 		   qbittorrent  	    qpdfview		     keepassxc-full 	      light-locker             gnome-keyring         \
+lm-sensors 		   qbittorrent  	    qpdfview		                    	      light-locker             gnome-keyring         \
 xfce4-battery-plugin       xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfce4-cpugraph-plugin    xfce4-datetime-plugin    xfce4-diskperf-plugin \
 xfce4-fsguard-plugin       xfce4-genmon-plugin      xfce4-mailwatch-plugin   xfce4-netload-plugin     xfce4-places-plugin      xfce4-sensors-plugin  \
 xfce4-smartbookmark-plugin xfce4-systemload-plugin  xfce4-timer-plugin       xfce4-verve-plugin       xfce4-wavelan-plugin     xfce4-weather-plugin  \
@@ -167,10 +176,10 @@ ${CRON_TOOLS} \
 anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
 blueman bluetooth bluez bluez-firmware bluez-alsa-utils \
-bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping linux-sysctl-defaults isc-dhcp-client \
-network-manager network-manager-applet network-manager-openconnect network-manager-l2tp network-manager-l10n \
+bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping                       isc-dhcp-client \
+network-manager                        network-manager-openconnect network-manager-l2tp                      \
 powermgmt-base util-linux wpasupplicant xfce4-power-manager xfce4-power-manager-plugins \
-firmware-ath9k-htc firmware-amd-graphics firmware-intel-graphics firmware-linux firmware-linux-free firmware-realtek \
+firmware-ath9k-htc firmware-amd-graphics                         firmware-linux firmware-linux-free firmware-realtek \
 amd64-microcode intel-microcode mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-drivers firmware-iwlwifi network-manager-l10n \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio audacity pulseaudio-module-bluetooth xfce4-pulseaudio-plugin \
@@ -194,6 +203,7 @@ unattended-upgrades apt-utils apt-listchanges \
 ${VIRTUALIZATION_PACKAGES}  \
 qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virtinst libvirt-daemon virt-manager spice-vdagent \
 qemu-guest-agent \
+${DIFFERENT_PACKAGES} \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
 
