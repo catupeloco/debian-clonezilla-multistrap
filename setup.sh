@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-0112
+SCRIPT_DATE=20251220-0117
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -366,7 +366,7 @@ cat << EOF > /tmp/disk.watch
 #!/bin/bash
 while true ; do
 	sudo fdisk -l
-	sudo df -h
+	sudo df -h ${ROOTFS} ${RECOVERYFS} ${CACHE_FOLDER}
 	sudo lsblk -f
 	sleep 3
 	clear
