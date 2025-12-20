@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-0103
+SCRIPT_DATE=20251220-0108
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -151,7 +151,7 @@ if [ "$DEBIAN_VERISON" == "trixie" ] ; then
 #network-manager network-manager-applet network-manager-openconnect network-manager-l2tp network-manager-l10n \
 #firmware-ath9k-htc firmware-amd-graphics firmware-intel-graphics firmware-linux firmware-linux-free firmware-realtek \
 else
-	DIFFERENT_PACKAGES=""
+	DIFFERENT_PACKAGES="network-manager-gnome"
 fi
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
 apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak btrfs-progs \
