@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-0108
+SCRIPT_DATE=20251220-0112
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -376,8 +376,10 @@ EOF
 cat << EOF > /tmp/downloads.watch
 #!/bin/bash
 while true ; do
-	sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/
+	sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/ | grep ^\-
 	echo Debian Packages $(ls ${CACHE_FOLDER}/*.deb | wc -l)
+	sleep 3
+	clear
 done
 EOF
 chmod +x /tmp/disk.watch /tmp/downloads.watch
