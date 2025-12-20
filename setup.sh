@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-0046
+SCRIPT_DATE=20251220-0103
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -362,13 +362,34 @@ echo "Inicializing logs tails -------------------------------------"
 	touch $ERR
 set +e
 	# RUNNING TAILS ON SECOND AND THIRD TTYs
+cat << EOF > /tmp/disk.watch
+#!/bin/bash
+while true ; do
+	sudo fdisk -l
+	sudo df -h
+	sudo lsblk -f
+	sleep 3
+	clear
+done
+EOF
+
+cat << EOF > /tmp/downloads.watch
+#!/bin/bash
+while true ; do
+	sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/
+	echo Debian Packages $(ls ${CACHE_FOLDER}/*.deb | wc -l)
+done
+EOF
+chmod +x /tmp/disk.watch /tmp/downloads.watch
 	if ! pgrep tail ; then
-		setsid bash -c 'exec watch sudo fdisk -l										<> /dev/tty2 >&0 2>&1' &
-		setsid bash -c 'exec watch sudo df -h   										<> /dev/tty3 >&0 2>&1' &
-		setsid bash -c 'exec watch sudo lsblk -f										<> /dev/tty4 >&0 2>&1' &
-		setsid bash -c 'exec watch sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/	<> /dev/tty5 >&0 2>&1' &
-		setsid bash -c 'exec tail -f '$LOG'											<> /dev/tty6 >&0 2>&1' &
-		setsid bash -c 'exec tail -f '$ERR' 											<> /dev/tty7 >&0 2>&1' &
+		#setsid bash -c 'exec watch sudo fdisk -l										<> /dev/tty2 >&0 2>&1' &
+		#setsid bash -c 'exec watch sudo df -h   										<> /dev/tty3 >&0 2>&1' &
+		#setsid bash -c 'exec watch sudo lsblk -f										<> /dev/tty4 >&0 2>&1' &
+		#setsid bash -c 'exec watch sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/	<> /dev/tty5 >&0 2>&1' &
+		setsid bash -c 'exec bash /tmp/disk.watch										<> /dev/tty2 >&0 2>&1' &
+		setsid bash -c 'exec bash /tmp/downloads.watch										<> /dev/tty3 >&0 2>&1' &
+		setsid bash -c 'exec tail -f '$LOG'											<> /dev/tty4 >&0 2>&1' &
+		setsid bash -c 'exec tail -f '$ERR' 											<> /dev/tty5 >&0 2>&1' &
 	fi
 set -e
 
