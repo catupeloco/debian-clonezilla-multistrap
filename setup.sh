@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-0042
+SCRIPT_DATE=20251220-0046
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -31,7 +31,7 @@ else
 	#####################################################################################################
 	DEBIAN_VERSION=$(whiptail --title "Please select debian version" --radiolist \
 		"Which one do you prefere this time?" 20 60 10 \
-		"trixie  " "Debian 13 (current stable)"    ON  \
+		"trixie"   "Debian 13 (current stable)"    ON  \
 		"bookworm" "Debian 12 (latest old stable)" OFF \
 			3>&1 1>&2 2>&3)
 	#####################################################################################################
@@ -180,7 +180,7 @@ bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping         
 network-manager                        network-manager-openconnect network-manager-l2tp                      \
 powermgmt-base util-linux wpasupplicant xfce4-power-manager xfce4-power-manager-plugins \
 firmware-ath9k-htc firmware-amd-graphics                         firmware-linux firmware-linux-free firmware-realtek \
-amd64-microcode intel-microcode mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-drivers firmware-iwlwifi network-manager-l10n \
+amd64-microcode intel-microcode mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-drivers firmware-iwlwifi                      \
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio audacity pulseaudio-module-bluetooth xfce4-pulseaudio-plugin \
 alsa-topology-conf alsa-ucm-conf alsa-utils sound-icons \
