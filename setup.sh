@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-0123
+SCRIPT_DATE=20251220-1237
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -855,13 +855,13 @@ echo "Setting Keyboard --------------------------------------------"
 	echo "---For everything else"
 	echo 'XKBLAYOUT="latam"' > ${ROOTFS}/etc/default/keyboard
 
-cleaning_screen	
-echo "Fixing nm-applet from empty icon bug ------------------------"
-	echo --Before
-	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
-	sed -i '/^Exec=/c\Exec=nm-applet --indicator' ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
-	echo --After
-	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop
+# cleaning_screen	
+# echo "Fixing nm-applet from empty icon bug ------------------------"
+# 	echo --Before
+#	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
+#	sed -i '/^Exec=/c\Exec=nm-applet --indicator' ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
+#	echo --After
+#	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop
 
 cleaning_screen	
 echo "Creating recovery -------------------------------------------"
