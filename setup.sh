@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-2217
+SCRIPT_DATE=20251220-2234
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -365,8 +365,11 @@ set +e
 cat << EOF > /tmp/disk.watch
 #!/bin/bash
 while true ; do
+	echo ---FDISK---
 	sudo fdisk -l ${DEVICE}
+	echo ---DF------
 	sudo df -h ${ROOTFS} ${RECOVERYFS} ${CACHE_FOLDER}
+	echo --LSBLK----
 	sudo lsblk -f ${DEVICE}
 	sleep 3
 	clear
@@ -376,8 +379,8 @@ EOF
 cat << EOF > /tmp/downloads.watch
 #!/bin/bash
 while true ; do
-	sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/ | grep ^\-
-	echo Debian Packages \$(ls \${CACHE_FOLDER}/\*.deb | wc -l)
+	sudo ls -larth ${CACHE_FOLDER}/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/ | grep ^\-
+	echo Debian Packages \$(ls ${CACHE_FOLDER}/*.deb | wc -l)
 	sleep 3
 	clear
 done
@@ -581,7 +584,7 @@ echo "---Cleaning cache packages if necesary"
 	# MAY TRAY TO INSTALL EACH FILE FOR SOME PACKAGE AND FAILS
 	while [ -n "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
 		echo ---This packages have more than one version.
-		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r linopo
+		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
         	do find ${CACHE_FOLDER}/"${line}"*
 		done
 		echo ---Removing older versions so mmdebstrap wont fail
