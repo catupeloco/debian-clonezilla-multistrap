@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-2005
+SCRIPT_DATE=20251221-2021
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -336,15 +336,13 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin :
 		- X2goclient, Remmina, x11vnc and ssvnc.
 		- Unattended upgrades, Virtual Machine Manager (KVM/QEMU).
         	- Wifi and bluetooth drivers. NTFS support (to read Windows Partitions).
-		- Optional : 
-		  --Firefox ESR (from Mozilla repository).
-		  --encrypted home.
+		- Optional : encrypted home.
 	- External latest :
 		- Libreoffice, Google Chrome, Clonezilla recovery, Spotify.
 		- Flatpak: Mission Center (task manager).
 		- SyncThing, X2Go Client, Draw.io, MarkText.
 		- Keymaps for tty.
-		- Optional : Firefox Rapid Release (from Mozilla repository).
+		- From Mozilla repository ${FIREFOX_PACKAGE} has been selected.
 	- With Overprovisioning partition ${PART_OP_PERCENTAGE} %
 
 To follow extra details, use: Alt plus left or right arrows"
