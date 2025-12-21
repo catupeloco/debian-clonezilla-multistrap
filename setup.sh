@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1708
+SCRIPT_DATE=20251221-2005
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -61,11 +61,6 @@ else
 	REPEAT=yes
 	while [ "$REPEAT" == "yes" ] ; do
 		# New code to join password prompt in one whiptail
-			# This doesnt work passwordform is not in whiptail
-			# DATA=$(whiptail --title "Local admin creation" --passwordform "Set password for $username" 20 60 10 \
-		        # "Password:" 1 1 "" 1 25 25 0 \
-	        	# "Confirm Password:" 2 1 "" 2 25 25 0 \
-	        	# 3>&1 1>&2 2>&3)
 		DATA=$(dialog --title "Local admin creation" \
                   --backtitle "User Management System" \
                   --insecure \
@@ -87,7 +82,6 @@ else
 		if [ -n "$password" ] && [ "$password" == "$password2" ] ; then # added empty password check
 			REPEAT=no
 		else
-			#echo "ERROR: Passwords entered dont match"
 			    whiptail --title "Local admin creation" \
 				     --msgbox "ERROR: Passwords dont match, try again" 20 60  3>&1 1>&2 2>&3
 		fi
@@ -403,8 +397,15 @@ EOF
 cat << EOF > /tmp/downloads.watch
 #!/bin/bash
 while true ; do
-	sudo ls -larth ${CACHE_FOLDER}/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/ | grep ^\-
-	echo Debian Packages \$(ls ${CACHE_FOLDER}/*.deb | wc -l)
+	echo Information of Downloaded packages ---------------------
+	if mount | grep ${CACHE_FOLDER} ; then
+		echo ---Downloaded by aria2
+		sudo ls -larth ${CACHE_FOLDER}/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/ | grep ^\-
+		echo ---Downloaded by mmdebstrap 
+		echo ----Debian Packages \$(ls ${CACHE_FOLDER}/*.deb | wc -l)
+	else
+		echo Can\'t show information because cache folder : ${CACHE_FOLDER} is not mounted
+	fi
 	sleep 3
 	clear
 done
@@ -815,7 +816,7 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
 cleaning_screen
 echo "Running mmdebstrap (please be patient, longest step) --------"
-ls -a ${ROOTFS}
+ls -A ${ROOTFS}
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
     --include="${INCLUDES_DEB} google-chrome-stable ${FIREFOX_PACKAGE} spotify-client syncthing" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
@@ -1472,6 +1473,8 @@ echo "END of the road!! keep up the good work ---------------------"
 		# Aria must not continue if all files are not downloaded
 			# No haria falta
 	# Back port kernel and wifi drivers for bookworm (again)
+	# Dark theme
+	# Secondaries TTY stetic
 # Best practicies
 	# Commenting code
 	# Commenting pushes
