@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1331
+SCRIPT_DATE=20251221-1335
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -736,7 +736,10 @@ done
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Extracting clonezilla"
-	unzip -u ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} -d ${RECOVERYFS} >>$LOG 2>>$ERR || sed 's/Official_Fast/Official_Slow/' $SELECTIONS 
+	unzip -u ${DOWNLOAD_DIR_CLONEZILLA}/${FILE_CLONEZILLA} -d ${RECOVERYFS} >>$LOG 2>>$ERR 
+	# Code no longer needed because files now always should be downloaded
+	# || sed 's/Official_Fast/Official_Slow/' $SELECTIONS 
+
 	cp -p ${RECOVERYFS}/boot/grub/grub.cfg ${RECOVERYFS}/boot/grub/grub.cfg.old
 	sed -i '/menuentry[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
 	sed -i '/submenu[^}]*{/,/}/d' ${RECOVERYFS}/boot/grub/grub.cfg
@@ -1447,9 +1450,12 @@ echo "END of the road!! keep up the good work ---------------------"
 	# xfce locks after some time and its annoying
 	# Failover download
 		# Clonezilla
+			# Listo
 		# Debian Repository
 		# Not show $SELECTIONS
+			# Listo
 		# Aria must not continue if all files are not downloaded
+			# No haria falta
 	# Back port kernel and wifi drivers for bookworm (again)
 # Best practicies
 	# Commenting code
