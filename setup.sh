@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1335
+SCRIPT_DATE=20251221-1338
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1422,9 +1422,10 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
         umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
         umount ${ROOTFS}/home                   2>/dev/null || true
         umount ${ROOTFS}/*                      2>/dev/null || true
-        umount ${ROOTFS}                                    || true
-	sleep 3
-        umount ${ROOTFS}                                    || true
+	for times in {1..5} ; do
+		umount ${ROOTFS}                2>/dev/null || true
+		sleep 1
+	done
         umount ${RECOVERYFS}                    2>/dev/null || true
         umount ${CACHE_FOLDER}                  2>/dev/null || true
         umount ${CACHE_FOLDER}                  2>/dev/null || true
