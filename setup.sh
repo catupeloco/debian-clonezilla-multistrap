@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-2234
+SCRIPT_DATE=20251220-2244
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -683,8 +683,6 @@ while [ ! -z "$PENDING" ] ; do
 		if [[ ! -f "$FILE" ]]; then
 		    PENDING+=("$FILE")
 		    echo --Adding $FILE in $PENDING
-		else
-		    echo PENDING is - $PENDING - 
 		fi
 	done
 	ls -la "${FILES_TO_DOWNLOAD[@]}" >/dev/null || true
