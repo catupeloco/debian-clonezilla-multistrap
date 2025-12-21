@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-2340
+SCRIPT_DATE=20251220-2345
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -372,7 +372,7 @@ while true ; do
 	echo --LSBLK--------
 	sudo lsblk -f ${DEVICE}
 	echo --SELECTIONS---
-	cat ${SELECTIONS}
+	cat ${SELECTIONS} | 's/^\(export password=\).*/\1******/'
 	sleep 3
 	clear
 done
