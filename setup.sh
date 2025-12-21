@@ -1,10 +1,10 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-2041
+SCRIPT_DATE=20251221-2052
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
 SELECTIONS=/tmp/selections
-AUTOMATIZATION=/tmp/automatization
+AUTOMATIZATIONS=/tmp/automatizations
 
 echo ---------------------------------------------------------------------------
 timedatectl set-timezone America/Argentina/Buenos_Aires
@@ -25,10 +25,10 @@ echo "Installing dependencies for this script ---------------------"
 #Selections
 #####################################################################################################
 if [ -f $SELECTIONS ] ; then
-	echo Skiping questions, you may delete $SELECTIONS if you change your mind | tee $AUTOMATIZATION
+	echo Skiping questions, you may delete $SELECTIONS if you change your mind | tee $AUTOMATIZATIONS
 	source $SELECTIONS
 else
-	echo Manually answered questions > $AUTOMATIZATION
+	echo Manually answered questions > $AUTOMATIZATIONS
 	reset
 	#####################################################################################################
 	DEBIAN_VERSION=$(whiptail --title "Please select Debian version" --menu \
@@ -389,6 +389,8 @@ while true ; do
 	sudo lsblk -f ${DEVICE}
 	echo --SELECTIONS---
 	cat ${SELECTIONS} | sed 's/^\(export password=\).*/\1******/'
+	echo --AUTOMATIZATIONS
+	cat ${AUTOMATIZATIONS}
 	sleep 3
 	clear
 done
