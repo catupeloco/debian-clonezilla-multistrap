@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-2202
+SCRIPT_DATE=20251220-2217
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -940,6 +940,7 @@ echo "Entering chroot ---------------------------------------------"
 	cd /opt
 	git clone ${GRUB_BTRFS}									1>&3
 	cd grub-btrfs
+	sed -i 's/\/\.snapshots --syslog/ --syslog --timeshift-auto/' grub-btrfsd.service
 	make install										1>&3
 	cd -
 	systemctl enable --now grub-btrfsd || true
