@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1210
+SCRIPT_DATE=20251221-1214
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1388,6 +1388,9 @@ echo "END of the road!! keep up the good work ---------------------"
 	# Update of git hub scripts
 	# Power button shutdown
 	# xfce locks after some time and its annoying
+	# Failover download
+		# Clonezilla
+		# Debian Repository
 # Best practicies
 	# Commenting code
 	# Commenting pushes
