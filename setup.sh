@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-1319
+SCRIPT_DATE=20251220-2155
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -144,7 +144,7 @@ eval "$("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')"
 
 # Apt packages list for installing with mmdebstrap
 # NOTE: Fictional variables below are only for title purposes ########################################
-if [ "$DEBIAN_VERISON" == "trixie" ] ; then
+if [ "$DEBIAN_VERSION" == "trixie" ] ; then
 	DIFFERENT_PACKAGES="keepassxc-full linux-sysctl-defaults network-manager-applet network-manager-l10n firmware-intel-graphics "
 #lm-sensors 		   qbittorrent  	    qpdfview		     keepassxc-full 	      light-locker             gnome-keyring         \
 #bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping linux-sysctl-defaults isc-dhcp-client \
