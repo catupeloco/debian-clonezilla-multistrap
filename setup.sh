@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1123
+SCRIPT_DATE=20251221-1126
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1390,6 +1390,7 @@ echo "END of the road!! keep up the good work ---------------------"
 	# xfce locks after some time and its annoying
 # Best practicies
 	# Commenting code
+	# Commenting pushes
 	# Testing branch and url
 		# bug fixes
 		# new features
