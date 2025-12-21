@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1651
+SCRIPT_DATE=20251221-1708
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -137,9 +137,8 @@ fi
 #####################################################################################################
 
 # Debian Variables 
-#DEBIAN_VERSION=trixie
 SECURITY_DEB="http://security.debian.org/debian-security"
-SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20251031T203358Z/"
+#SNAPSHOT_DEB="https://snapshot.debian.org/archive/debian/20251031T203358Z/"
  
 # Mount Points
 CACHE_FOLDER=/tmp/resources-fs
@@ -1081,9 +1080,6 @@ EOF
 # packages of Firefox and Chrome I've downgraded for testing purposes.
 cat << EOF > ${ROOTFS}/usr/local/bin/System_Upgrade
 #!/bin/bash
-wget -qO- ${CHROME_KEY} | tee              ${CHROME_TRUSTED}                     > /dev/null
-echo "deb [signed-by=${CHROME_TRUSTED}]    ${CHROME_REPOSITORY}     stable main" > /etc/apt/sources.list.d/google-chrome.list
-
 echo Obteniendo lista---------------------
 	apt update
 	apt list --upgradable
@@ -1109,6 +1105,10 @@ echo --Firefox, Google Chrome, Draw.io and Marktext
 
 echo Listo -------------------------------
 	sleep 10
+
+# Disabled
+	# wget -qO- ${CHROME_KEY} | tee              ${CHROME_TRUSTED}                     > /dev/null
+	# echo "deb [signed-by=${CHROME_TRUSTED}]    ${CHROME_REPOSITORY}     stable main" > /etc/apt/sources.list.d/google-chrome.list
 EOF
 
 # For testing Unattended upgrades I've added an option to downgrade Firefox and Chrome
@@ -1116,28 +1116,33 @@ EOF
 cat << EOF > ${ROOTFS}/usr/local/bin/System_Downgrade
 #!/bin/bash
 echo Asi empezamos ----------------------
-	dpkg -l | grep -E "firefox-esr|chrome"
-	rm /etc/apt/sources.list.d/debian.list                  
-	cp -p /root/old.list /etc/apt/sources.list.d/debian.list
+	dpkg -l | grep chrome
 
 echo Borramos ---------------------------
-	apt remove --purge firefox-esr google-chrome-stable -y
+	apt remove --purge google-chrome-stable -y
 	apt update                                               
 	CHROME_OLD_VERSION=$CHROME_OLD_VERSION
 	wget --show-progress -qcN -O /tmp/google-chrome-stable.deb \
 	https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_\${CHROME_OLD_VERSION}_amd64.deb
 
 echo Instalamos -------------------------
-	apt install firefox-esr /tmp/google-chrome-stable.deb -y
+	apt install /tmp/google-chrome-stable.deb -y
 
 echo Asi quedamos -----------------------
-	dpkg -l | grep -E "firefox-esr|chrome"
+	dpkg -l | grep chrome
 	sleep 5
-	rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
-	cp -p /root/new.list /etc/apt/sources.list.d/debian.list
 	apt update                                             
 	apt list --upgradable
 	sleep 10
+# Disabled
+	#dpkg -l | grep -E "firefox-esr|chrome"
+	#rm /etc/apt/sources.list.d/debian.list                  
+	#cp -p /root/old.list /etc/apt/sources.list.d/debian.list
+	#apt remove --purge firefox-esr google-chrome-stable -y
+	#apt install firefox-esr /tmp/google-chrome-stable.deb -y
+	#dpkg -l | grep -E "firefox-esr|chrome"
+	#rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
+	#cp -p /root/new.list /etc/apt/sources.list.d/debian.list
 EOF
 
 # To get an estimated time of upgrade I've added this script
@@ -1158,13 +1163,13 @@ EOF
 
 # The scripts above uses this testing repositories
 # Not to use in normal cases.
-	let "PROGRESS_BAR_CURRENT += 1"
-	echo "---Repositories for testing scripts"
-	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/new.list
-	echo "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
-	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
-        echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/old.list
-	echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/old.list
+#	let "PROGRESS_BAR_CURRENT += 1"
+#	echo "---Repositories for testing scripts"
+#	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/new.list
+#	echo "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
+#	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
+#        echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/old.list
+#	echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/old.list
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Sudoers file for testing scripts"
@@ -1216,7 +1221,8 @@ EOF
 	          ${ROOTFS}/usr/local/bin/System_Downgrade \
 		  ${ROOTFS}/usr/local/bin/System_Status
 
-	chmod 644 ${ROOTFS}/root/new.list            ${ROOTFS}/root/old.list \
+	#chmod 644 ${ROOTFS}/root/new.list            ${ROOTFS}/root/old.list \
+	chmod 644  \
 	${ROOTFS}/usr/share/applications/System_Upgrade.desktop \
 	${ROOTFS}/usr/share/applications/System_Downgrade.desktop \
 	${ROOTFS}/usr/share/applications/System_Status.desktop
