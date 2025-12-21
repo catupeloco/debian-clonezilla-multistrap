@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-0031
+SCRIPT_DATE=20251221-1028
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -29,10 +29,10 @@ if [ -f $SELECTIONS ] ; then
 else
 	reset
 	#####################################################################################################
-	DEBIAN_VERSION=$(whiptail --title "Please select debian version" --radiolist \
+	DEBIAN_VERSION=$(whiptail --title "Please select Debian version" --menu \
 		"Which one do you prefere this time?" 20 60 10 \
-		"trixie"   "Debian 13 (current stable)"    ON  \
-		"bookworm" "Debian 12 (latest old stable)" OFF \
+		"trixie"   "Debian 13 (current stable)"        \
+		"bookworm" "Debian 12 (latest old stable)"     \
 			3>&1 1>&2 2>&3)
 	#####################################################################################################
 	#Finding Fastest repo in the background
@@ -87,7 +87,7 @@ else
 		done
 	fi
 	#####################################################################################################
-	echo "Detecting fastest debian mirror, please wait ----------------"
+	echo "Detecting fastest Debian mirror, please wait ----------------"
 	#Waiting to background process to finish
 	wait $REPOSITORY_DEB_PID
 	REPOSITORY_DEB_FAST=$(cat /tmp/fastest_repo)
@@ -288,7 +288,7 @@ FLATPAK_REPO="https://dl.flathub.org/repo/flathub.flatpakrepo"
 # For Taskbar Skel
 THIS_SCRIPT="https://github.com/catupeloco/debian-clonezilla-multistrap.git"
 
-# Auto entries on grub of snapshots made by btrfs and timeshift
+# Auto entries for grub of snapshots made by timeshift on btrfs subvolumnes
 GRUB_BTRFS="https://github.com/Antynea/grub-btrfs.git"
 
 # Old Versions of this script used Debian 12 which didnt have drivers for my wifi, so I've 
@@ -357,11 +357,11 @@ set -e
 }
 
 cleaning_screen
-echo "Inicializing logs tails -------------------------------------"
+echo "Inicializing following ttys ---------------------------------"
 	touch $LOG
 	touch $ERR
 set +e
-	# RUNNING TAILS ON SECOND AND THIRD TTYs
+	# RUNNING EXTRA INFO ON FOLLOWING TTYS
 cat << EOF > /tmp/disk.watch
 #!/bin/bash
 while true ; do
@@ -387,12 +387,9 @@ while true ; do
 	clear
 done
 EOF
-chmod +x /tmp/disk.watch /tmp/downloads.watch
+	chmod +x /tmp/disk.watch /tmp/downloads.watch
+
 	if ! pgrep tail ; then
-		#setsid bash -c 'exec watch sudo fdisk -l										<> /dev/tty2 >&0 2>&1' &
-		#setsid bash -c 'exec watch sudo df -h   										<> /dev/tty3 >&0 2>&1' &
-		#setsid bash -c 'exec watch sudo lsblk -f										<> /dev/tty4 >&0 2>&1' &
-		#setsid bash -c 'exec watch sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/	<> /dev/tty5 >&0 2>&1' &
 		setsid bash -c 'exec bash /tmp/disk.watch										<> /dev/tty2 >&0 2>&1' &
 		setsid bash -c 'exec bash /tmp/downloads.watch										<> /dev/tty3 >&0 2>&1' &
 		setsid bash -c 'exec tail -f '$LOG'											<> /dev/tty4 >&0 2>&1' &
@@ -522,19 +519,6 @@ echo "Formating partitions ----------------------------------------"
 		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -F	 >/dev/null 2>&1 || true
 			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	 >/dev/null 2>&1 || true
 
-#[ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 	                 || true
-#[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	                 || true 
-#		 	   mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 	                 || true
-#			   mkfs.btrfs -L LINUX      "${DEVICE}"3 	                 || true
-		     # Disabled because it formats even if REPARTED = no
-		     # || mkfs.vfat  -n EFI        "${DEVICE}"1          >/dev/null 2>&1 || true
-		     # || mkfs.ext4  -L RESOURCES  "${DEVICE}"4          >/dev/null 2>&1 || true
-		     # || mkfs.ext4  -L CLONEZILLA "${DEVICE}"2          >/dev/null 2>&1 || true
-		     # || mkfs.btrfs -L LINUX      "${DEVICE}"3          >/dev/null 2>&1 || true
-
-			# Changed to btrs for snapshots with timeshift 
-			# mkfs.ext4  -L LINUX      "${DEVICE}"3		 >/dev/null 2>&1 || true
-
 cleaning_screen
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
@@ -547,11 +531,6 @@ echo "---OS partition"
         #btrfs subvolume create  ${ROOTFS}/@varcache 2>/dev/null || true
         umount ${ROOTFS}
 	mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@     "${DEVICE}"3 ${ROOTFS}
-        #mount -o subvol=@,compress=zstd,noatime         "${DEVICE}"3 ${ROOTFS}
-	#mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
-        #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
-        #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
-        #mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
 
 #####################################################################################
 
@@ -614,9 +593,6 @@ echo "Downloading external software -------------------------------"
 			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
 			CLONEZILLA_ORIGIN=${URL_CLONEZILLA} ;;
         esac
-	#FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
-	#URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
-	#${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ${URL_CLONEZILLA}
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Parallel Downloading of Keyboard Maps, Libreoffice, Draw.io, MarkText and Clonezilla"
@@ -821,16 +797,7 @@ echo "Generating fstab and mounting more btrfs subvols ------------"
         root_uuid="$(blkid | grep ^"$DEVICE" | grep ' LABEL="LINUX" ' | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         efi_uuid="$(blkid  | grep ^"$DEVICE" | grep ' LABEL="EFI" '   | grep -o ' UUID="[^"]\+"' | sed -e 's/^ //' )"
         FILE=${ROOTFS}/etc/fstab
-	#echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
-        ############################################################################
 	mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
-
-	# Commented because I change command order to be more beautiful for the eyes (?)
-        #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
-        #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
-        #echo "$root_uuid /          btrfs subvol=@,compress=zstd,noatime 0 0        "  > $FILE
-        #echo "$root_uuid /home      btrfs subvol=@home,compress=zstd,noatime 0 0    " >> $FILE
-        #echo "$root_uuid /var/log   btrfs subvol=@varlog,compress=zstd,noatime 0 0  " >> $FILE
 
 	mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@home     "${DEVICE}"3 ${ROOTFS}/home
         mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@varlog   "${DEVICE}"3 ${ROOTFS}/var/log
@@ -838,10 +805,6 @@ echo "Generating fstab and mounting more btrfs subvols ------------"
         echo "$root_uuid /home      btrfs compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@home	 0 0" >> $FILE
         echo "$root_uuid /var/log   btrfs compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@varlog	 0 0" >> $FILE
         
-	# Disabled maybe for boot bug
-	#mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
-        #echo "$root_uuid /var/cache btrfs subvol=@varcache,compress=zstd,noatime 0 0" >> $FILE
-        ############################################################################
         echo "$efi_uuid  /boot/efi vfat defaults 0 1                                " >> $FILE
 
 cleaning_screen	
@@ -857,14 +820,6 @@ echo "Setting Keyboard --------------------------------------------"
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---For everything else"
 	echo 'XKBLAYOUT="latam"' > ${ROOTFS}/etc/default/keyboard
-
-# cleaning_screen	
-# echo "Fixing nm-applet from empty icon bug ------------------------"
-# 	echo --Before
-#	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
-#	sed -i '/^Exec=/c\Exec=nm-applet --indicator' ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
-#	echo --After
-#	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop
 
 cleaning_screen	
 echo "Creating recovery -------------------------------------------"
@@ -896,6 +851,8 @@ echo "Getting ready for chroot ------------------------------------"
         mount -t sysfs sysfs ${ROOTFS}/sys
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
 
+# There are things that need to be done inside chroot
+# Setting kvm, installing external apps, grub shenanigans and language
 cleaning_screen	
 echo "Entering chroot ---------------------------------------------"
         echo "#!/bin/bash
@@ -972,10 +929,9 @@ echo "Entering chroot ---------------------------------------------"
 	set -e
 	
 	# echo ---Kernel
-	# This is not read for prime time lol
+	# This is not ready for prime time lol
 	cd /opt	
 	git clone https://github.com/alexiarstein/kernelinstall.git				1>&3
-
 
         echo ---Setting languaje and unattended-upgrades packages
         debconf-set-selections <<< \"tzdata                  tzdata/Areas                                              select America\"
@@ -1242,9 +1198,6 @@ NoDisplay=true
 Terminal=false
 X-GNOME-Autostart-enabled=true'> ${ROOTFS}/etc/xdg/autostart/volumen.desktop
 
-
-
-
 cleaning_screen	
 echo "Final touches for timeshift snapshots -----------------------"
 # To run snapshots without user password prompt
@@ -1255,7 +1208,8 @@ EOF
 cleaning_screen	
 echo "Setting up local admin account ------------------------------"
 # I create default admin user with password and groups for upgrades and virtmanager
-        echo "export LC_ALL=C LANGUAGE=C LANG=C
+cat <<EOF > ${ROOTFS}/tmp/local_admin.sh
+        export LC_ALL=C LANGUAGE=C LANG=C
 	useradd -d /home/$username -G sudo -m -s /bin/bash $username
 	groupadd updates
 	groupadd timeshift
@@ -1265,7 +1219,8 @@ echo "Setting up local admin account ------------------------------"
 	adduser $username libvirt		>/dev/null
 	adduser $username libvirt-qemu	        >/dev/null
 	echo ${username}:${password} | chpasswd
-	rm /tmp/local_admin.sh" > ${ROOTFS}/tmp/local_admin.sh
+	rm /tmp/local_admin.sh
+EOF
         chmod +x ${ROOTFS}/tmp/local_admin.sh
         chroot ${ROOTFS} /bin/bash /tmp/local_admin.sh
         
@@ -1428,6 +1383,12 @@ echo "END of the road!! keep up the good work ---------------------"
 
 ######################################################################################################################################################
 # TODO
+# lupa xfce4-appfinder/whiskermenu on SUPER_L
+# Update of git hub scripts
+# Power button shutdown
+# xfce locks after some time and its annoying
+
+##########################################################################
 # Volumen siempre vuelve a cero
 	# Listo
 # Nala, seleccion de repositorio optimo
@@ -1438,9 +1399,6 @@ echo "END of the road!! keep up the good work ---------------------"
 		# sudo nala fetch --debian trixie --auto              --non-free -c AR
 		# sudo nala fetch --debian trixie --auto --fetches 10 --non-free
 	# Desde XFCE4
-# lupa xfce4-appfinder
-
-##########################################################################
 # Discover no abre la primera vez hasta que haces sudo apt update
 	# Descartado
 # Mover salida principal a F2
@@ -1498,3 +1456,50 @@ echo "Downloading lastest clonezilla ------------------------------"
         esac
 
 BYPASS
+		#setsid bash -c 'exec watch sudo fdisk -l										<> /dev/tty2 >&0 2>&1' &
+		#setsid bash -c 'exec watch sudo df -h   										<> /dev/tty3 >&0 2>&1' &
+		#setsid bash -c 'exec watch sudo lsblk -f										<> /dev/tty4 >&0 2>&1' &
+		#setsid bash -c 'exec watch sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/	<> /dev/tty5 >&0 2>&1' &
+#[ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 	                 || true
+#[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	                 || true 
+#		 	   mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 	                 || true
+#			   mkfs.btrfs -L LINUX      "${DEVICE}"3 	                 || true
+		     # Disabled because it formats even if REPARTED = no
+		     # || mkfs.vfat  -n EFI        "${DEVICE}"1          >/dev/null 2>&1 || true
+		     # || mkfs.ext4  -L RESOURCES  "${DEVICE}"4          >/dev/null 2>&1 || true
+		     # || mkfs.ext4  -L CLONEZILLA "${DEVICE}"2          >/dev/null 2>&1 || true
+		     # || mkfs.btrfs -L LINUX      "${DEVICE}"3          >/dev/null 2>&1 || true
+
+			# Changed to btrs for snapshots with timeshift 
+			# mkfs.ext4  -L LINUX      "${DEVICE}"3		 >/dev/null 2>&1 || true
+        #mount -o subvol=@,compress=zstd,noatime         "${DEVICE}"3 ${ROOTFS}
+	#mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
+        #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
+        #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
+        #mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
+	#FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+	#URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
+	#${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ${URL_CLONEZILLA}
+	# Commented because I change command order to be more beautiful for the eyes (?)
+        #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
+        #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
+        #echo "$root_uuid /          btrfs subvol=@,compress=zstd,noatime 0 0        "  > $FILE
+        #echo "$root_uuid /home      btrfs subvol=@home,compress=zstd,noatime 0 0    " >> $FILE
+        #echo "$root_uuid /var/log   btrfs subvol=@varlog,compress=zstd,noatime 0 0  " >> $FILE
+
+	#echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
+        ############################################################################
+	# Disabled maybe for boot bug
+	#mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
+        #echo "$root_uuid /var/cache btrfs subvol=@varcache,compress=zstd,noatime 0 0" >> $FILE
+        ############################################################################
+
+
+# cleaning_screen	
+# echo "Fixing nm-applet from empty icon bug ------------------------"
+# 	echo --Before
+#	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
+#	sed -i '/^Exec=/c\Exec=nm-applet --indicator' ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
+#	echo --After
+#	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop
+
