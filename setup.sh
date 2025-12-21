@@ -1,9 +1,10 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-2022
+SCRIPT_DATE=20251221-2041
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
 SELECTIONS=/tmp/selections
+AUTOMATIZATION=/tmp/automatization
 
 echo ---------------------------------------------------------------------------
 timedatectl set-timezone America/Argentina/Buenos_Aires
@@ -24,9 +25,10 @@ echo "Installing dependencies for this script ---------------------"
 #Selections
 #####################################################################################################
 if [ -f $SELECTIONS ] ; then
-	echo Skiping questions, you may delete $SELECTIONS if you change your mind
+	echo Skiping questions, you may delete $SELECTIONS if you change your mind | tee $AUTOMATIZATION
 	source $SELECTIONS
 else
+	echo Manually answered questions > $AUTOMATIZATION
 	reset
 	#####################################################################################################
 	DEBIAN_VERSION=$(whiptail --title "Please select Debian version" --menu \
@@ -489,14 +491,14 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		fi
 
 	let "PROGRESS_BAR_CURRENT += 1"
-	echo "---Repartitioning needed? :"
+	echo "---Repartitioning needed? :" | tee -a $AUTOMATIZATIONS
 		# SKIPPING REPARTED ONLY IF LABELS AND SIZES MATCH
 		if [ "$LABELS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
 			REPARTED=no
 		else
 			REPARTED=yes
 		fi
-		echo ------${REPARTED}
+		echo ------${REPARTED} | tee -a $AUTOMATIZATIONS
 
 cleaning_screen 
 if [ "$REPARTED" == "yes" ] ; then
@@ -585,9 +587,9 @@ echo "---Cleaning cache packages if necesary"
 	# MORE THAN ONE DEB FILE FOR EACH PACKAGE. IN THIS CASES BOOTSTRAP
 	# MAY TRAY TO INSTALL EACH FILE FOR SOME PACKAGE AND FAILS
 	while [ -n "$(ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d)" ] ; do
-		echo ---This packages have more than one version.
+		echo ---This packages have more than one version. | tee -a $AUTOMATIZATIONS
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
-        	do find ${CACHE_FOLDER}/"${line}"*
+        	do find ${CACHE_FOLDER}/"${line}"* | tee -a $AUTOMATIZATIONS
 		done
 		echo ---Removing older versions so mmdebstrap wont fail
 		ls ${CACHE_FOLDER}/ | awk -F'_' '{print $1}' | sort | uniq -d | while read -r line
@@ -627,6 +629,7 @@ BYPASS
 	    if [ -n "$FILE_CLONEZILLA" ]; then
 		CLONEZILLA_ORIGIN="${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA}"
 		echo -----Success
+		echo Fast clonezilla >> $AUTOMATIZATIONS
 		break
 	    fi
 	    echo "Retrying (attempt $i/5)..."
@@ -643,6 +646,7 @@ BYPASS
 		if [ -n "$FILE_CLONEZILLA" ]; then
 		    CLONEZILLA_ORIGIN="$URL_CLONEZILLA"
 		    echo -----Success
+		    echo Slow clonezilla >> $AUTOMATIZATIONS
 		    break
 		fi
 
@@ -1422,27 +1426,27 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 	pgrep gpg | while read -r line
 	do kill -9 "$line"			2>/dev/null || true
 	done
-        umount ${ROOTFS}/dev/pts                2>/dev/null || true
-        umount ${ROOTFS}/proc                   2>/dev/null || true
-        umount ${ROOTFS}/run                    2>/dev/null || true
-        umount ${ROOTFS}/sys                    2>/dev/null || true
-        umount ${ROOTFS}/tmp                    2>/dev/null || true
-        umount ${ROOTFS}/tmp                    2>/dev/null || true
-        umount ${ROOTFS}/dev                    2>/dev/null || true
-        umount ${ROOTFS}/dev                    2>/dev/null || true
-        umount ${ROOTFS}/boot/efi               2>/dev/null || true
-        umount          /var/cache/apt/archives 2>/dev/null || true
-        umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
-        umount ${ROOTFS}/home                   2>/dev/null || true
-        umount ${ROOTFS}/*                      2>/dev/null || true
 	for times in {1..5} ; do
-		umount ${ROOTFS}                2>/dev/null || true
+		umount ${ROOTFS}/dev/pts                2>/dev/null || true
+		umount ${ROOTFS}/proc                   2>/dev/null || true
+		umount ${ROOTFS}/run                    2>/dev/null || true
+		umount ${ROOTFS}/sys                    2>/dev/null || true
+		umount ${ROOTFS}/tmp                    2>/dev/null || true
+		umount ${ROOTFS}/tmp                    2>/dev/null || true
+		umount ${ROOTFS}/dev                    2>/dev/null || true
+		umount ${ROOTFS}/dev                    2>/dev/null || true
+		umount ${ROOTFS}/boot/efi               2>/dev/null || true
+		umount          /var/cache/apt/archives 2>/dev/null || true
+		umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
+		umount ${ROOTFS}/home                   2>/dev/null || true
+		umount ${ROOTFS}/*                      2>/dev/null || true
+		umount ${ROOTFS}                	2>/dev/null || true
+		umount ${RECOVERYFS}                    2>/dev/null || true
+		umount ${CACHE_FOLDER}                  2>/dev/null || true
+		umount ${CACHE_FOLDER}                  2>/dev/null || true
+		umount "${DEVICE}"*                     2>/dev/null || true
 		sleep 1
 	done
-        umount ${RECOVERYFS}                    2>/dev/null || true
-        umount ${CACHE_FOLDER}                  2>/dev/null || true
-        umount ${CACHE_FOLDER}                  2>/dev/null || true
-        umount "${DEVICE}"*                     2>/dev/null || true
 
 
 PROGRESS_BAR_CURRENT=$PROGRESS_BAR_MAX
