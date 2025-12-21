@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1313
+SCRIPT_DATE=20251221-1331
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -46,10 +46,11 @@ else
 	done <<< "$disk_list"
 	DEVICE=$(whiptail --title "Disk selection" --menu "Choose a disk from below and press enter to begin:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
 	#####################################################################################################
-	MIRROR_CLONEZILLA=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
-	       "Official_Fast" "NCHC - Taiwan" \
-	       "Official_Slow" "SourceForge" \
-	       3>&1 1>&2 2>&3)
+	# Disable the choise to make default and failover
+	#MIRROR_CLONEZILLA=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
+	#       "Official_Fast" "NCHC - Taiwan" \
+	#       "Official_Slow" "SourceForge" \
+	#       3>&1 1>&2 2>&3)
 	#####################################################################################################
 	FIREFOX_PACKAGE=$(whiptail --title "Select Firefox Package" --menu "Choose one option:" 20 60 10 \
 	       "firefox     firefox-l10n-es-ar    " "Firefox Rapid Release" \
@@ -59,9 +60,23 @@ else
 	username=$(whiptail --title "Local admin creation" --inputbox "Type a username:" 20 60  3>&1 1>&2 2>&3)
 	REPEAT=yes
 	while [ "$REPEAT" == "yes" ] ; do
-		password=$( whiptail --title "Local admin creation" --passwordbox "Type a password:"                  20 60  3>&1 1>&2 2>&3)
-		password2=$(whiptail --title "Local admin creation" --passwordbox "Just in case type it again:"       20 60  3>&1 1>&2 2>&3)
-		if [ "$password" == "$password2" ] ; then
+		# New code to join password prompt in one whiptail
+		DATA=$(whiptail --title "Local admin creation" --passwordform "Set password for $username" 20 60 10 \
+	        "Password:" 1 1 "" 1 25 25 0 \
+	        "Confirm Password:" 2 1 "" 2 25 25 0 \
+        	3>&1 1>&2 2>&3)
+
+		password=$(echo "$DATA" | sed -n '1p')
+    		password2=$(echo "$DATA" | sed -n '2p')
+
+		# Old code with two whiptails
+		#password=$( whiptail --title "Local admin creation" --passwordbox "Type a password:"                  20 60  3>&1 1>&2 2>&3)
+		#password2=$(whiptail --title "Local admin creation" --passwordbox "Just in case type it again:"       20 60  3>&1 1>&2 2>&3)
+
+		# Old code without empty password check
+		#if [ "$password" == "$password2" ] ; then
+
+		if [ -n "$password" ] && [ "$password" == "$password2" ] ; then # added empty password check
 			REPEAT=no
 		else
 			#echo "ERROR: Passwords entered dont match"
@@ -101,7 +116,7 @@ else
 	#####################################################################################################
 	echo export DEVICE="$DEVICE"				>  $SELECTIONS
 	echo export DEBIAN_VERSION="$DEBIAN_VERSION"		>> $SELECTIONS
-	echo export MIRROR_CLONEZILLA="$MIRROR_CLONEZILLA"	>> $SELECTIONS
+	#echo export MIRROR_CLONEZILLA="$MIRROR_CLONEZILLA"	>> $SELECTIONS
 	echo export FIREFOX_PACKAGE=\"$FIREFOX_PACKAGE\"	>> $SELECTIONS
 	echo export username="$username"			>> $SELECTIONS
 	echo export password="$password"			>> $SELECTIONS
@@ -585,7 +600,7 @@ echo "Downloading external software -------------------------------"
 	mkdir -p $MARKTEXT_FOLDER		>/dev/null 2>&1
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA	>/dev/null 2>&1 || true
 
-# BOTH CLONEZILLA SITES ARE UNRELIABLE SO I MAKE A BETTER PLAN
+# BOTH CLONEZILLA SITES ARE UNRELIABLE SO I MAKE A BETTER PLAN###################################
 <<BYPASS
 	case ${MIRROR_CLONEZILLA} in
 		Official_Fast )
@@ -597,12 +612,15 @@ echo "Downloading external software -------------------------------"
 			CLONEZILLA_ORIGIN=${URL_CLONEZILLA} ;;
         esac
 BYPASS
-	echo --Trying clonezilla fast site
+#################################################################################################
+	echo ---Obtaining Clonezilla file URL
+	echo ----Trying clonezilla fast site
 	for i in {1..5}; do
 	    FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
 
 	    if [ -n "$FILE_CLONEZILLA" ]; then
 		CLONEZILLA_ORIGIN="${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA}"
+		echo -----Success
 		break
 	    fi
 	    echo "Retrying (attempt $i/5)..."
@@ -618,6 +636,7 @@ BYPASS
 
 		if [ -n "$FILE_CLONEZILLA" ]; then
 		    CLONEZILLA_ORIGIN="$URL_CLONEZILLA"
+		    echo -----Success
 		    break
 		fi
 
