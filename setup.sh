@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1126
+SCRIPT_DATE=20251221-1210
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -177,7 +177,7 @@ anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
 blueman bluetooth bluez bluez-firmware bluez-alsa-utils \
 bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping                       isc-dhcp-client \
-network-manager                        network-manager-openconnect network-manager-l2tp                      \
+network-manager                        network-manager-openconnect network-manager-l2tp openconnect           \
 powermgmt-base util-linux wpasupplicant xfce4-power-manager xfce4-power-manager-plugins \
 firmware-ath9k-htc firmware-amd-graphics                         firmware-linux firmware-linux-free firmware-realtek \
 amd64-microcode intel-microcode mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-drivers firmware-iwlwifi                      \
@@ -316,7 +316,7 @@ echo "Installing on Device ${DEVICE} with ${username} as local admin :
 		- XFCE with custom skel (for taskbar) and keybindings (for window manager).
 		- BTRFS, GRUB-BTRFS and Timeshift for snapshots of root file system.
 		- Flameshot (replace for screenshots), Qterminal (replace for xfce terminal).
-		- Mousepad, VLC, QBittorrent, OBS Studio, KeePassXC.
+		- Mousepad, VLC, QBittorrent, OBS Studio, KeePassXC, Audacity.
 		- X2goclient, Remmina, x11vnc and ssvnc.
 		- Unattended upgrades, Virtual Machine Manager (KVM/QEMU).
         	- Wifi and bluetooth drivers. NTFS support (to read Windows Partitions).
@@ -1391,6 +1391,7 @@ echo "END of the road!! keep up the good work ---------------------"
 # Best practicies
 	# Commenting code
 	# Commenting pushes
+	# update README.md
 	# Testing branch and url
 		# bug fixes
 		# new features
