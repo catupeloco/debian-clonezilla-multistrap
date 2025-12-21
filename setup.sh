@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251220-2155
+SCRIPT_DATE=20251220-2202
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -901,8 +901,8 @@ echo "Entering chroot ---------------------------------------------"
         export LO_LANG=es  # Idioma para la instalación
         export LC_ALL=C LANGUAGE=C LANG=C
         export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true
-	export LOG=/var/log/notebook.log
-	export ERR=/var/log/notebook.err
+	export LOG=/var/log/laptop.log
+	export ERR=/var/log/laptop.err
 	echo nameserver 8.8.8.8 > /etc/resolv.conf
 	set -e
 	set -x
