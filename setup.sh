@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1028
+SCRIPT_DATE=20251221-1123
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -851,10 +851,10 @@ echo "Getting ready for chroot ------------------------------------"
         mount -t sysfs sysfs ${ROOTFS}/sys
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
 
-# There are things that need to be done inside chroot
-# Setting kvm, installing external apps, grub shenanigans and language
 cleaning_screen	
 echo "Entering chroot ---------------------------------------------"
+# There are things that need to be done inside chroot
+# Setting kvm, installing external apps, grub and language configurations
         echo "#!/bin/bash
         export DOWNLOAD_DIR_LO=/var/cache/apt/archives/Libreoffice
         export VERSION_LO=${VERSION_LO}
@@ -1383,10 +1383,25 @@ echo "END of the road!! keep up the good work ---------------------"
 
 ######################################################################################################################################################
 # TODO
-# lupa xfce4-appfinder/whiskermenu on SUPER_L
-# Update of git hub scripts
-# Power button shutdown
-# xfce locks after some time and its annoying
+# Functionalitys
+	# lupa xfce4-appfinder/whiskermenu on SUPER_L
+	# Update of git hub scripts
+	# Power button shutdown
+	# xfce locks after some time and its annoying
+# Best practicies
+	# Commenting code
+	# Testing branch and url
+		# bug fixes
+		# new features
+	# Releases
+		# Change log
+	# Split code in multiple files
+	# Pre-release testing steps
+       		# Generate clonezilla image and restore
+		# Generate timeshift snapshot, change something and restore
+		# Testing apps
+		# Testing wifi, sound and bluetooth
+		# 	
 
 ##########################################################################
 # Volumen siempre vuelve a cero
