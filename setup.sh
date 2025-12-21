@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1214
+SCRIPT_DATE=20251221-1313
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -584,7 +584,10 @@ echo "Downloading external software -------------------------------"
 	mkdir -p $DRAWIO_FOLDER			>/dev/null 2>&1
 	mkdir -p $MARKTEXT_FOLDER		>/dev/null 2>&1
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA	>/dev/null 2>&1 || true
-        case ${MIRROR_CLONEZILLA} in
+
+# BOTH CLONEZILLA SITES ARE UNRELIABLE SO I MAKE A BETTER PLAN
+<<BYPASS
+	case ${MIRROR_CLONEZILLA} in
 		Official_Fast )
 			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
 			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
@@ -593,6 +596,40 @@ echo "Downloading external software -------------------------------"
 			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
 			CLONEZILLA_ORIGIN=${URL_CLONEZILLA} ;;
         esac
+BYPASS
+	echo --Trying clonezilla fast site
+	for i in {1..5}; do
+	    FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+
+	    if [ -n "$FILE_CLONEZILLA" ]; then
+		CLONEZILLA_ORIGIN="${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA}"
+		break
+	    fi
+	    echo "Retrying (attempt $i/5)..."
+	    sleep 0.5
+	done
+
+	if [ -z "$CLONEZILLA_ORIGIN" ]; then
+	    echo "----Trying clonezilla slow site"
+
+	    for i in {1..5}; do
+		URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null | grep https | cut -d \" -f 2)
+		FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
+
+		if [ -n "$FILE_CLONEZILLA" ]; then
+		    CLONEZILLA_ORIGIN="$URL_CLONEZILLA"
+		    break
+		fi
+
+		echo "Retrying (attempt $i/5)..."
+		sleep 0.5
+	    done
+	fi
+
+	if [ -z "$CLONEZILLA_ORIGIN" ]; then
+	    echo "Could not detect Clonezilla file url"
+	    exit 1
+	fi
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Parallel Downloading of Keyboard Maps, Libreoffice, Draw.io, MarkText and Clonezilla"
@@ -1385,12 +1422,16 @@ echo "END of the road!! keep up the good work ---------------------"
 # TODO
 # Functionalitys
 	# lupa xfce4-appfinder/whiskermenu on SUPER_L
+	# not ask for debian repository
 	# Update of git hub scripts
 	# Power button shutdown
 	# xfce locks after some time and its annoying
 	# Failover download
 		# Clonezilla
 		# Debian Repository
+		# Not show $SELECTIONS
+		# Aria must not continue if all files are not downloaded
+	# Back port kernel and wifi drivers for bookworm (again)
 # Best practicies
 	# Commenting code
 	# Commenting pushes
