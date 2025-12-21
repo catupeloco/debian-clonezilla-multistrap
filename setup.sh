@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-1338
+SCRIPT_DATE=20251221-1513
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -15,7 +15,7 @@ echo "Installing dependencies for this script ---------------------"
 	cd /tmp
         apt update							 >/dev/null 2>&1
 	apt install --fix-broken -y					 >/dev/null 2>&1
-        apt install dosfstools parted gnupg2 unzip \
+        apt install dosfstools parted gnupg2 unzip dialog \
         wget curl openssh-server mmdebstrap xmlstarlet \
 	netselect-apt aria2  btrfs-progs		-y		 >/dev/null 2>&1
 	systemctl start sshd						 >/dev/null 2>&1
@@ -61,10 +61,18 @@ else
 	REPEAT=yes
 	while [ "$REPEAT" == "yes" ] ; do
 		# New code to join password prompt in one whiptail
-		DATA=$(whiptail --title "Local admin creation" --passwordform "Set password for $username" 20 60 10 \
-	        "Password:" 1 1 "" 1 25 25 0 \
-	        "Confirm Password:" 2 1 "" 2 25 25 0 \
-        	3>&1 1>&2 2>&3)
+			# This doesnt work passwordform is not in whiptail
+			# DATA=$(whiptail --title "Local admin creation" --passwordform "Set password for $username" 20 60 10 \
+		        # "Password:" 1 1 "" 1 25 25 0 \
+	        	# "Confirm Password:" 2 1 "" 2 25 25 0 \
+	        	# 3>&1 1>&2 2>&3)
+		DATA=$(dialog --title "Local admin creation" \
+                  --backtitle "User Management System" \
+                  --insecure \
+                  --stdout \
+                  --passwordform "Set password for: $username" 20 60 10 \
+                  "Password:"         1 1 "" 1 20 25 0 \
+                  "Confirm Password:" 2 1 "" 2 20 25 0)
 
 		password=$(echo "$DATA" | sed -n '1p')
     		password2=$(echo "$DATA" | sed -n '2p')
