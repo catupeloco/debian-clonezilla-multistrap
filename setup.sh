@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251221-2211
+SCRIPT_DATE=20251221-2219
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -477,6 +477,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		blkid | grep "${DEVICE}"3 | grep LINUX      >/dev/null && \
 		blkid | grep "${DEVICE}"4 | grep RESOURCES  >/dev/null && \
 		LABELS_MATCH=yes && echo ------They DO match || echo ------They DON\'T match
+		echo LABELS_MATCH $LABELS_MATCH >> $AUTOMATIZATIONS
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Sizes test"
@@ -491,6 +492,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 			echo ------They DON\'T match
 			SIZES_MATCH=no
 		fi
+		echo SIZES_MATCH $SIZES_MATCH >> $AUTOMATIZATIONS
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Repartitioning needed? :" | tee -a $AUTOMATIZATIONS
@@ -1467,7 +1469,9 @@ echo "END of the road!! keep up the good work ---------------------"
 	# not ask for debian repository
 	# Update of git hub scripts
 	# Power button shutdown
+		# Difficult
 	# xfce locks after some time and its annoying
+		# Testing
 	# Failover download
 		# Clonezilla
 			# Listo
@@ -1478,7 +1482,13 @@ echo "END of the road!! keep up the good work ---------------------"
 			# No haria falta
 	# Back port kernel and wifi drivers for bookworm (again)
 	# Dark theme
+		# Listo
 	# Secondaries TTY stetic
+		# Listo
+	# Reparted bug
+		# Analyzing
+	# Double password prompt same window
+		# Works but stetics is different than whiptail
 # Best practicies
 	# Commenting code
 	# Commenting pushes
