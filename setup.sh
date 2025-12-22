@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251222-0919
+SCRIPT_DATE=20251222-2015
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -186,7 +186,7 @@ at-spi2-core xinput gawk inotify-tools \
 ${FONTS_PACKAGES_AND_THEMES}  \
 fonts-dejavu-core fonts-droid-fallback fonts-font-awesome fonts-lato fonts-liberation2 fonts-mathjax fonts-noto-mono fonts-opensymbol fonts-quicksand \
 fonts-symbola fonts-urw-base35 gsfonts arc-theme \
-task-xfce-desktop task-ssh-server task-laptop qterminal \
+task-xfce-desktop task-ssh-server ssh-askpass task-laptop qterminal \
 ${COMMANDLINE_TOOLS} \
 sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils fdisk file git gh zenity build-essential ncdu \
 whiptail \
@@ -220,7 +220,7 @@ ${UNATTENDED_UPGRADES_PACKAGES}  \
 unattended-upgrades apt-utils apt-listchanges \
 ${VIRTUALIZATION_PACKAGES}  \
 qemu-system-x86 qemu-utils libvirt-daemon-system libvirt-clients bridge-utils virtinst libvirt-daemon virt-manager spice-vdagent \
-qemu-guest-agent \
+qemu-guest-agent ovmf \
 ${DIFFERENT_PACKAGES} \
 ${OBS_STUDIO} \
 ffmpeg obs-studio" #https://ppa.launchpadcontent.net/obsproject/obs-studio/ubuntu/pool/main/o/obs-studio/
