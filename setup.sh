@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251222-2015
+SCRIPT_DATE=20251222-2215
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1465,30 +1465,40 @@ echo "END of the road!! keep up the good work ---------------------"
 ######################################################################################################################################################
 # TODO
 # Functionalitys
-	# lupa xfce4-appfinder/whiskermenu on SUPER_L
-	# not ask for debian repository
-	# Update of git hub scripts
-	# Power button shutdown
-		# Difficult
-	# xfce locks after some time and its annoying
-		# Testing
-	# Failover download
-		# Clonezilla
-			# Listo
-		# Debian Repository
-		# Not show $SELECTIONS
-			# Listo
-		# Aria must not continue if all files are not downloaded
-			# No haria falta
-	# Back port kernel and wifi drivers for bookworm (again)
-	# Dark theme
-		# Listo
-	# Secondaries TTY stetic
-		# Listo
-	# Reparted bug
-		# Analyzing
-	# Double password prompt same window
-		# Works but stetics is different than whiptail
+	# FIXME lupa xfce4-appfinder/whiskermenu on SUPER_L
+	# FIXME Back port kernel and wifi drivers for bookworm (again)
+	# FIXME Power button shutdown. Difficult
+	# FIXME Reparted bug. Analyzing
+	# FIXME EFI doesnt format its partition
+	# xfce locks after some time and its annoying. Listo
+	# TODO Failover download
+	# TODO Failover download Debian Repository 
+	# TODO not ask for debian repository
+	# TODO Update of git hub scripts
+	# TODO Double password prompt same window. Works but stetics is different than whiptail and tab doesnt work
+	# Failover download Clonezilla  Listo
+	# Failover download Not show $SELECTIONS. Listo
+	# Failover download Aria must not continue if all files are not downloaded. Listo
+	# Dark theme. Listo
+	# Secondaries TTY stetic. Listo
+
+
+# FOR VERSION 2.0
+	# Marktext and drawio with gh
+		# Check version before download
+		# Download this way on setup.sh
+	# Integrate to mmdebstrap
+	 # Install of Libreoffice, marktext, drawio
+          # ${CACHE_FOLDER}/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}
+	 # Generation of hostname and hosts
+	 # Mount of home, is it possible? maybe postinstall
+	   # User creation
+	   # Mount of var log
+	   # Mount of efi
+	     # creation of fstab 
+	     # installation of 
+	 # Uncompress of keymaps
+
 # Best practicies
 	# Commenting code
 	# Commenting pushes
