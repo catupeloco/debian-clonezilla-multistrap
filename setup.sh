@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251224-1425
+SCRIPT_DATE=20251224-1846
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -320,8 +320,8 @@ GRUB_BTRFS="https://github.com/Antynea/grub-btrfs.git"
 
 # For Cleaning Screen and progress bar
 LOCALIP=$(ip -br a | grep -v ^lo | grep -i UP | awk '{print $3}' | cut -d\/ -f1)
-export PROGRESS_BAR_MAX=45
-export PROGRESS_BAR_WIDTH=43
+export PROGRESS_BAR_MAX=49
+export PROGRESS_BAR_WIDTH=47
 export PROGRESS_BAR_CURRENT=0
 
 ########################################################################################################################################################
@@ -384,7 +384,7 @@ while true ; do
 	echo ---FDISK-------
 	sudo fdisk -l ${DEVICE}
 	echo ---DF----------
-	sudo df -h ${ROOTFS} ${RECOVERYFS} ${CACHE_FOLDER}
+	sudo df -h ${ROOTFS} ${RECOVERYFS} ${CACHE_FOLDER}  ${ROOTFS}/boot/efi 2>/dev/null
 	echo --LSBLK--------
 	sudo lsblk -f ${DEVICE}
 	echo --SELECTIONS---
