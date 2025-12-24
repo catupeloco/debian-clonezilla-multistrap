@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251224-1846
+SCRIPT_DATE=20251224-1929
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -382,7 +382,7 @@ cat << EOF > /tmp/disk.watch
 #!/bin/bash
 while true ; do
 	echo ---FDISK-------
-	sudo fdisk -l ${DEVICE}
+	sudo fdisk -l ${DEVICE} | grep -E "${DEVICE}|Disklabel|Device" --color
 	echo ---DF----------
 	sudo df -h ${ROOTFS} ${RECOVERYFS} ${CACHE_FOLDER}  ${ROOTFS}/boot/efi 2>/dev/null
 	echo --LSBLK--------
