@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251224-1930
+SCRIPT_DATE=20251224-2030
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1483,15 +1483,14 @@ echo "END of the road!! keep up the good work ---------------------"
 # Functionalitys
 	# FIXME lupa xfce4-appfinder/whiskermenu on SUPER_L
 	# FIXME Back port kernel and wifi drivers for bookworm (again)
-	# FIXME Power button shutdown. Difficult
-	# FIXME Reparted bug. Analyzing
-	# FIXME EFI doesnt format its partition
-	# xfce locks after some time and its annoying. Listo
-	# TODO Failover download
+	# FIXME Power button shutdown. Difficult (It works well on DELL but not on Thinkpad)
 	# TODO Failover download Debian Repository 
 	# TODO not ask for debian repository
 	# TODO Update of git hub scripts
 	# TODO Double password prompt same window. Works but stetics is different than whiptail and tab doesnt work
+	# Reparted bug. Listo mié 24 dic 2025 19:44:30 -03
+	# EFI doesnt format its partition. Listo mié 24 dic 2025 20:10:59 -03
+	# xfce locks after some time and its annoying. Listo
 	# Failover download Clonezilla  Listo
 	# Failover download Not show $SELECTIONS. Listo
 	# Failover download Aria must not continue if all files are not downloaded. Listo
