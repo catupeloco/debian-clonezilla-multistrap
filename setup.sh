@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251224-1351
+SCRIPT_DATE=20251224-1414
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -473,11 +473,22 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Labels test"
 		LABELS_MATCH=no
+		blkid | grep "${DEVICE}"1 | grep ESP        >/dev/null && \
 		blkid | grep "${DEVICE}"2 | grep CLONEZILLA >/dev/null && \
 		blkid | grep "${DEVICE}"3 | grep LINUX      >/dev/null && \
 		blkid | grep "${DEVICE}"4 | grep RESOURCES  >/dev/null && \
 		LABELS_MATCH=yes && echo ------They DO match || echo ------They DON\'T match
 		echo LABELS_MATCH $LABELS_MATCH >> $AUTOMATIZATIONS
+	
+	let "PROGRESS_BAR_CURRENT += 1"
+	echo "---Filesystems test"
+		FILESYSTEMS_MATCH=no
+		blkid | grep "${DEVICE}"1 | grep vfat       >/dev/null && \
+		blkid | grep "${DEVICE}"2 | grep ext4       >/dev/null && \
+		blkid | grep "${DEVICE}"3 | grep btrfs      >/dev/null && \
+		blkid | grep "${DEVICE}"4 | grep ext4       >/dev/null && \
+		FILESYSTEMS_MATCH=yes && echo ------They DO match || echo ------They DON\'T match
+		echo FILESYSTEMS_MATCH $FILESYSTEMS_MATCH >> $AUTOMATIZATIONS
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Sizes test"
@@ -497,7 +508,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Repartitioning needed? :" | tee -a $AUTOMATIZATIONS
 		# SKIPPING REPARTED ONLY IF LABELS AND SIZES MATCH
-		if [ "$LABELS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
+		if [ "$LABELS_MATCH" == "yes" ] && [ "$FILESYSTEMS_MATCH" == "yes" ]&& [ "$SIZES_MATCH" == "yes" ] ; then
 			REPARTED=no
 		else
 			REPARTED=yes
