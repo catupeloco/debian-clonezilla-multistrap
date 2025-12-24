@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251224-1345
+SCRIPT_DATE=20251224-1351
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -542,6 +542,8 @@ echo "Formating partitions ----------------------------------------"
 			  fsck -y "${DEVICE}"3				 >/dev/null 2>&1 || true
 			  fsck -y "${DEVICE}"4				 >/dev/null 2>&1 || true
 			  mkfs.vfat  -n EFI        "${DEVICE}"1 -F	 >/dev/null 2>&1 || true
+# As this partition has no label, it fails to detect if it is not a vfat partition
+# I should test filesystems in addition to size and labels
 #[ "$REPARTED" == yes ]&& mkfs.vfat  -n EFI        "${DEVICE}"1 -F	 >/dev/null 2>&1 || true
 [ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	-F	 >/dev/null 2>&1 || true 
 		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -F	 >/dev/null 2>&1 || true
