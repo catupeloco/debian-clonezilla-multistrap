@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251224-1929
+SCRIPT_DATE=20251224-1930
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -419,6 +419,7 @@ EOF
 		setsid bash -c 'exec bash /tmp/downloads.watch										<> /dev/tty3 >&0 2>&1' &
 		setsid bash -c 'exec tail -f '$LOG'											<> /dev/tty4 >&0 2>&1' &
 		setsid bash -c 'exec tail -f '$ERR' 											<> /dev/tty5 >&0 2>&1' &
+		setsid bash -c 'exec top	 											<> /dev/tty6 >&0 2>&1' &
 	fi
 set -e
 
