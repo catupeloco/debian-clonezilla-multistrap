@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251224-1423
+SCRIPT_DATE=20251224-1425
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -404,7 +404,7 @@ while true ; do
 		echo ---Downloaded by aria2
 		sudo ls -larth ${CACHE_FOLDER}/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/ | grep ^\-
 		echo ---Downloaded by mmdebstrap 
-		echo ----Debian Packages \$(ls ${CACHE_FOLDER}/*.deb | wc -l)
+		echo ----Debian Packages \$(ls ${CACHE_FOLDER}/*.deb 2>/dev/null | wc -l)
 	else
 		echo Can\'t show information because cache folder : ${CACHE_FOLDER} is not mounted
 	fi
