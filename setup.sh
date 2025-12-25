@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251224-2030
+SCRIPT_DATE=20251225-1800
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -9,7 +9,6 @@ AUTOMATIZATIONS=/tmp/automatizations
 echo ---------------------------------------------------------------------------
 timedatectl set-timezone America/Argentina/Buenos_Aires
 echo "now    $(date +'%Y%m%d-%H%M')"
-# echo "now    $(env TZ=America/Argentina/Buenos_Aires date +'%Y%m%d-%H%M')"
 echo "script $SCRIPT_DATE"
 echo ---------------------------------------------------------------------------
 echo "Installing dependencies for this script ---------------------"
@@ -47,12 +46,11 @@ else
 	      menu_options+=("/dev/$name" "$size")
 	done <<< "$disk_list"
 	DEVICE=$(whiptail --title "Disk selection" --menu "Choose a disk from below and press enter to begin:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
-	#####################################################################################################
-	# Disable the choise to make default and failover
-	#MIRROR_CLONEZILLA=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
-	#       "Official_Fast" "NCHC - Taiwan" \
-	#       "Official_Slow" "SourceForge" \
-	#       3>&1 1>&2 2>&3)
+	if echo ${DEVICE} | grep -i nvme > /dev/null ; then
+		DEVICE_P=${DEVICE}p
+	else
+		DEVICE_P=${DEVICE}
+	fi
 	#####################################################################################################
 	FIREFOX_PACKAGE=$(whiptail --title "Select Firefox Package" --menu "Choose one option:" 20 60 10 \
 	       "firefox     firefox-l10n-es-ar    " "Firefox Rapid Release" \
@@ -120,7 +118,6 @@ else
 	#####################################################################################################
 	echo export DEVICE="$DEVICE"				>  $SELECTIONS
 	echo export DEBIAN_VERSION="$DEBIAN_VERSION"		>> $SELECTIONS
-	#echo export MIRROR_CLONEZILLA="$MIRROR_CLONEZILLA"	>> $SELECTIONS
 	echo export FIREFOX_PACKAGE=\"$FIREFOX_PACKAGE\"	>> $SELECTIONS
 	echo export username="$username"			>> $SELECTIONS
 	echo export password="$password"			>> $SELECTIONS
@@ -474,20 +471,20 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Labels test"
 		LABELS_MATCH=no
-		blkid | grep "${DEVICE}"1 | grep ESP        >/dev/null && \
-		blkid | grep "${DEVICE}"2 | grep CLONEZILLA >/dev/null && \
-		blkid | grep "${DEVICE}"3 | grep LINUX      >/dev/null && \
-		blkid | grep "${DEVICE}"4 | grep RESOURCES  >/dev/null && \
+		blkid | grep "${DEVICE_P}"1 | grep ESP        >/dev/null && \
+		blkid | grep "${DEVICE_P}"2 | grep CLONEZILLA >/dev/null && \
+		blkid | grep "${DEVICE_P}"3 | grep LINUX      >/dev/null && \
+		blkid | grep "${DEVICE_P}"4 | grep RESOURCES  >/dev/null && \
 		LABELS_MATCH=yes && echo ------They DO match || echo ------They DON\'T match
 		echo LABELS_MATCH $LABELS_MATCH >> $AUTOMATIZATIONS
 	
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Filesystems test"
 		FILESYSTEMS_MATCH=no
-		blkid | grep "${DEVICE}"1 | grep vfat       >/dev/null && \
-		blkid | grep "${DEVICE}"2 | grep ext4       >/dev/null && \
-		blkid | grep "${DEVICE}"3 | grep btrfs      >/dev/null && \
-		blkid | grep "${DEVICE}"4 | grep ext4       >/dev/null && \
+		blkid | grep "${DEVICE_P}"1 | grep vfat       >/dev/null && \
+		blkid | grep "${DEVICE_P}"2 | grep ext4       >/dev/null && \
+		blkid | grep "${DEVICE_P}"3 | grep btrfs      >/dev/null && \
+		blkid | grep "${DEVICE_P}"4 | grep ext4       >/dev/null && \
 		FILESYSTEMS_MATCH=yes && echo ------They DO match || echo ------They DON\'T match
 		echo FILESYSTEMS_MATCH $FILESYSTEMS_MATCH >> $AUTOMATIZATIONS
 
@@ -545,35 +542,28 @@ fi
 
 cleaning_screen
 echo "Formating partitions ----------------------------------------"
-	if echo ${DEVICE} | grep -i nvme > /dev/null ; then
-		DEVICE=${DEVICE}p
-	fi
 		# EVEN IF THE PARTITION IS FORMATTED I TRY TO CHECK THE FILESYSTEM
-			  fsck -y "${DEVICE}"1				 >/dev/null 2>&1 || true
-			  fsck -y "${DEVICE}"2				 >/dev/null 2>&1 || true
-			  fsck -y "${DEVICE}"3				 >/dev/null 2>&1 || true
-			  fsck -y "${DEVICE}"4				 >/dev/null 2>&1 || true
-			  mkfs.vfat  -n EFI        "${DEVICE}"1  	 >/dev/null 2>&1 || true
-# As this partition has no label, it fails to detect if it is not a vfat partition
-# I should test filesystems in addition to size and labels. DONE mié 24 dic 2025 14:21:25 -03
-# Also remove -F as it was a bad parameter that doesnt is for forcing, instead is for selection filesystem type in mkfs.vfat
-#[ "$REPARTED" == yes ]&& mkfs.vfat  -n EFI        "${DEVICE}"1 -F	 >/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	-F	 >/dev/null 2>&1 || true 
-		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 -F	 >/dev/null 2>&1 || true
-			  mkfs.btrfs -L LINUX      "${DEVICE}"3 -f	 >/dev/null 2>&1 || true
+			  fsck -y "${DEVICE_P}"1			 >/dev/null 2>&1 || true
+			  fsck -y "${DEVICE_P}"2			 >/dev/null 2>&1 || true
+			  fsck -y "${DEVICE_P}"3			 >/dev/null 2>&1 || true
+			  fsck -y "${DEVICE_P}"4			 >/dev/null 2>&1 || true
+			  mkfs.vfat  -n EFI        "${DEVICE_P}"1  	 >/dev/null 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE_P}"4 -F	 >/dev/null 2>&1 || true 
+		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE_P}"2 -F	 >/dev/null 2>&1 || true
+			  mkfs.btrfs -L LINUX      "${DEVICE_P}"3 -f	 >/dev/null 2>&1 || true
 
 cleaning_screen
 echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
-        mount "${DEVICE}"3 ${ROOTFS}                            > /dev/null 2>&1
+        mount "${DEVICE_P}"3 ${ROOTFS}                          > /dev/null 2>&1
 #####################################################################################
         btrfs subvolume create  ${ROOTFS}/@         2>/dev/null || true
         btrfs subvolume create  ${ROOTFS}/@home     2>/dev/null || true
         btrfs subvolume create  ${ROOTFS}/@varlog   2>/dev/null || true
         #btrfs subvolume create  ${ROOTFS}/@varcache 2>/dev/null || true
         umount ${ROOTFS}
-	mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@     "${DEVICE}"3 ${ROOTFS}
+	mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@     "${DEVICE_P}"3 ${ROOTFS}
 
 #####################################################################################
 
@@ -585,7 +575,7 @@ echo "----Cleaning files just in case"
 	
 echo "---Recovery partition"
         mkdir -p ${RECOVERYFS}                                  > /dev/null 2>&1
-        mount "${DEVICE}"2 ${RECOVERYFS}                        > /dev/null 2>&1
+        mount "${DEVICE_P}"2 ${RECOVERYFS}                      > /dev/null 2>&1
 
 	let "PROGRESS_BAR_CURRENT += 1"
 echo "----Cleaning files just in case"
@@ -598,7 +588,7 @@ echo "---Resources/Cache partition"
 	echo -n "-----"
         mkdir -vp ${CACHE_FOLDER}
         chown "${SUDO_USER}": -R ${CACHE_FOLDER}
-	mount "${DEVICE}"4 ${CACHE_FOLDER}
+	mount "${DEVICE_P}"4 ${CACHE_FOLDER}
 
 	let "PROGRESS_BAR_CURRENT += 1"
 echo "---Cleaning cache packages if necesary"
@@ -888,8 +878,8 @@ echo "Generating fstab and mounting more btrfs subvols ------------"
         FILE=${ROOTFS}/etc/fstab
 	mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
 
-	mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@home     "${DEVICE}"3 ${ROOTFS}/home
-        mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@varlog   "${DEVICE}"3 ${ROOTFS}/var/log
+	mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@home     "${DEVICE_P}"3 ${ROOTFS}/home
+        mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@varlog   "${DEVICE_P}"3 ${ROOTFS}/var/log
         echo "$root_uuid /          btrfs compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@	 0 0"  > $FILE
         echo "$root_uuid /home      btrfs compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@home	 0 0" >> $FILE
         echo "$root_uuid /var/log   btrfs compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@varlog	 0 0" >> $FILE
@@ -930,7 +920,7 @@ cleaning_screen
 echo "Getting ready for chroot ------------------------------------"
 	echo "---Mounting EFI partition"
         mkdir -p ${ROOTFS}/boot/efi
-        mount "${DEVICE}"1 ${ROOTFS}/boot/efi
+        mount "${DEVICE_P}"1 ${ROOTFS}/boot/efi
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Mounting pseudo-filesystems"
@@ -1183,16 +1173,6 @@ systemctl list-timers --all | grep apt
 echo ------------------------------------- 
 sleep 30
 EOF
-
-# The scripts above uses this testing repositories
-# Not to use in normal cases.
-#	let "PROGRESS_BAR_CURRENT += 1"
-#	echo "---Repositories for testing scripts"
-#	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/new.list
-#	echo "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
-#	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
-#        echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/old.list
-#	echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/old.list
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Sudoers file for testing scripts"
@@ -1484,6 +1464,7 @@ echo "END of the road!! keep up the good work ---------------------"
 	# FIXME lupa xfce4-appfinder/whiskermenu on SUPER_L
 	# FIXME Back port kernel and wifi drivers for bookworm (again)
 	# FIXME Power button shutdown. Difficult (It works well on DELL but not on Thinkpad)
+	# FIXME 
 	# TODO Failover download Debian Repository 
 	# TODO not ask for debian repository
 	# TODO Update of git hub scripts
@@ -1558,6 +1539,8 @@ echo "END of the road!! keep up the good work ---------------------"
 	# xfconf-query -c xfce4-panel -l
 	# /etc/xdg/xfce4/panel/default.xml
 ##########################################################################
+
+## OLD CODE KEEP IT JUST IN CASE #################################################################################################################################
 <<BYPASS
 cleaning_screen	
 echo "Downloading keyboard mappings -------------------------------"
@@ -1646,3 +1629,23 @@ BYPASS
 #	echo --After
 #	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop
 
+	#####################################################################################################
+	# Disable the choise to make default and failover
+	#MIRROR_CLONEZILLA=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
+	#       "Official_Fast" "NCHC - Taiwan" \
+	#       "Official_Slow" "SourceForge" \
+	#       3>&1 1>&2 2>&3)
+# The scripts above uses this testing repositories
+# Not to use in normal cases.
+#	let "PROGRESS_BAR_CURRENT += 1"
+#	echo "---Repositories for testing scripts"
+#	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/new.list
+#	echo "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
+#	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
+#        echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/old.list
+#	echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/old.list
+
+# As this partition has no label, it fails to detect if it is not a vfat partition
+# I should test filesystems in addition to size and labels. DONE mié 24 dic 2025 14:21:25 -03
+# Also remove -F as it was a bad parameter that doesnt is for forcing, instead is for selection filesystem type in mkfs.vfat
+#[ "$REPARTED" == yes ]&& mkfs.vfat  -n EFI        "${DEVICE}"1 -F	 >/dev/null 2>&1 || true

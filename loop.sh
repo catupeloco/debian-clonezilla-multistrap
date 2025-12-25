@@ -1,4 +1,5 @@
 #!/bin/bash
+git pull
 #This script is for making changes more quickly
 while true; do
 	vi setup.sh 
