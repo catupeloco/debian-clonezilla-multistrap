@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251225-1800
+SCRIPT_DATE=20251225-1816
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -501,7 +501,9 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 			echo ------They DON\'T match
 			SIZES_MATCH=no
 		fi
-		echo SIZES_MATCH $SIZES_MATCH >> $AUTOMATIZATIONS
+		echo SIZES_MATCH $SIZES_MATCH 										>> $AUTOMATIZATIONS
+		echo PART_OP_SIZE PART_OP_SIZE_REAL PART_OS_START PART_OS_START_REAL PART_OS_END PART_OS_END_REAL 	>> $AUTOMATIZATIONS
+		echo $PART_OP_SIZE $PART_OP_SIZE_REAL $PART_OS_START $PART_OS_START_REAL $PART_OS_END $PART_OS_END_REAL >> $AUTOMATIZATIONS
 
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Repartitioning needed? :" | tee -a $AUTOMATIZATIONS
