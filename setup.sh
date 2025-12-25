@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251225-1843
+SCRIPT_DATE=20251225-1846
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -374,6 +374,8 @@ echo "Inicializing following ttys ---------------------------------"
 	touch $LOG
 	touch $ERR
 set +e
+	# Kill lock screen process because its annoying
+	pkill light-locker 2>/dev/null || true
 	# RUNNING EXTRA INFO ON FOLLOWING TTYS
 cat << EOF > /tmp/disk.watch
 #!/bin/bash
