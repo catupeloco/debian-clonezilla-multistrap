@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251225-1816
+SCRIPT_DATE=20251225-1843
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -494,7 +494,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 		PART_OS_START_REAL=$(parted "${DEVICE}" --script unit MiB print | awk '$1 == "3" {print $2}' | tr -d 'MiB')
 		PART_OS_END_REAL=$(  parted "${DEVICE}" --script unit MiB print | awk '$1 == "3" {print $3}' | tr -d 'MiB')
 
-		if [ "$((PART_OP_SIZE - 1))" == "$PART_OP_SIZE_REAL" ] && [ "$PART_OS_START" == "$PART_OS_START_REAL" ] && [ "$PART_OS_END" == "$PART_OS_END_REAL" ] ; then
+		if [ "$PART_OP_SIZE" == "$PART_OP_SIZE_REAL" ] && [ "$PART_OS_START" == "$PART_OS_START_REAL" ] && [ "$PART_OS_END" == "$PART_OS_END_REAL" ] ; then
 			echo ------They DO match
 			SIZES_MATCH=yes
 		else
