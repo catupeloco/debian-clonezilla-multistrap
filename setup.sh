@@ -39,13 +39,21 @@ else
 	#Finding Fastest repo in the background
 	netselect-apt -n -s -a amd64 $DEBIAN_VERSION 2>&1 | grep -A1 "fastest valid for http" | tail -n1 > /tmp/fastest_repo &
 	REPOSITORY_DEB_PID=$!
-	
-	disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
+#####################################################################################################
+	# Remove usb drives from available list
+ disk_list=$(lsblk -dn -o NAME,SIZE,TYPE,TRAN | awk '$3=="disk" && $4!="usb" {print $1,$2}')
+
+ # Original code
+	#disk_list=$(lsblk -dn -o NAME,SIZE,TYPE | awk '$3=="disk"{print $1,$2}')
+
 	menu_options=()
 	while read -r name size; do
 	      menu_options+=("/dev/$name" "$size")
 	done <<< "$disk_list"
 	DEVICE=$(whiptail --title "Disk selection" --menu "Choose a disk from below and press enter to begin:" 20 60 10 "${menu_options[@]}" 3>&1 1>&2 2>&3)
+
+[[ -z "$DEVICE" ]] && exit 1
+
 	if echo ${DEVICE} | grep -i nvme > /dev/null ; then
 		DEVICE_P=${DEVICE}p
 	else
