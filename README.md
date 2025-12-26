@@ -5,15 +5,11 @@
 This project builds upon my previous work, ***"debian-multistrap"***, which was designed to set up an X2go server.
 In this instance, the goal is to build a laptop/desktop image with the following components :
 
-- Debian Trixie with :
-  - XFCE.
-    - With custom skel for task bar.
-    - With custom keybindings for windows manager.
-  - Flameshot (replace for screenshots).
-  - Qterminal (replace for xfce terminal).
-  - Mousepad.
-  - VLC.
-  - QBittorrent.
+- Debian Trixie/Bookworm with :
+  - Xfce with custom skel (for task bar) and keybindings (for windows manager).
+  - BTRFS, Grub-Btrfs and Timeshift for snapshots of root file system. 
+  - Flameshot (replace for screenshots), Qterminal (replace for xfce terminal).
+  - Mousepad, VLC, QBittorrent.
   - OBS Studio.
   - KeePassXC.
   - Remmina, x11vnc and ssvnc.
