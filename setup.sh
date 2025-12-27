@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251227-1654
+SCRIPT_DATE=20251227-1712
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -377,6 +377,35 @@ set -e
 #########################################################################
 }
 
+umounting_device(){
+cleaning_screen	
+echo "Unmounting ${DEVICE} -----------------------------------------"
+	pgrep gpg | while read -r line
+	do kill -9 "$line"			2>/dev/null || true
+	done
+	for times in {1..5} ; do
+		umount ${ROOTFS}/dev/pts                2>/dev/null || true
+		umount ${ROOTFS}/proc                   2>/dev/null || true
+		umount ${ROOTFS}/run                    2>/dev/null || true
+		umount ${ROOTFS}/sys                    2>/dev/null || true
+		umount ${ROOTFS}/tmp                    2>/dev/null || true
+		umount ${ROOTFS}/tmp                    2>/dev/null || true
+		umount ${ROOTFS}/dev                    2>/dev/null || true
+		umount ${ROOTFS}/dev                    2>/dev/null || true
+		umount ${ROOTFS}/boot/efi               2>/dev/null || true
+		umount          /var/cache/apt/archives 2>/dev/null || true
+		umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
+		umount ${ROOTFS}/home                   2>/dev/null || true
+		umount ${ROOTFS}/*                      2>/dev/null || true
+		umount ${ROOTFS}                	2>/dev/null || true
+		umount ${RECOVERYFS}                    2>/dev/null || true
+		umount ${CACHE_FOLDER}                  2>/dev/null || true
+		umount ${CACHE_FOLDER}                  2>/dev/null || true
+		umount "${DEVICE}"*                     2>/dev/null || true
+		sleep 1
+	done
+}
+
 cleaning_screen
 echo "Inicializing following ttys ---------------------------------"
 	touch $LOG
@@ -430,43 +459,8 @@ EOF
 	fi
 set -e
 
-cleaning_screen
-echo "Unmounting ${DEVICE}  ----------------------------------------"
-	# JUST IN CASE KILLING GPG PROCESSES FOR MULTIPLE RUNS
-	pgrep gpg | while read -r line
-	do kill -9 "$line" 			2>/dev/null || true
-	done
-	# REPEATING UNMOUNT COMMANDS JUST IN CASE
-        umount "${DEVICE}"*                     2>/dev/null || true
-        umount "${DEVICE}"*                     2>/dev/null || true
-        umount ${ROOTFS}/dev/pts                2>/dev/null || true
-        umount ${ROOTFS}/dev/pts                2>/dev/null || true
-        umount ${ROOTFS}/dev                    2>/dev/null || true
-        umount ${ROOTFS}/dev                    2>/dev/null || true
-        umount ${ROOTFS}/proc                   2>/dev/null || true
-        umount ${ROOTFS}/proc                   2>/dev/null || true
-        umount ${ROOTFS}/run                    2>/dev/null || true
-        umount ${ROOTFS}/run                    2>/dev/null || true
-        umount ${ROOTFS}/sys                    2>/dev/null || true
-        umount ${ROOTFS}/sys                    2>/dev/null || true
-        umount ${ROOTFS}/tmp                    2>/dev/null || true
-        umount ${ROOTFS}/tmp                    2>/dev/null || true
-        umount ${ROOTFS}/boot/efi               2>/dev/null || true
-        umount ${ROOTFS}/boot/efi               2>/dev/null || true
-        umount          /var/cache/apt/archives 2>/dev/null || true
-        umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
-        umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
-        umount ${ROOTFS}/var/log                2>/dev/null || true
-        umount ${ROOTFS}/var/log                2>/dev/null || true
-        umount ${ROOTFS}/home                   2>/dev/null || true
-        umount ${ROOTFS}/home                   2>/dev/null || true
-        umount ${ROOTFS}                        2>/dev/null || true
-        umount ${ROOTFS}                        2>/dev/null || true
-        umount ${ROOTFS}                        2>/dev/null || true
-        umount ${RECOVERYFS}                    2>/dev/null || true
-        umount ${RECOVERYFS}                    2>/dev/null || true
-        umount ${CACHE_FOLDER}                  2>/dev/null || true
-        umount ${CACHE_FOLDER}                  2>/dev/null || true
+umounting_device
+
 
 cleaning_screen
 echo "Comparing partitions target scheme vs actual schema ---------"
@@ -569,15 +563,11 @@ echo "Mounting ----------------------------------------------------"
 echo "---OS partition"
         mkdir -p ${ROOTFS}                                      > /dev/null 2>&1
         mount "${DEVICE_P}"3 ${ROOTFS}                          > /dev/null 2>&1
-#####################################################################################
         btrfs subvolume create  ${ROOTFS}/@         2>/dev/null || true
         btrfs subvolume create  ${ROOTFS}/@home     2>/dev/null || true
         btrfs subvolume create  ${ROOTFS}/@varlog   2>/dev/null || true
-        #btrfs subvolume create  ${ROOTFS}/@varcache 2>/dev/null || true
         umount ${ROOTFS}
 	mount -o compress=zstd,noatime,ssd,space_cache=v2,discard=async,subvol=@     "${DEVICE_P}"3 ${ROOTFS}
-
-#####################################################################################
 
 	let "PROGRESS_BAR_CURRENT += 1"
 echo "----Cleaning files just in case"
@@ -630,18 +620,6 @@ echo "Downloading external software -------------------------------"
 	mkdir -p $MARKTEXT_FOLDER		>/dev/null 2>&1
         mkdir -p $DOWNLOAD_DIR_CLONEZILLA	>/dev/null 2>&1 || true
 
-# BOTH CLONEZILLA SITES ARE UNRELIABLE SO I MAKE A BETTER PLAN###################################
-<<BYPASS
-	case ${MIRROR_CLONEZILLA} in
-		Official_Fast )
-			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
-			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
-		Official_Slow )
-			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
-			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
-			CLONEZILLA_ORIGIN=${URL_CLONEZILLA} ;;
-        esac
-BYPASS
 #################################################################################################
 	echo ---Obtaining Clonezilla file URL
 	echo ----Trying clonezilla fast site
@@ -1159,15 +1137,6 @@ echo Asi quedamos -----------------------
 	apt update                                             
 	apt list --upgradable
 	sleep 10
-# Disabled
-	#dpkg -l | grep -E "firefox-esr|chrome"
-	#rm /etc/apt/sources.list.d/debian.list                  
-	#cp -p /root/old.list /etc/apt/sources.list.d/debian.list
-	#apt remove --purge firefox-esr google-chrome-stable -y
-	#apt install firefox-esr /tmp/google-chrome-stable.deb -y
-	#dpkg -l | grep -E "firefox-esr|chrome"
-	#rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
-	#cp -p /root/new.list /etc/apt/sources.list.d/debian.list
 EOF
 
 # To get an estimated time of upgrade I've added this script
@@ -1433,33 +1402,7 @@ cleaning_screen
 echo "Backing up logs ----------------------------------------------"
 	cp ${LOG} ${ERR} ${ROOTFS}/
 
-cleaning_screen	
-echo "Unmounting ${DEVICE} -----------------------------------------"
-	pgrep gpg | while read -r line
-	do kill -9 "$line"			2>/dev/null || true
-	done
-	for times in {1..5} ; do
-		umount ${ROOTFS}/dev/pts                2>/dev/null || true
-		umount ${ROOTFS}/proc                   2>/dev/null || true
-		umount ${ROOTFS}/run                    2>/dev/null || true
-		umount ${ROOTFS}/sys                    2>/dev/null || true
-		umount ${ROOTFS}/tmp                    2>/dev/null || true
-		umount ${ROOTFS}/tmp                    2>/dev/null || true
-		umount ${ROOTFS}/dev                    2>/dev/null || true
-		umount ${ROOTFS}/dev                    2>/dev/null || true
-		umount ${ROOTFS}/boot/efi               2>/dev/null || true
-		umount          /var/cache/apt/archives 2>/dev/null || true
-		umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
-		umount ${ROOTFS}/home                   2>/dev/null || true
-		umount ${ROOTFS}/*                      2>/dev/null || true
-		umount ${ROOTFS}                	2>/dev/null || true
-		umount ${RECOVERYFS}                    2>/dev/null || true
-		umount ${CACHE_FOLDER}                  2>/dev/null || true
-		umount ${CACHE_FOLDER}                  2>/dev/null || true
-		umount "${DEVICE}"*                     2>/dev/null || true
-		sleep 1
-	done
-
+#UMOUNT!!!
 
 PROGRESS_BAR_CURRENT=$PROGRESS_BAR_MAX
 PROGRESS_BAR_FILLED_LEN=$PROGRESS_BAR_CURRENT
@@ -1476,7 +1419,6 @@ echo "END of the road!! keep up the good work ---------------------"
 	# FIXME lupa xfce4-appfinder/whiskermenu on SUPER_L
 	# FIXME Back port kernel and wifi drivers for bookworm (again)
 	# FIXME Power button shutdown. Difficult (It works well on DELL but not on Thinkpad)
-	# FIXME 
 	# TODO Failover download Debian Repository 
 	# TODO not ask for debian repository
 	# TODO Update of git hub scripts
@@ -1525,6 +1467,7 @@ echo "END of the road!! keep up the good work ---------------------"
 		# 	
 
 ##########################################################################
+# DONE TASKS
 # Volumen siempre vuelve a cero
 	# Listo
 # Nala, seleccion de repositorio optimo
@@ -1661,3 +1604,49 @@ BYPASS
 # I should test filesystems in addition to size and labels. DONE mié 24 dic 2025 14:21:25 -03
 # Also remove -F as it was a bad parameter that doesnt is for forcing, instead is for selection filesystem type in mkfs.vfat
 #[ "$REPARTED" == yes ]&& mkfs.vfat  -n EFI        "${DEVICE}"1 -F	 >/dev/null 2>&1 || true
+# BOTH CLONEZILLA SITES ARE UNRELIABLE SO I MAKE A BETTER PLAN###################################
+<<BYPASS
+	case ${MIRROR_CLONEZILLA} in
+		Official_Fast )
+			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
+		Official_Slow )
+			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
+			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
+			CLONEZILLA_ORIGIN=${URL_CLONEZILLA} ;;
+        esac
+BYPASS
+# Disabled
+	#dpkg -l | grep -E "firefox-esr|chrome"
+	#rm /etc/apt/sources.list.d/debian.list                  
+	#cp -p /root/old.list /etc/apt/sources.list.d/debian.list
+	#apt remove --purge firefox-esr google-chrome-stable -y
+	#apt install firefox-esr /tmp/google-chrome-stable.deb -y
+	#dpkg -l | grep -E "firefox-esr|chrome"
+	#rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
+	#cp -p /root/new.list /etc/apt/sources.list.d/debian.list
+<<BYPASS
+cleaning_screen
+echo "Unmounting ${DEVICE}  ----------------------------------------"
+	# JUST IN CASE KILLING GPG PROCESSES FOR MULTIPLE RUNS
+	pgrep gpg | while read -r line
+	do kill -9 "$line" 			2>/dev/null || true
+	done
+	# REPEATING UNMOUNT COMMANDS JUST IN CASE
+        umount "${DEVICE}"*                     2>/dev/null || true
+        umount ${ROOTFS}/dev/pts                2>/dev/null || true
+        umount ${ROOTFS}/dev                    2>/dev/null || true
+        umount ${ROOTFS}/proc                   2>/dev/null || true
+        umount ${ROOTFS}/run                    2>/dev/null || true
+        umount ${ROOTFS}/sys                    2>/dev/null || true
+        umount ${ROOTFS}/tmp                    2>/dev/null || true
+        umount ${ROOTFS}/boot/efi               2>/dev/null || true
+        umount          /var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}/var/log                2>/dev/null || true
+        umount ${ROOTFS}/home                   2>/dev/null || true
+        umount ${ROOTFS}                        2>/dev/null || true
+        umount ${ROOTFS}                        2>/dev/null || true
+        umount ${RECOVERYFS}                    2>/dev/null || true
+        umount ${CACHE_FOLDER}                  2>/dev/null || true
+BYPASS
