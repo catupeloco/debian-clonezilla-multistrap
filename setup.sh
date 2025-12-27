@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251227-1712
+SCRIPT_DATE=20251227-1742
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1402,7 +1402,7 @@ cleaning_screen
 echo "Backing up logs ----------------------------------------------"
 	cp ${LOG} ${ERR} ${ROOTFS}/
 
-#UMOUNT!!!
+umounting_device
 
 PROGRESS_BAR_CURRENT=$PROGRESS_BAR_MAX
 PROGRESS_BAR_FILLED_LEN=$PROGRESS_BAR_CURRENT
@@ -1423,6 +1423,7 @@ echo "END of the road!! keep up the good work ---------------------"
 	# TODO not ask for debian repository
 	# TODO Update of git hub scripts
 	# TODO Double password prompt same window. Works but stetics is different than whiptail and tab doesnt work
+	# TODO Skip redownload with aria2
 	# Reparted bug. Listo mié 24 dic 2025 19:44:30 -03
 	# EFI doesnt format its partition. Listo mié 24 dic 2025 20:10:59 -03
 	# xfce locks after some time and its annoying. Listo
