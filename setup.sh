@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251228-1010
+SCRIPT_DATE=20251228-1016
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err

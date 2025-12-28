@@ -54,7 +54,7 @@
       <property name="&lt;Primary&gt;&lt;Alt&gt;l" type="string" value="xflock4"/>
       <property name="&lt;Alt&gt;F1" type="string" value="xfce4-popup-applicationsmenu"/>
       <property name="&lt;Super&gt;p" type="string" value="xfce4-display-settings --minimal"/>
-      <property name="&lt;Primary&gt;&lt;Shift&gt;Escape" type="string" value="xfce4-taskmanager"/>
+      <property name="&lt;Primary&gt;&lt;Shift&gt;Escape" type="string" value="/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=missioncenter io.missioncenter.MissionCenter"/>
       <property name="&lt;Super&gt;e" type="string" value="thunar"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;Escape" type="string" value="xkill"/>
       <property name="HomePage" type="string" value="exo-open --launch WebBrowser"/>
@@ -126,7 +126,7 @@
       <property name="&lt;Alt&gt;w" type="empty"/>
       <property name="&lt;Alt&gt;z" type="empty"/>
       <property name="&lt;Alt&gt;x" type="empty"/>
-      <property name="Super_L" type="empty"/>
+      <property name="Super_L" type="string" value="/usr/bin/xfce4-popup-whiskermenu"/>
       <property name="&lt;Alt&gt;F4" type="string" value="close_window_key"/>
       <property name="&lt;Primary&gt;&lt;Alt&gt;KP_3" type="string" value="move_window_workspace_3_key"/>
       <property name="&lt;Primary&gt;F2" type="string" value="workspace_2_key"/>
