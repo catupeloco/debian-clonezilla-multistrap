@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251228-1027
+SCRIPT_DATE=20251228-1054
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -405,7 +405,8 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 		sleep 1
 	done
 }
-
+# Setting Seconds	
+SECONDS=0
 cleaning_screen
 echo "Inicializing following ttys ---------------------------------"
 	touch $LOG
@@ -427,6 +428,8 @@ while true ; do
 	cat ${SELECTIONS} | sed 's/^\(export password=\).*/\1******/'
 	echo --AUTOMATIZATIONS
 	cat ${AUTOMATIZATIONS}
+	echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_START_EXTRACTING_CLONEZILLA - CLONEZILLA $END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP \
+ - MMDEBSTRAT $END_MMDEBSTRAP_START_POSTTASKS - POSTTASKS $END_POSTTASKS_START_CHROOT - CHROOT $END_CHROOT_START_SCRIPTS - END $END
 	sleep 3
 	clear
 done
@@ -610,6 +613,8 @@ echo "---Cleaning cache packages if necesary"
 	done
 	set -e
 
+END_DISK_SETUP_START_DOWNLOADS=$SECONDS
+
 ###########################Parallel Downloads fixes############################################
 cleaning_screen
 echo "Downloading external software -------------------------------"
@@ -748,6 +753,8 @@ done
         tar -xzf ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE} -C $DOWNLOAD_DIR_LO
         tar -xzf ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE} -C $DOWNLOAD_DIR_LO
 
+END_DOWNLOADS_START_EXTRACTING_CLONEZILLA=$SECONDS
+
 ###########################Parallel Downloads fixes############################################
 
 	let "PROGRESS_BAR_CURRENT += 1"
@@ -822,6 +829,9 @@ sed -i 's/%%KEYBOARD%%/'$CLONEZILLA_KEYBOARD'/g' ${RECOVERYFS}/boot/grub/grub.cf
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/boot/grub/grub.cfg
 sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
+
+END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP=$SECONDS
+
 cleaning_screen
 echo "Running mmdebstrap (please be patient, longest step) --------"
 ls -A ${ROOTFS}
@@ -836,6 +846,8 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
 	"deb [trusted=yes] ${SPOTIFY_REPOSITORY}                          stable  non-free"                        \
 	"deb [trusted=yes] ${SYNCTHING_REPOSITORY}                        syncthing stable-v2"                     \
         > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
+
+END_MMDEBSTRAP_START_POSTTASKS=$SECONDS
 
 cleaning_screen	
 echo "Splitting sources.list\'s in sources.list.d ------------------"
@@ -925,6 +937,8 @@ echo "Getting ready for chroot ------------------------------------"
         mount --bind /run  ${ROOTFS}/run
         mount -t sysfs sysfs ${ROOTFS}/sys
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
+
+END_POSTTASKS_START_CHROOT=$SECONDS
 
 cleaning_screen	
 echo "Entering chroot ---------------------------------------------"
@@ -1051,6 +1065,8 @@ echo "Entering chroot ---------------------------------------------"
         exit" > ${ROOTFS}/root/chroot.sh
         chmod +x ${ROOTFS}/root/chroot.sh
         chroot ${ROOTFS} /bin/bash /root/chroot.sh 2>>$ERR 3>>$LOG
+
+END_CHROOT_START_SCRIPTS=$SECONDS
 
 cleaning_screen	
 echo "Unattended upgrades -----------------------------------------"
@@ -1418,6 +1434,7 @@ PROGRESS_BAR_EMPTY_LEN=0
 cleaning_screen	
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}" || true
+	END=$SECONDS
 	exit
 
 ######################################################################################################################################################
