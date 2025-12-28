@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251227-1914
+SCRIPT_DATE=20251227-2107
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1424,6 +1424,8 @@ echo "END of the road!! keep up the good work ---------------------"
 	# TODO Update of git hub scripts
 	# TODO Double password prompt same window. Works but stetics is different than whiptail and tab doesnt work
 	# TODO Skip redownload with aria2
+	# Taking screenshots of installation process
+		# TODO Creation of animated gif files
 	# Reparted bug. Listo mié 24 dic 2025 19:44:30 -03
 	# EFI doesnt format its partition. Listo mié 24 dic 2025 20:10:59 -03
 	# xfce locks after some time and its annoying. Listo
