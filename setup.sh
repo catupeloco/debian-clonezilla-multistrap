@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251228-1055
+SCRIPT_DATE=20251228-1110
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -706,7 +706,7 @@ aria2_pending(){
 	PENDING=""
    	for FILE in "${FILES_TO_DOWNLOAD[@]}"; do
 		if [[ ! -f "$FILE" ]]; then
-		    PENDING+=("$FILE")
+		    PENDING+="$FILE"
 		    echo --Adding $FILE in $PENDING
 		fi
 	done
