@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251228-1054
+SCRIPT_DATE=20251228-1055
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1355,7 +1355,7 @@ echo "Replacing keybindings ----------------------------------------"
 	-e 's/xfce4-screenshooter -w/flameshot gui/g' \
 	-e 's/xfce4-screenshooter -r/flameshot gui/g' \
 	-e 's/xfce4-screenshooter/flameshot gui/g'    \
-	-e 's/xfce4-taskmanager/\/usr\/bin\/flatpak run --branch=stable --arch=x86_64 --command=missioncenter io.missioncenter.MissionCenter"/g'    \
+	-e 's/xfce4-taskmanager/\/usr\/bin\/flatpak run --branch=stable --arch=x86_64 --command=missioncenter io.missioncenter.MissionCenter/g'    \
     	"$FILE"
 
 	echo --Deleting lines that may conflict 
