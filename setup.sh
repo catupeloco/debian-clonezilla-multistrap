@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251227-2107
+SCRIPT_DATE=20251228-1010
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1328,11 +1328,12 @@ echo "Replacing keybindings ----------------------------------------"
 	cp ${FILE} ${FILE}.bak
 
 	let "PROGRESS_BAR_CURRENT += 1"
-	echo --Replacing screenshooter for flameshot
+	echo --Replacing Screenshooter for Flameshot and Taskmanager for Mission Center
 	sed -i \
 	-e 's/xfce4-screenshooter -w/flameshot gui/g' \
 	-e 's/xfce4-screenshooter -r/flameshot gui/g' \
 	-e 's/xfce4-screenshooter/flameshot gui/g'    \
+	-e 's/xfce4-taskmanager/\/usr\/bin\/flatpak run --branch=stable --arch=x86_64 --command=missioncenter io.missioncenter.MissionCenter"/g'    \
     	"$FILE"
 
 	echo --Deleting lines that may conflict 
@@ -1419,6 +1420,7 @@ echo "END of the road!! keep up the good work ---------------------"
 	# FIXME lupa xfce4-appfinder/whiskermenu on SUPER_L
 	# FIXME Back port kernel and wifi drivers for bookworm (again)
 	# FIXME Power button shutdown. Difficult (It works well on DELL but not on Thinkpad)
+	# FIXME Control Shift Escape fails to open task manager
 	# TODO Failover download Debian Repository 
 	# TODO not ask for debian repository
 	# TODO Update of git hub scripts
