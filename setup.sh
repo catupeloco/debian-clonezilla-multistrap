@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251228-1016
+SCRIPT_DATE=20251228-1025
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -696,7 +696,21 @@ ${CLONEZILLA_ORIGIN}
   dir=${DOWNLOAD_DIR_CLONEZILLA}
   out=${FILE_CLONEZILLA}
 EOF
-PENDING="SOMETHING"
+aria2_pending(){
+	set +e
+	PENDING=""
+   	for FILE in "${FILES_TO_DOWNLOAD[@]}"; do
+		if [[ ! -f "$FILE" ]]; then
+		    PENDING+=("$FILE")
+		    echo --Adding $FILE in $PENDING
+		fi
+	done
+	ls -la "${FILES_TO_DOWNLOAD[@]}" >/dev/null || true
+	export PENDING=$PENDING
+	set -e
+}
+#PENDING="SOMETHING"
+aria2_pending
 while [ ! -z "$PENDING" ] ; do
 	# -i                         		: Read URLs from input file
 	# -j 5                      		: Run 5 paralell downloads
@@ -721,16 +735,7 @@ while [ ! -z "$PENDING" ] ; do
 	--console-log-level=warn \
 	--download-result=hide \
 	--summary-interval=0 
-	set +e
-	PENDING=""
-   	for FILE in "${FILES_TO_DOWNLOAD[@]}"; do
-		if [[ ! -f "$FILE" ]]; then
-		    PENDING+=("$FILE")
-		    echo --Adding $FILE in $PENDING
-		fi
-	done
-	ls -la "${FILES_TO_DOWNLOAD[@]}" >/dev/null || true
-	set -e
+	aria2_pending
 	sleep 5
 done
 	let "PROGRESS_BAR_CURRENT += 1"
