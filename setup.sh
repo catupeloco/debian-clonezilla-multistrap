@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251228-1025
+SCRIPT_DATE=20251228-1027
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -707,6 +707,7 @@ aria2_pending(){
 	done
 	ls -la "${FILES_TO_DOWNLOAD[@]}" >/dev/null || true
 	export PENDING=$PENDING
+	echo ARIA2 PENDING $PENDING >> $AUTOMATIZATIONS 
 	set -e
 }
 #PENDING="SOMETHING"
