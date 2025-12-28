@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251228-1110
+SCRIPT_DATE=20251228-1126
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -707,10 +707,10 @@ aria2_pending(){
    	for FILE in "${FILES_TO_DOWNLOAD[@]}"; do
 		if [[ ! -f "$FILE" ]]; then
 		    PENDING+="$FILE"
-		    echo --Adding $FILE in $PENDING
+		    # echo --Adding $FILE in $PENDING
 		fi
 	done
-	ls -la "${FILES_TO_DOWNLOAD[@]}" >/dev/null || true
+	# ls -la "${FILES_TO_DOWNLOAD[@]}" >/dev/null || true
 	export PENDING=$PENDING
 	echo ARIA2 PENDING $PENDING >> $AUTOMATIZATIONS 
 	set -e
