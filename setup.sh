@@ -1,10 +1,11 @@
 #!/bin/bash
-SCRIPT_DATE=20251228-1126
+SCRIPT_DATE=20251228-1130
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
 SELECTIONS=/tmp/selections
 AUTOMATIZATIONS=/tmp/automatizations
+TIMES=/tmp/times
 
 echo ---------------------------------------------------------------------------
 timedatectl set-timezone America/Argentina/Buenos_Aires
@@ -407,6 +408,9 @@ echo "Unmounting ${DEVICE} -----------------------------------------"
 }
 # Setting Seconds	
 SECONDS=0
+echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_START_EXTRACTING_CLONEZILLA - CLONEZILLA $END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP \
+ - MMDEBSTRAT $END_MMDEBSTRAP_START_POSTTASKS - POSTTASKS $END_POSTTASKS_START_CHROOT - CHROOT $END_CHROOT_START_SCRIPTS - END $END > $TIMES
+
 cleaning_screen
 echo "Inicializing following ttys ---------------------------------"
 	touch $LOG
@@ -428,8 +432,8 @@ while true ; do
 	cat ${SELECTIONS} | sed 's/^\(export password=\).*/\1******/'
 	echo --AUTOMATIZATIONS
 	cat ${AUTOMATIZATIONS}
-	echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_START_EXTRACTING_CLONEZILLA - CLONEZILLA $END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP \
- - MMDEBSTRAT $END_MMDEBSTRAP_START_POSTTASKS - POSTTASKS $END_POSTTASKS_START_CHROOT - CHROOT $END_CHROOT_START_SCRIPTS - END $END
+	echo --TIMES
+	cat ${TIMES}
 	sleep 3
 	clear
 done
@@ -614,6 +618,8 @@ echo "---Cleaning cache packages if necesary"
 	set -e
 
 END_DISK_SETUP_START_DOWNLOADS=$SECONDS
+echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_START_EXTRACTING_CLONEZILLA - CLONEZILLA $END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP \
+ - MMDEBSTRAT $END_MMDEBSTRAP_START_POSTTASKS - POSTTASKS $END_POSTTASKS_START_CHROOT - CHROOT $END_CHROOT_START_SCRIPTS - END $END > $TIMES
 
 ###########################Parallel Downloads fixes############################################
 cleaning_screen
@@ -754,6 +760,8 @@ done
         tar -xzf ${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE} -C $DOWNLOAD_DIR_LO
 
 END_DOWNLOADS_START_EXTRACTING_CLONEZILLA=$SECONDS
+echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_START_EXTRACTING_CLONEZILLA - CLONEZILLA $END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP \
+ - MMDEBSTRAT $END_MMDEBSTRAP_START_POSTTASKS - POSTTASKS $END_POSTTASKS_START_CHROOT - CHROOT $END_CHROOT_START_SCRIPTS - END $END > $TIMES
 
 ###########################Parallel Downloads fixes############################################
 
@@ -831,6 +839,8 @@ sed -i 's/%%BASE%%/'$BASE'/g'                    ${RECOVERYFS}/clean
 
 
 END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP=$SECONDS
+echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_START_EXTRACTING_CLONEZILLA - CLONEZILLA $END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP \
+ - MMDEBSTRAT $END_MMDEBSTRAP_START_POSTTASKS - POSTTASKS $END_POSTTASKS_START_CHROOT - CHROOT $END_CHROOT_START_SCRIPTS - END $END > $TIMES
 
 cleaning_screen
 echo "Running mmdebstrap (please be patient, longest step) --------"
@@ -848,6 +858,8 @@ mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --
         > >(tee -a "$LOG") 2> >(tee -a "$ERR" >&2)
 
 END_MMDEBSTRAP_START_POSTTASKS=$SECONDS
+echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_START_EXTRACTING_CLONEZILLA - CLONEZILLA $END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP \
+ - MMDEBSTRAT $END_MMDEBSTRAP_START_POSTTASKS - POSTTASKS $END_POSTTASKS_START_CHROOT - CHROOT $END_CHROOT_START_SCRIPTS - END $END > $TIMES
 
 cleaning_screen	
 echo "Splitting sources.list\'s in sources.list.d ------------------"
@@ -939,6 +951,8 @@ echo "Getting ready for chroot ------------------------------------"
         mount -t tmpfs tmpfs ${ROOTFS}/tmp
 
 END_POSTTASKS_START_CHROOT=$SECONDS
+echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_START_EXTRACTING_CLONEZILLA - CLONEZILLA $END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP \
+ - MMDEBSTRAT $END_MMDEBSTRAP_START_POSTTASKS - POSTTASKS $END_POSTTASKS_START_CHROOT - CHROOT $END_CHROOT_START_SCRIPTS - END $END > $TIMES
 
 cleaning_screen	
 echo "Entering chroot ---------------------------------------------"
@@ -1067,6 +1081,8 @@ echo "Entering chroot ---------------------------------------------"
         chroot ${ROOTFS} /bin/bash /root/chroot.sh 2>>$ERR 3>>$LOG
 
 END_CHROOT_START_SCRIPTS=$SECONDS
+echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_START_EXTRACTING_CLONEZILLA - CLONEZILLA $END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP \
+ - MMDEBSTRAT $END_MMDEBSTRAP_START_POSTTASKS - POSTTASKS $END_POSTTASKS_START_CHROOT - CHROOT $END_CHROOT_START_SCRIPTS - END $END > $TIMES
 
 cleaning_screen	
 echo "Unattended upgrades -----------------------------------------"
@@ -1434,8 +1450,11 @@ PROGRESS_BAR_EMPTY_LEN=0
 cleaning_screen	
 echo "END of the road!! keep up the good work ---------------------"
 	mount | grep -E "${DEVICE}|${CACHE_FOLDER}|${ROOTFS}|${RECOVERYFS}" || true
-	END=$SECONDS
-	exit
+
+END=$SECONDS
+echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_START_EXTRACTING_CLONEZILLA - CLONEZILLA $END_EXTRACTING_CLONEZILLA_START_MMDEBSTRAP \
+ - MMDEBSTRAT $END_MMDEBSTRAP_START_POSTTASKS - POSTTASKS $END_POSTTASKS_START_CHROOT - CHROOT $END_CHROOT_START_SCRIPTS - END $END > $TIMES
+exit
 
 ######################################################################################################################################################
 # TODO
