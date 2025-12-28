@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251228-1207
+SCRIPT_DATE=20251228-1217
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -442,7 +442,7 @@ EOF
 cat << EOF > /tmp/downloads.watch
 #!/bin/bash
 while true ; do
-	echo Information of Downloaded packages ---------------------
+	echo Downloaded packages Information ---------------------
 	if mount | grep ${CACHE_FOLDER} >/dev/null ; then
 		echo ---Downloaded by aria2
 		sudo ls -larth ${CACHE_FOLDER}/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/ | grep ^\-
