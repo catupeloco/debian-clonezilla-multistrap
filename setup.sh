@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251228-1218
+SCRIPT_DATE=20251231-1024
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -201,7 +201,7 @@ anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
 blueman bluetooth bluez bluez-firmware bluez-alsa-utils \
 bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping                       isc-dhcp-client \
-network-manager                        network-manager-openconnect network-manager-l2tp openconnect           \
+network-manager                        network-manager-openconnect network-manager-openconnect-gnome network-manager-l2tp openconnect           \
 powermgmt-base util-linux wpasupplicant xfce4-power-manager xfce4-power-manager-plugins \
 firmware-ath9k-htc firmware-amd-graphics                         firmware-linux firmware-linux-free firmware-realtek \
 amd64-microcode intel-microcode mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-drivers firmware-iwlwifi                      \
