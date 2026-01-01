@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20251231-1024
+SCRIPT_DATE=20260101-1606
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1495,6 +1495,7 @@ exit
 	     # creation of fstab 
 	     # installation of 
 	 # Uncompress of keymaps
+	 # ZRAM
 
 # Best practicies
 	# Commenting code
