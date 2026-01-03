@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260103-1252
+SCRIPT_DATE=20260101-1606
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1463,7 +1463,6 @@ exit
 	# FIXME Back port kernel and wifi drivers for bookworm (again)
 	# FIXME Power button shutdown. Difficult (It works well on DELL but not on Thinkpad)
 	# FIXME Control Shift Escape fails to open task manager
-	# FIXME Add .bashrc to skel
 	# TODO Failover download Debian Repository 
 	# TODO not ask for debian repository
 	# TODO Update of git hub scripts
@@ -1543,3 +1542,159 @@ exit
 	# xfconf-query -c xfce4-panel -l
 	# /etc/xdg/xfce4/panel/default.xml
 ##########################################################################
+
+## OLD CODE KEEP IT JUST IN CASE #################################################################################################################################
+<<BYPASS
+cleaning_screen	
+echo "Downloading keyboard mappings -------------------------------"
+	wget --show-progress -qcN -O ${CACHE_FOLDER}/"${KEYBOARD_MAPS}" ${KEYBOARD_FIX_URL}"${KEYBOARD_MAPS}"
+
+cleaning_screen
+echo "Downloading Libreoffice -------------------------------------"
+	mkdir -p $DOWNLOAD_DIR_LO >/dev/null 2>&1
+        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_MAIN_FILE}" "${LIBREOFFICE_MAIN}"
+        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_LAPA_FILE}" "${LIBREOFFICE_LAPA}"
+        wget --show-progress -qcN -O "${DOWNLOAD_DIR_LO}/${LIBREOFFICE_HELP_FILE}" "${LIBREOFFICE_HELP}"
+	find $DOWNLOAD_DIR_LO/ -type f -name '*.deb' -exec rm {} \; || true
+        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb.tar.gz -C $DOWNLOAD_DIR_LO
+        tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_langpack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
+	tar -xzf $DOWNLOAD_DIR_LO/LibreOffice_"${VERSION_LO}"_Linux_x86-64_deb_helppack_$LO_LANG.tar.gz -C $DOWNLOAD_DIR_LO
+
+cleaning_screen
+echo "Downloading Draw.io -----------------------------------------"
+	mkdir -p $DRAWIO_FOLDER >/dev/null 2>&1
+        wget --show-progress -qcN -O ${DRAWIO_FOLDER}/${DRAWIO_DEB} ${DRAWIO_URL}
+
+cleaning_screen
+echo "Downloading MarkText-----------------------------------------"
+	mkdir -p $MARKTEXT_FOLDER >/dev/null 2>&1
+        wget --show-progress -qcN -O ${MARKTEXT_FOLDER}/${MARKTEXT_DEB} ${MARKTEXT_URL}
+
+cleaning_screen
+echo "Downloading lastest clonezilla ------------------------------"
+        mkdir -p $DOWNLOAD_DIR_CLONEZILLA 2>/dev/null || true
+	echo "---Downloading from ${MIRROR_CLONEZILLA}"
+        case ${MIRROR_CLONEZILLA} in
+		Official_Fast )
+			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" ${BASEURL_CLONEZILLA_FAST}"${FILE_CLONEZILLA}" ;;
+		Official_Slow )
+			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
+			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
+			wget --show-progress -qcN -O ${DOWNLOAD_DIR_CLONEZILLA}/"${FILE_CLONEZILLA}" "${URL_CLONEZILLA}" ;;
+        esac
+
+BYPASS
+		#setsid bash -c 'exec watch sudo fdisk -l										<> /dev/tty2 >&0 2>&1' &
+		#setsid bash -c 'exec watch sudo df -h   										<> /dev/tty3 >&0 2>&1' &
+		#setsid bash -c 'exec watch sudo lsblk -f										<> /dev/tty4 >&0 2>&1' &
+		#setsid bash -c 'exec watch sudo ls -larth '${CACHE_FOLDER}'/{Draw.io,Marktext,Keyboard_maps,Clonezilla,Libreoffice}/	<> /dev/tty5 >&0 2>&1' &
+#[ "$REPARTED" == yes ] && mkfs.vfat  -n EFI        "${DEVICE}"1 	                 || true
+#[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE}"4	                 || true 
+#		 	   mkfs.ext4  -L CLONEZILLA "${DEVICE}"2 	                 || true
+#			   mkfs.btrfs -L LINUX      "${DEVICE}"3 	                 || true
+		     # Disabled because it formats even if REPARTED = no
+		     # || mkfs.vfat  -n EFI        "${DEVICE}"1          >/dev/null 2>&1 || true
+		     # || mkfs.ext4  -L RESOURCES  "${DEVICE}"4          >/dev/null 2>&1 || true
+		     # || mkfs.ext4  -L CLONEZILLA "${DEVICE}"2          >/dev/null 2>&1 || true
+		     # || mkfs.btrfs -L LINUX      "${DEVICE}"3          >/dev/null 2>&1 || true
+
+			# Changed to btrs for snapshots with timeshift 
+			# mkfs.ext4  -L LINUX      "${DEVICE}"3		 >/dev/null 2>&1 || true
+        #mount -o subvol=@,compress=zstd,noatime         "${DEVICE}"3 ${ROOTFS}
+	#mkdir -p ${ROOTFS}/{home,{var/log,var/cache}}
+        #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
+        #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
+        #mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
+	#FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+	#URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
+	#${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ${URL_CLONEZILLA}
+	# Commented because I change command order to be more beautiful for the eyes (?)
+        #mount -o subvol=@home,compress=zstd,noatime     "${DEVICE}"3 ${ROOTFS}/home
+        #mount -o subvol=@varlog,compress=zstd,noatime   "${DEVICE}"3 ${ROOTFS}/var/log
+        #echo "$root_uuid /          btrfs subvol=@,compress=zstd,noatime 0 0        "  > $FILE
+        #echo "$root_uuid /home      btrfs subvol=@home,compress=zstd,noatime 0 0    " >> $FILE
+        #echo "$root_uuid /var/log   btrfs subvol=@varlog,compress=zstd,noatime 0 0  " >> $FILE
+
+	#echo "$root_uuid /        ext4  defaults 0 1"  > $FILE
+        ############################################################################
+	# Disabled maybe for boot bug
+	#mount -o subvol=@varcache,compress=zstd,noatime "${DEVICE}"3 ${ROOTFS}/var/cache
+        #echo "$root_uuid /var/cache btrfs subvol=@varcache,compress=zstd,noatime 0 0" >> $FILE
+        ############################################################################
+
+
+# cleaning_screen	
+# echo "Fixing nm-applet from empty icon bug ------------------------"
+# 	echo --Before
+#	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
+#	sed -i '/^Exec=/c\Exec=nm-applet --indicator' ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop 
+#	echo --After
+#	grep Exec ${ROOTFS}/etc/xdg/autostart/nm-applet.desktop
+
+	#####################################################################################################
+	# Disable the choise to make default and failover
+	#MIRROR_CLONEZILLA=$(whiptail --title "Select Clonezilla mirror" --menu "Choose one option:" 20 60 10 \
+	#       "Official_Fast" "NCHC - Taiwan" \
+	#       "Official_Slow" "SourceForge" \
+	#       3>&1 1>&2 2>&3)
+# The scripts above uses this testing repositories
+# Not to use in normal cases.
+#	let "PROGRESS_BAR_CURRENT += 1"
+#	echo "---Repositories for testing scripts"
+#	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/new.list
+#	echo "deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
+#	echo "deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/new.list
+#        echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}          main contrib non-free non-free-firmware"  > ${ROOTFS}/root/old.list
+#	echo "deb [trusted=yes] ${SNAPSHOT_DEB}     ${DEBIAN_VERSION}-updates  main contrib non-free non-free-firmware" >> ${ROOTFS}/root/old.list
+
+# As this partition has no label, it fails to detect if it is not a vfat partition
+# I should test filesystems in addition to size and labels. DONE mié 24 dic 2025 14:21:25 -03
+# Also remove -F as it was a bad parameter that doesnt is for forcing, instead is for selection filesystem type in mkfs.vfat
+#[ "$REPARTED" == yes ]&& mkfs.vfat  -n EFI        "${DEVICE}"1 -F	 >/dev/null 2>&1 || true
+# BOTH CLONEZILLA SITES ARE UNRELIABLE SO I MAKE A BETTER PLAN###################################
+<<BYPASS
+	case ${MIRROR_CLONEZILLA} in
+		Official_Fast )
+			FILE_CLONEZILLA=$(curl -s "$BASEURL_CLONEZILLA_FAST" | grep -oP 'href="\Kclonezilla-live-[^"]+?\.zip(?=")' | head -n 1)
+			CLONEZILLA_ORIGIN=${BASEURL_CLONEZILLA_FAST}${FILE_CLONEZILLA} ;;
+		Official_Slow )
+			URL_CLONEZILLA=$(curl -S "$BASEURL_CLONEZILLA_SLOW" 2>/dev/null|grep https| cut -d \" -f 2)
+			FILE_CLONEZILLA=$(echo "$URL_CLONEZILLA" | cut -f8 -d\/ | cut -f1 -d \?)
+			CLONEZILLA_ORIGIN=${URL_CLONEZILLA} ;;
+        esac
+BYPASS
+# Disabled
+	#dpkg -l | grep -E "firefox-esr|chrome"
+	#rm /etc/apt/sources.list.d/debian.list                  
+	#cp -p /root/old.list /etc/apt/sources.list.d/debian.list
+	#apt remove --purge firefox-esr google-chrome-stable -y
+	#apt install firefox-esr /tmp/google-chrome-stable.deb -y
+	#dpkg -l | grep -E "firefox-esr|chrome"
+	#rm /etc/apt/sources.list.d/debian.list                   &>/dev/null
+	#cp -p /root/new.list /etc/apt/sources.list.d/debian.list
+<<BYPASS
+cleaning_screen
+echo "Unmounting ${DEVICE}  ----------------------------------------"
+	# JUST IN CASE KILLING GPG PROCESSES FOR MULTIPLE RUNS
+	pgrep gpg | while read -r line
+	do kill -9 "$line" 			2>/dev/null || true
+	done
+	# REPEATING UNMOUNT COMMANDS JUST IN CASE
+        umount "${DEVICE}"*                     2>/dev/null || true
+        umount ${ROOTFS}/dev/pts                2>/dev/null || true
+        umount ${ROOTFS}/dev                    2>/dev/null || true
+        umount ${ROOTFS}/proc                   2>/dev/null || true
+        umount ${ROOTFS}/run                    2>/dev/null || true
+        umount ${ROOTFS}/sys                    2>/dev/null || true
+        umount ${ROOTFS}/tmp                    2>/dev/null || true
+        umount ${ROOTFS}/boot/efi               2>/dev/null || true
+        umount          /var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}/var/cache/apt/archives 2>/dev/null || true
+        umount ${ROOTFS}/var/log                2>/dev/null || true
+        umount ${ROOTFS}/home                   2>/dev/null || true
+        umount ${ROOTFS}                        2>/dev/null || true
+        umount ${ROOTFS}                        2>/dev/null || true
+        umount ${RECOVERYFS}                    2>/dev/null || true
+        umount ${CACHE_FOLDER}                  2>/dev/null || true
+BYPASS
