@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260103-1258
+SCRIPT_DATE=20260103-1318
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1463,7 +1463,7 @@ exit
 	# FIXME Back port kernel and wifi drivers for bookworm (again)
 	# FIXME Power button shutdown. Difficult (It works well on DELL but not on Thinkpad)
 	# FIXME Control Shift Escape fails to open task manager
-	# FIXME Add .bashrc to skel
+	# FIXME Add .bashrc and .vimrc to skel
 	# TODO Failover download Debian Repository 
 	# TODO not ask for debian repository
 	# TODO Update of git hub scripts
