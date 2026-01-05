@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260103-1323
+SCRIPT_DATE=20260105-1935
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -208,6 +208,7 @@ amd64-microcode intel-microcode mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-d
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio audacity pulseaudio-module-bluetooth xfce4-pulseaudio-plugin \
 alsa-topology-conf alsa-ucm-conf alsa-utils sound-icons \
+firmware-intel-sound firmware-intel-misc firmware-sof-signed alsa-firmware-loaders \
 ${BOOT_PACKAGES}  \
 grub2-common grub-efi grub-efi-amd64 \
 ${FIREFOX_AND_CHROME_DEPENDENCIES}  \
