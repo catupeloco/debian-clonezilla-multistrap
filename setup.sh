@@ -178,11 +178,11 @@ else
 	DIFFERENT_PACKAGES="network-manager-gnome"
 fi
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
-apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak btrfs-progs \
+apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak flatseal btrfs-progs \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
 xfce4 xorg dbus-x11 	   gvfs cups thunar-volman  system-config-printer    xarchiver                vlc flameshot	       mousepad              \
 lm-sensors 		   qbittorrent  	    qpdfview		                    	                               gnome-keyring         \
-xfce4-battery-plugin       xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfce4-cpugraph-plugin    xfce4-datetime-plugin    xfce4-diskperf-plugin \
+xfce4-battery-plugin xfce4-clipman      xfce4-clipman-plugin     xfce4-cpufreq-plugin     xfce4-cpugraph-plugin    xfce4-datetime-plugin    xfce4-diskperf-plugin \
 xfce4-fsguard-plugin       xfce4-genmon-plugin      xfce4-mailwatch-plugin   xfce4-netload-plugin     xfce4-places-plugin      xfce4-sensors-plugin  \
 xfce4-smartbookmark-plugin xfce4-systemload-plugin  xfce4-timer-plugin       xfce4-verve-plugin       xfce4-wavelan-plugin     xfce4-weather-plugin  \
 xfce4-xkb-plugin           xfce4-whiskermenu-plugin xfce4-dict 		     xfce4-notifyd            xfce4-indicator-plugin   xfce4-mpc-plugin      \
