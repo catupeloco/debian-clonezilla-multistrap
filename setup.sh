@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260202-2014
+SCRIPT_DATE=20260202-2045
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -195,7 +195,7 @@ fonts-symbola fonts-urw-base35 gsfonts arc-theme \
 task-xfce-desktop task-ssh-server ssh-askpass task-laptop qterminal \
 ${COMMANDLINE_TOOLS} \
 sudo vim wget curl dialog nano file less pciutils lshw usbutils bind9-dnsutils fdisk file git gh zenity build-essential ncdu \
-whiptail \
+whiptail aria2 \
 ${CRON_TOOLS} \
 anacron cron cron-daemon-common \
 ${NETWORK_PACKAGES_AND_DRIVERS} \
@@ -1132,6 +1132,12 @@ echo --Debian
 	apt upgrade -y
 	sleep 3
 
+echo --Git repositories
+	for repo in /opt/grub-btrfs /opt/install-libreoffice-from-web /opt/kernelinstall ; do
+		cd \$repo
+		git pull
+	done
+
 echo --Libreoffice
 	/opt/install-libreoffice-from-web/setup.sh
 
@@ -1302,6 +1308,8 @@ cat << EOF > ${ROOTFS}/etc/sudoers.d/timeshift
 %timeshift ALL = NOPASSWD : /usr/bin/timeshift-gtk
 EOF
 
+cleaning_screen	
+echo "Cloning login screen on every display -----------------------"
 cat << EOF > ${ROOTFS}/usr/local/bin/lightdm.sh
 #!/bin/sh
 LOG=/tmp/\$(basename \$0).log
@@ -1337,7 +1345,7 @@ else
 fi
 
 if xrandr | grep eDP-1 | grep " connected" ; then
-        if echo $HDMI1_setup \$DP1_setup $DP2_setup $DP3_setup $DP4_setup | grep -q normal ; then
+        if echo \$HDMI1_setup \$DP1_setup \$DP2_setup \$DP3_setup \$DP4_setup | grep -q normal ; then
                 eDP1_setup="  --mode 1920x1080 --pos 0x0 --rotate normal --brightness 1.0"
         else
                 eDP1_setup=" --preferred --brightness 1.0"
@@ -1348,22 +1356,26 @@ else
 fi
 
 
-xrandr --output eDP-1  \$eDP1_setup  \
-       --output HDMI-1 \$HDMI1_setup \
-       --output DP-1   \$DP1_setup   \
-       --output DP-2   \$DP2_setup   \
-       --output DP-3   \$DP3_setup   \
+xrandr --output eDP-1  \$eDP1_setup  \\
+       --output HDMI-1 \$HDMI1_setup \\
+       --output DP-1   \$DP1_setup   \\
+       --output DP-2   \$DP2_setup   \\
+       --output DP-3   \$DP3_setup   \\
        --output DP-4   \$DP4_setup  > \$LOG 2>&1
 xrandr   >> \$LOG 2>&1
-cat << EOF >> \$LOG
+cat << LOG >> \$LOG
 eDP1_setup=  \$eDP1_setup
 HDMI1_setup= \$HDMI1_setup
 DP1_setup=   \$DP1_setup
 DP2_setup=   \$DP2_setup
 DP3_setup=   \$DP3_setup
 DP4_setup=   \$DP3_setup
+LOG
 EOF
-EOF
+	chmod +x ${ROOTFS}/usr/local/bin/lightdm.sh
+	FILE="${ROOTFS}/etc/lightdm/lightdm.conf"
+	sed -i 's|^[#\s]*display-setup-script=.*|display-setup-script=/usr/local/bin/lightdm.sh|' "$FILE"
+	sed -i 's|^[#\s]*session-setup-script=.*|session-setup-script=/usr/local/bin/lightdm.sh|' "$FILE"
 
 
 cleaning_screen	
