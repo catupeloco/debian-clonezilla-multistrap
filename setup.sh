@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260105-2107
+SCRIPT_DATE=20260202-2004
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -186,7 +186,7 @@ xfce4-battery-plugin xfce4-clipman      xfce4-clipman-plugin     xfce4-cpufreq-p
 xfce4-fsguard-plugin       xfce4-genmon-plugin      xfce4-mailwatch-plugin   xfce4-netload-plugin     xfce4-places-plugin      xfce4-sensors-plugin  \
 xfce4-smartbookmark-plugin xfce4-systemload-plugin  xfce4-timer-plugin       xfce4-verve-plugin       xfce4-wavelan-plugin     xfce4-weather-plugin  \
 xfce4-xkb-plugin           xfce4-whiskermenu-plugin xfce4-dict 		     xfce4-notifyd            xfce4-indicator-plugin   xfce4-mpc-plugin      \
-thunar-archive-plugin      thunar-media-tags-plugin ntfs-3g  gdebi timeshift \
+thunar-archive-plugin      thunar-media-tags-plugin ntfs-3g  gdebi timeshift mate-polkit \
 ${BUG_FIXES_PACKAGES} \
 at-spi2-core xinput gawk inotify-tools \
 ${FONTS_PACKAGES_AND_THEMES}  \
