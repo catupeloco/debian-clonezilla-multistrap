@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260202-2004
+SCRIPT_DATE=20260202-2014
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1295,11 +1295,76 @@ Terminal=false
 X-GNOME-Autostart-enabled=true'> ${ROOTFS}/etc/xdg/autostart/volumen.desktop
 
 cleaning_screen	
+# TODO It still asks for password...
 echo "Final touches for timeshift snapshots -----------------------"
 # To run snapshots without user password prompt
 cat << EOF > ${ROOTFS}/etc/sudoers.d/timeshift
 %timeshift ALL = NOPASSWD : /usr/bin/timeshift-gtk
 EOF
+
+cat << EOF > ${ROOTFS}/usr/local/bin/lightdm.sh
+#!/bin/sh
+LOG=/tmp/\$(basename \$0).log
+
+if xrandr | grep HDMI-1 | grep " connected" ; then
+        HDMI1_setup="  --mode 1920x1080 --pos 0x0 --rotate normal --brightness 1.0"
+else
+        HDMI1_setup="  --off"
+fi
+
+if xrandr | grep ^DP-1 | grep " connected" ; then
+        DP1_setup="  --mode 1920x1080 --pos 0x0 --rotate normal --brightness 1.0"
+else
+        DP1_setup="  --off"
+fi
+
+if xrandr | grep ^DP-2 | grep " connected" ; then
+        DP2_setup="  --mode 1920x1080 --pos 0x0 --rotate normal --brightness 1.0"
+else
+        DP2_setup="  --off"
+fi
+
+if xrandr | grep ^DP-3 | grep " connected" ; then
+        DP3_setup="  --mode 1920x1080 --pos 0x0 --rotate normal --brightness 1.0"
+else
+        DP3_setup="  --off"
+fi
+
+if xrandr | grep ^DP-4 | grep " connected" ; then
+        DP4_setup="  --mode 1920x1080 --pos 0x0 --rotate normal --brightness 1.0"
+else
+        DP4_setup="  --off"
+fi
+
+if xrandr | grep eDP-1 | grep " connected" ; then
+        if echo $HDMI1_setup \$DP1_setup $DP2_setup $DP3_setup $DP4_setup | grep -q normal ; then
+                eDP1_setup="  --mode 1920x1080 --pos 0x0 --rotate normal --brightness 1.0"
+        else
+                eDP1_setup=" --preferred --brightness 1.0"
+
+        fi
+else
+        eDP1_setup="  --off"
+fi
+
+
+xrandr --output eDP-1  \$eDP1_setup  \
+       --output HDMI-1 \$HDMI1_setup \
+       --output DP-1   \$DP1_setup   \
+       --output DP-2   \$DP2_setup   \
+       --output DP-3   \$DP3_setup   \
+       --output DP-4   \$DP4_setup  > \$LOG 2>&1
+xrandr   >> \$LOG 2>&1
+cat << EOF >> \$LOG
+eDP1_setup=  \$eDP1_setup
+HDMI1_setup= \$HDMI1_setup
+DP1_setup=   \$DP1_setup
+DP2_setup=   \$DP2_setup
+DP3_setup=   \$DP3_setup
+DP4_setup=   \$DP3_setup
+EOF
+EOF
+
 
 cleaning_screen	
 echo "Setting up local admin account ------------------------------"
