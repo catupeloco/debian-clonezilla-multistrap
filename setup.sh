@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260202-2105
+SCRIPT_DATE=20260202-2201
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1314,11 +1314,18 @@ cat << EOF > ${ROOTFS}/usr/local/bin/lightdm.sh
 #!/bin/sh
 LOG=/tmp/\$(basename \$0).log
 
+if xrandr | grep Virtual-1 | grep " connected" ; then
+        Virtual1_setup="  --mode 1920x1080 --pos 0x0 --rotate normal --brightness 1.0"
+else
+        Virtual1_setup="  --off"
+fi
+
 if xrandr | grep HDMI-1 | grep " connected" ; then
         HDMI1_setup="  --mode 1920x1080 --pos 0x0 --rotate normal --brightness 1.0"
 else
         HDMI1_setup="  --off"
 fi
+
 
 if xrandr | grep ^DP-1 | grep " connected" ; then
         DP1_setup="  --mode 1920x1080 --pos 0x0 --rotate normal --brightness 1.0"
@@ -1356,12 +1363,13 @@ else
 fi
 
 
-xrandr --output eDP-1  \$eDP1_setup  \\
-       --output HDMI-1 \$HDMI1_setup \\
-       --output DP-1   \$DP1_setup   \\
-       --output DP-2   \$DP2_setup   \\
-       --output DP-3   \$DP3_setup   \\
-       --output DP-4   \$DP4_setup  > \$LOG 2>&1
+xrandr --output eDP-1     \$eDP1_setup     \\
+       --output Virtual-1 \$Virtual1_setup \\
+       --output HDMI-1    \$HDMI1_setup    \\
+       --output DP-1      \$DP1_setup      \\
+       --output DP-2      \$DP2_setup      \\
+       --output DP-3      \$DP3_setup      \\
+       --output DP-4      \$DP4_setup   >  \$LOG 2>&1
 xrandr   >> \$LOG 2>&1
 cat << LOG >> \$LOG
 eDP1_setup=  \$eDP1_setup
