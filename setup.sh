@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260202-2201
+SCRIPT_DATE=20260202-2237
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1565,6 +1565,7 @@ exit
 	# Failover download Aria must not continue if all files are not downloaded. Listo
 	# Dark theme. Listo
 	# Secondaries TTY stetic. Listo
+	# Clone login screen on every monitor. Listo 
 
 
 # FOR VERSION 2.0
