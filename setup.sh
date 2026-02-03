@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260202-2045
+SCRIPT_DATE=20260202-2105
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -737,7 +737,7 @@ while [ ! -z "$PENDING" ] ; do
 	# --console-log-level=warn   		: Minimize verbose output
 	# --download-result=hide 		: Minimize verbose output
 	# --summary-interval=0			: Minimize verbose output
-	aria2c \
+	time aria2c \
 	-i /tmp/downloads.list \
 	-j 5 \
 	-x 4 \
