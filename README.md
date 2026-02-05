@@ -218,3 +218,5 @@ GOOD THINGS TAKE TIME.
     - This is done to reduce the size of the disk image created earlier.
 
 # Enjoy :rocket:
+
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/catupeloco/debian-clonezilla-multistrap)
