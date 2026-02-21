@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260202-2237
+SCRIPT_DATE=20260221-1408
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -169,7 +169,8 @@ eval "$("$APT_CONFIG" shell APT_TRUSTEDDIR 'Dir::Etc::trustedparts/d')"
 # Apt packages list for installing with mmdebstrap
 # NOTE: Fictional variables below are only for title purposes ########################################
 if [ "$DEBIAN_VERSION" == "trixie" ] ; then
-	DIFFERENT_PACKAGES="keepassxc-full linux-sysctl-defaults network-manager-applet network-manager-l10n firmware-intel-graphics "
+	DIFFERENT_PACKAGES="keepassxc-full linux-sysctl-defaults network-manager-applet network-manager-l10n
+    firmware-intel-graphics flatseal firmware-intel-misc "
 #lm-sensors 		   qbittorrent  	    qpdfview		     keepassxc-full 	      light-locker             gnome-keyring         \
 #bind9-host dfu-util dnsmasq-base ethtool ifupdown iproute2 iputils-ping linux-sysctl-defaults isc-dhcp-client \
 #network-manager network-manager-applet network-manager-openconnect network-manager-l2tp network-manager-l10n \
@@ -178,7 +179,7 @@ else
 	DIFFERENT_PACKAGES="network-manager-gnome"
 fi
 INCLUDES_DEB="${RAMDISK_AND_SYSTEM_PACKAGES} \
-apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak flatseal btrfs-progs \
+apt initramfs-tools zstd gnupg systemd linux-image-amd64 login flatpak btrfs-progs \
 ${XFCE_AND_DESKTOP_APPLICATIONS} \
 xfce4 xorg dbus-x11 	   gvfs cups thunar-volman  system-config-printer    xarchiver                vlc flameshot	       mousepad              \
 lm-sensors 		   qbittorrent  	    qpdfview		                    	                               gnome-keyring         \
@@ -208,7 +209,7 @@ amd64-microcode intel-microcode mesa-va-drivers mesa-vdpau-drivers mesa-vulkan-d
 ${AUDIO_PACKAGES} \
 pavucontrol pulseaudio audacity pulseaudio-module-bluetooth xfce4-pulseaudio-plugin \
 alsa-topology-conf alsa-ucm-conf alsa-utils sound-icons \
-firmware-intel-sound firmware-intel-misc firmware-sof-signed alsa-firmware-loaders \
+firmware-intel-sound firmware-sof-signed alsa-firmware-loaders \
 ${BOOT_PACKAGES}  \
 grub2-common grub-efi grub-efi-amd64 \
 ${FIREFOX_AND_CHROME_DEPENDENCIES}  \
