@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260221-1408
+SCRIPT_DATE=20260221-1440
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -720,7 +720,11 @@ aria2_pending(){
 	done
 	# ls -la "${FILES_TO_DOWNLOAD[@]}" >/dev/null || true
 	export PENDING=$PENDING
-	echo ARIA2 PENDING $PENDING >> $AUTOMATIZATIONS 
+    if grep -q ARIA2 $AUTOMATIZATIONS ; then
+        sed -i 's/^ARIA2 PENDING .*/ARIA2 DONE/' $AUTOMATIZATIONS
+    else
+    	echo ARIA2 PENDING $PENDING >> $AUTOMATIZATIONS 
+    fi
 	set -e
 }
 #PENDING="SOMETHING"
@@ -847,8 +851,13 @@ echo START - DISK $END_DISK_SETUP_START_DOWNLOADS - DOWNLOADS $END_DOWNLOADS_STA
 cleaning_screen
 echo "Running mmdebstrap (please be patient, longest step) --------"
 ls -A ${ROOTFS}
+if [ "$DEBIAN_VERSION" == "trixie" ] ; then
+    INSTALL_SPOTIFY="spotify-client"
+else
+    INSTALL_SPOTIFY=""
+fi
 mmdebstrap --variant=apt --architectures=amd64 --mode=root --format=directory --skip=cleanup \
-    --include="${INCLUDES_DEB} google-chrome-stable ${FIREFOX_PACKAGE} spotify-client syncthing" "${DEBIAN_VERSION}" "${ROOTFS}" \
+    --include="${INCLUDES_DEB} google-chrome-stable ${FIREFOX_PACKAGE} ${INSTALL_SPOTIFY} syncthing" "${DEBIAN_VERSION}" "${ROOTFS}" \
     --setup-hook='mkdir -p "$1/var/cache/apt/archives"'  --setup-hook='mount --bind '$CACHE_FOLDER' "$1/var/cache/apt/archives"' \
 	"deb [trusted=yes] ${REPOSITORY_DEB}   ${DEBIAN_VERSION}          main contrib non-free non-free-firmware" \
 	"deb [trusted=yes] ${SECURITY_DEB}     ${DEBIAN_VERSION}-security main contrib non-free non-free-firmware" \
