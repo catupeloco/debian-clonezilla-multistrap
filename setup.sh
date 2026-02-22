@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260222-1352
+SCRIPT_DATE=20260222-1356
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -55,11 +55,6 @@ else
 
 [[ -z "$DEVICE" ]] && exit 1
 
-	if echo ${DEVICE} | grep -i nvme > /dev/null ; then
-		DEVICE_P=${DEVICE}p
-	else
-		DEVICE_P=${DEVICE}
-	fi
 	#####################################################################################################
 	FIREFOX_PACKAGE=$(whiptail --title "Select Firefox Package" --menu "Choose one option:" 20 60 10 \
 	       "firefox     firefox-l10n-es-ar    " "Firefox Rapid Release" \
@@ -149,6 +144,11 @@ ROOTFS=/tmp/os-rootfs
 # Partition Fixed Sizes
 PART_EFI_END=901
 PART_CZ_END=12901
+if echo ${DEVICE} | grep -i nvme > /dev/null ; then
+	DEVICE_P=${DEVICE}p
+else
+	DEVICE_P=${DEVICE}
+fi
 
 # Keyboard Language for TTY consoles
 KEYBOARD_FIX_URL="https://mirrors.edge.kernel.org/pub/linux/utils/kbd"
