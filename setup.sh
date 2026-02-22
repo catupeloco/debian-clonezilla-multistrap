@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260221-1440
+SCRIPT_DATE=20260222-1347
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -521,7 +521,7 @@ echo "Comparing partitions target scheme vs actual schema ---------"
 	let "PROGRESS_BAR_CURRENT += 1"
 	echo "---Repartitioning needed? :" | tee -a $AUTOMATIZATIONS
 		# SKIPPING REPARTED ONLY IF LABELS AND SIZES MATCH
-		if [ "$LABELS_MATCH" == "yes" ] && [ "$FILESYSTEMS_MATCH" == "yes" ]&& [ "$SIZES_MATCH" == "yes" ] ; then
+		if [ "$LABELS_MATCH" == "yes" ] && [ "$FILESYSTEMS_MATCH" == "yes" ] && [ "$SIZES_MATCH" == "yes" ] ; then
 			REPARTED=no
 		else
 			REPARTED=yes
@@ -558,14 +558,14 @@ fi
 cleaning_screen
 echo "Formating partitions ----------------------------------------"
 		# EVEN IF THE PARTITION IS FORMATTED I TRY TO CHECK THE FILESYSTEM
-			  fsck -y "${DEVICE_P}"1			 >/dev/null 2>&1 || true
-			  fsck -y "${DEVICE_P}"2			 >/dev/null 2>&1 || true
-			  fsck -y "${DEVICE_P}"3			 >/dev/null 2>&1 || true
-			  fsck -y "${DEVICE_P}"4			 >/dev/null 2>&1 || true
-			  mkfs.vfat  -n EFI        "${DEVICE_P}"1  	 >/dev/null 2>&1 || true
-[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE_P}"4 -F	 >/dev/null 2>&1 || true 
-		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE_P}"2 -F	 >/dev/null 2>&1 || true
-			  mkfs.btrfs -L LINUX      "${DEVICE_P}"3 -f	 >/dev/null 2>&1 || true
+			  fsck -y "${DEVICE_P}"1                                    >$ERR 2>&1 || true
+			  fsck -y "${DEVICE_P}"2                                    >$ERR 2>&1 || true
+			  fsck -y "${DEVICE_P}"3                                    >$ERR 2>&1 || true
+			  fsck -y "${DEVICE_P}"4                                    >$ERR 2>&1 || true
+			  mkfs.vfat  -n EFI        "${DEVICE_P}"1                   >$ERR 2>&1 || true
+[ "$REPARTED" == yes ] && mkfs.ext4  -L RESOURCES  "${DEVICE_P}"4 -F    >$ERR 2>&1 || true 
+		 	  mkfs.ext4  -L CLONEZILLA "${DEVICE_P}"2 -F                >$ERR 2>&1 || true
+			  mkfs.btrfs -L LINUX      "${DEVICE_P}"3 -f                >$ERR 2>&1 || true
 
 cleaning_screen
 echo "Mounting ----------------------------------------------------"
