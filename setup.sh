@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260222-1356
+SCRIPT_DATE=20260711-2307
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -305,7 +305,7 @@ DRAWIO_DEB=${DRAWIO_URL##*/}
 MARKTEXT_FOLDER=${CACHE_FOLDER}/Marktext
 MARKTEXT_URL_PREFIX=https://github.com/marktext/marktext/releases/download
 MARKTEXT_RELEASE=$(curl --silent "https://api.github.com/repos/marktext/marktext/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")')
-MARKTEXT_DEB=marktext-amd64.deb
+MARKTEXT_DEB=marktext-linux-$(echo $MARKTEXT_RELEASE | sed 's/v//g').deb
 MARKTEXT_URL="${MARKTEXT_URL_PREFIX}/${MARKTEXT_RELEASE}/${MARKTEXT_DEB}"
 
 # For MissionCenter and others 
