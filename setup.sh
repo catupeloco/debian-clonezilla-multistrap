@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260919-0953
+SCRIPT_DATE=20260919-1851
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -277,7 +277,7 @@ FIREFOX_TRUSTED="/etc/apt/keyrings/packages.mozilla.org.asc"
 # curl -sS https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/spotify.gpg
 # echo "deb https://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
 SPOTIFY_REPOSITORY="https://repository.spotify.com"
-SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_C85668DF69375001.gpg"
+SPOTIFY_KEYS="https://download.spotify.com/debian/pubkey_5384CE82BA52C83A.gpg"
 SPOTIFY_TRUSTED="/etc/apt/trusted.gpg.d/spotify.gpg"
 
 # Cross platform app for syncing folders between devices
@@ -1160,7 +1160,7 @@ echo --Firefox, Google Chrome, Draw.io and Marktext
 		cd /tmp
 		GH_HOST=github.com gh release download -R \$package --pattern '*amd64*.deb'
 	done
-	apt install ./drawio-amd64*.deb ./marktext-amd64.deb $FIREFOX_PACKAGE google-chrome-stable -y
+	apt install ./drawio-amd64*.deb ./marktext*.deb $FIREFOX_PACKAGE google-chrome-stable -y
 
 echo Listo -------------------------------
 	sleep 10
