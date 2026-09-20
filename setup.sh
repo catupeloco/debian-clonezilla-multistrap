@@ -1,5 +1,5 @@
 #!/bin/bash
-SCRIPT_DATE=20260919-1851
+SCRIPT_DATE=20260920-1807
 set -e # Exit on error
 LOG=/tmp/laptop.log
 ERR=/tmp/laptop.err
@@ -1156,10 +1156,9 @@ echo --Flatpak
 	flatpak update -y
 
 echo --Firefox, Google Chrome, Draw.io and Marktext
-	for package in jgraph/drawio-desktop marktext/marktext; do
-		cd /tmp
-		GH_HOST=github.com gh release download -R \$package --pattern '*amd64*.deb'
-	done
+    cd /tmp
+    GH_HOST=github.com gh release download -R jgraph/drawio-desktop --pattern '*amd64*.deb'
+    GH_HOST=github.com gh release download -R marktext/marktext     --pattern '*.deb'
 	apt install ./drawio-amd64*.deb ./marktext*.deb $FIREFOX_PACKAGE google-chrome-stable -y
 
 echo Listo -------------------------------
