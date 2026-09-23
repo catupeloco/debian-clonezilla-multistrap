@@ -122,46 +122,38 @@ wget -qO- vicentech.com.ar/laptop | bash
 ## Installation walkthrough
 
 - ***Grub from ISO :*** just hit enter.
-  
-  <img title="1.Grub_from_ISO"               src="images/1.Grub_from_ISO.png">
 
-- ***Installation command :*** make sure all characters are correct before hitting enter.
-  
-  <img title="2.Installation_Command"        src="images/2.Installation_Command.png">
+- ***Manual Installation command :*** make sure all characters are correct before hitting enter (Step 5 above).
 
-- ***Installing dependencies :***  
-  
-  <img title="3.Dependencies"                src="images/3.Dependencies.png">
+- ***Installing dependencies :*** Wait to finish
 
-- ***Disk confirmation prompt :*** beware from this point storage will be erased. If you have more than one storage, choose the right one. 
-  
-  <img title="4.Disk_confirmation_prompt"    src="images/4.Disk_confirmation_prompt.png">
+- ***Release version prompt :*** Trixie (Debian 13) or Bookworm (Debian 12)
 
-- ***Clonezilla Mirror Selection :*** By default fastest mirror is selected. In case of failure you may choose the slower one.
-  
-  <img title="5.Clonezilla_Mirror_Selection" src="images/5.Clonezilla_Mirror_Selection.png">
+- ***Disk confirmation prompt :*** Beware from this point storage will be erased. If you have more than one storage, choose the right one. 
+
+- ***Firefox selection prompt :*** Choose Rapid Release or ESR
 
 - ***Local admin Creation :*** Type a username as you like. 
-  
-  <img title="6.Username_Prompt"             src="images/6.Username_Prompt.png">
 
 - ***Local admin password prompt :*** You will be asked twice for password confirmation.
-  
-  <img title="7.Password_Prompt_1"           src="images/7.Password_Prompt_1.png">
-  <img title="8.Password_Prompt_2"           src="images/8.Password_Prompt_2.png">
 
 - ***Overprovisioning Partition :*** As a advise from ssd manufacturers you may leave a percentage of the storage empty for performance and life span. The best way to do it is to fraction other paritions without this percentage and then delete this partition. For my advantage I use this space for temporally download all requiered packages. You may leave it, use it or delete the partition for OP.
-  
-  <img title="9.Overprovisioning_Selection" src="images/9.Overprovisioning_Selection.png">
 
-- ***Installation Screen 1 :*** As you may see below only titles will be shown on the default tty1. If you like to follow the internals of installation, you could connect remotelly by ssh or use "Control + Alt + F2" for standard output, and "Control + Alt + F3" for errors. Some downloads may be shown as a progress bar.
+- ***Debian Mirror prompt :*** Script will detect fastest mirror but just in case you could choose deb.debian.org.
+
+<img title="Selections"           src="images/Manual/animation.gif">
+
+- ***Installation Screen tty1 :*** As you may see below only titles will be shown on the default tty1. If you like to follow the internals of installation, you could connect remotelly by ssh or use "Control + Alt + F2" for standard output, and "Control + Alt + F3" for errors. Some downloads may be shown as a progress bar.
   
-  <img title="10.Installation_1" src="images/10.Installation_1.png">
-  <img title="11.Installation_2" src="images/11.Installation_2.png">
-  <img title="12.Installation_3" src="images/12.Installation_3.png">
-  <img title="13.Installation_4" src="images/13.Installation_4.png">
-  <img title="14.Installation_5" src="images/14.Installation_5.png">
-  <img title="15.Installation_6" src="images/15.Installation_6.png">
+  <img title="Selections"           src="images/Automatic/animation.gif">
+
+- ***Installation Screen tty4 :*** . Debug TTY
+  
+  <img title="Downloads"           src="images/Debug_tty.png">
+  
+- ***Installation Screen tty5 :*** . Download TTY
+  
+  <img title="Downloads"           src="images/Downloads/animation.gif">
 
 - ***Clean disk first run :*** 
   On the first run, the disk will be cleaned according to the following logic: 
