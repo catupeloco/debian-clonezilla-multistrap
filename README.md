@@ -143,17 +143,23 @@ wget -qO- vicentech.com.ar/laptop | bash
 
 <img title="Selections"           src="images/Manual/animation.gif">
 
-- ***Installation Screen tty1 :*** As you may see below only titles will be shown on the default tty1. If you like to follow the internals of installation, you could connect remotelly by ssh or use "Control + Alt + F2" for standard output, and "Control + Alt + F3" for errors. Some downloads may be shown as a progress bar.
+- ***Installation Screen tty1 :*** As you may see below only titles will be shown on the default tty1. If you like to follow the internals of installation, you could connect remotelly by ssh or use "Alt + Arrow keys" to switch other TTYS
   
   <img title="Selections"           src="images/Automatic/animation.gif">
 
-- ***Installation Screen tty4 :*** . Debug TTY
+- ***Installation Screen tty2 :*** . Selections and Debug
   
   <img title="Downloads"           src="images/Debug_tty.png">
-  
-- ***Installation Screen tty5 :*** . Download TTY
+
+- ***Installation Screen tty3 :*** . Downloads
   
   <img title="Downloads"           src="images/Downloads/animation.gif">
+
+- ***Installation Screen tty4 :*** . Standard output log
+
+- ***Installation Screen tty5 :*** . Standard error log
+
+- ***Installation Screen tty6 :*** . top (It doesn't work yet)
 
 - ***Clean disk first run :*** 
   On the first run, the disk will be cleaned according to the following logic: 
